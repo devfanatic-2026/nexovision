@@ -15,9 +15,11 @@ export default function AuthorsPage() {
         <div className="container mx-auto px-4 py-8 space-y-8">
             <HeaderSection title={HEADER_TITLE} />
 
-            <section role="alert" className="alert alert-info mb-4 bg-info/60">
-                <Info size="16" />
-                <span>{ATTENTION_DESCRIPTION}</span>
+            <section className="bg-editorial-50 dark:bg-editorial-900/40 border border-editorial-100 dark:border-editorial-800 p-6 rounded-sm mb-4">
+                <div className="flex items-center gap-3 text-secondary italic font-serif">
+                    <Info size="20" />
+                    <p className="text-lg">{ATTENTION_DESCRIPTION}</p>
+                </div>
             </section>
 
             <section className="flex-1">

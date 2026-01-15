@@ -4,7 +4,7 @@ import Navbar from "../elements/Navbar";
 
 export default function Header({ currentPath }: { currentPath: string }) {
     return (
-        <header className="border-b border-primary-content/80 dark:border-primary-content/20">
+        <header className="border-b border-editorial-200 dark:border-editorial-800 bg-base-100">
             <TopHeader currentPath={currentPath} />
             <Navbar currentPath={currentPath} />
         </header>

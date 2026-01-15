@@ -35,75 +35,73 @@ export default function ArticleHeader({ article, readingTime }: ArticleHeaderPro
     });
 
     return (
-        <section className="mb-8 flex flex-col lg:flex-col-reverse border-b border-b-base-300 lg:border-none pb-4 pt-0 lg:pt-6">
-            <div className="container px-0 max-w-5xl lg:mt-4 overflow-hidden aspect-[20/9] lg:rounded-md relative">
-                <img {...coverProps} />
+        <section className="mb-12 flex flex-col gap-8 pb-8 border-b border-editorial-100 dark:border-editorial-900">
+            <div className="container px-0 max-w-5xl overflow-hidden aspect-[21/9] rounded-sm relative bg-editorial-100 dark:bg-editorial-900">
+                <img {...coverProps} className="w-full h-full object-cover transition-transform duration-700 hover:scale-102" />
                 {isImpact && (
-                    <div className="absolute top-4 right-4 bg-primary text-primary-content px-3 py-1.5 rounded text-xs font-bold uppercase tracking-widest flex items-center gap-2 shadow-2xl z-20">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    <div className="absolute top-6 left-6 bg-primary text-white px-4 py-1.5 text-[10px] font-sans font-bold uppercase tracking-[0.2em] shadow-2xl z-20 flex items-center gap-2">
+                        <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                        </span>
                         Impacto Nexovisión
                     </div>
                 )}
             </div>
-            <div className="container my-4 max-w-5xl lg:hidden flex items-center gap-2">
-                <ResourcesAdd size="16" />
-                <a href={`/categories/${category.data.path}`} className="a-01 font-semibold">
-                    {category.data.title}
-                </a>
-            </div>
-            <div className="container max-w-5xl">
-                <h1 className="text-3xl lg:text-4xl font-bold text-left text-pretty">
-                    {article.data.title}
-                </h1>
-                <div className="flex flex-col gap-4 items-start mt-2 lg:mt-6 text-sm">
-                    <div className="text-base-content/70 flex items-center gap-2">
-                        <span className="hidden lg:flex items-center gap-1">
-                            <ResourcesAdd size="15" />
-                            <a href={`/categories/${category.id}`} className="a-01 font-semibold">
-                                {category.data.title}
-                            </a>
-                        </span>
-                        <Divider responsive />
-                        <span className="flex items-center gap-1">
-                            <Calendar04 size="15" />
-                            <time dateTime={normalizeDate(article.data.publishedTime)}>
-                                {getDisplayDate(article.data.publishedTime)}
-                            </time>
-                        </span>
-                        <Divider />
-                        <span className="flex items-center gap-1">
-                            <Time04 size="15" />
-                            <span>{readingTime}</span>
-                        </span>
+
+            <div className="container max-w-5xl space-y-6">
+                <div className="flex flex-col gap-4">
+                    <div className="flex items-center gap-3 text-[10px] font-sans font-bold uppercase tracking-widest text-secondary">
+                        <a href={`/categories/${category.id}`} className="hover:underline bg-secondary/10 px-2 py-1 rounded-sm">
+                            {category.data.title}
+                        </a>
+                        <span className="w-1.5 h-1.5 bg-editorial-200 rounded-full"></span>
+                        <span className="text-editorial-500 font-medium tracking-normal lowercase">{readingTime} de lectura</span>
                     </div>
 
-                    <div className="w-full flex flex-wrap gap-2 items-center justify-between">
-                        <div className="flex flex-wrap gap-4">
-                            {authors.map((author: any) => {
-                                const authorImgProps = image.props({
-                                    src: author.data.avatar || "/assets/images/default-avatar.jpg",
-                                    alt: author.data.name,
-                                    width: 64,
-                                    height: 64,
-                                    className: "w-full h-full object-cover",
-                                    loading: "eager"
-                                });
+                    <h1 className="text-4xl md:text-6xl font-serif font-bold leading-[1.1] tracking-tighter text-neutral">
+                        {article.data.title}
+                    </h1>
 
-                                return (
-                                    <div key={author.id} className="flex items-center gap-2">
-                                        <a href={`/authors/${author.id}`} className="flex items-center gap-2">
-                                            <div className="avatar">
-                                                <div className="w-8 rounded-full">
-                                                    <img {...authorImgProps} />
-                                                </div>
+                    <p className="text-xl md:text-2xl text-editorial-600 dark:text-editorial-400 font-sans leading-relaxed border-l-4 border-secondary/20 pl-6 italic">
+                        {article.data.description}
+                    </p>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-6 pt-6 border-t border-editorial-50 dark:border-editorial-900/50">
+                    <div className="flex flex-wrap gap-6">
+                        {authors.map((author: any) => {
+                            const authorImgProps = image.props({
+                                src: author.data.avatar || "/assets/images/default-avatar.jpg",
+                                alt: author.data.name,
+                                width: 80,
+                                height: 80,
+                                className: "w-full h-full object-cover",
+                                loading: "eager"
+                            });
+
+                            return (
+                                <div key={author.id} className="flex items-center gap-3">
+                                    <a href={`/authors/${author.id}`} className="group flex items-center gap-3">
+                                        <div className="avatar">
+                                            <div className="w-10 rounded-full border border-editorial-200 group-hover:border-secondary transition-colors">
+                                                <img {...authorImgProps} />
                                             </div>
-                                            <span className="font-bold capitalize">{author.data.name}</span>
-                                        </a>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                        {/* <Share text={article.data.title} /> */}
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <span className="text-sm font-serif font-bold group-hover:text-secondary transition-colors leading-none">{author.data.name}</span>
+                                            <span className="text-[10px] font-sans font-bold uppercase tracking-tighter text-editorial-400">{author.data.role}</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <div className="flex items-center gap-2 text-[11px] font-sans font-bold uppercase tracking-widest text-editorial-400">
+                        <Calendar04 size="14" />
+                        <time dateTime={normalizeDate(article.data.publishedTime)}>
+                            {getDisplayDate(article.data.publishedTime)}
+                        </time>
                     </div>
                 </div>
             </div>

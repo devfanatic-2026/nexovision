@@ -23,12 +23,12 @@ export default function NavbarItem({ item, currentPath }: Props) {
 
     return (
         <li
-            className={`relative after:absolute after:-bottom-2 after:left-0 after:h-[1.5px] after:w-full after:transition-all after:duration-300 ${active
-                ? "after:bg-base-content"
-                : "after:bg-transparent"
+            className={`relative after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:w-full after:transition-all after:duration-300 ${active
+                ? "after:bg-secondary text-secondary"
+                : "after:bg-transparent hover:after:bg-editorial-300"
                 }`}
         >
-            <a href={formatHref(item.href)} aria-label={item.text}>{item.text}</a>
+            <a href={formatHref(item.href)} aria-label={item.text} className="px-3 py-2">{item.text}</a>
         </li>
     );
 }

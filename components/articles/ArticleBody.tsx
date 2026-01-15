@@ -9,7 +9,7 @@ interface ArticleBodyProps {
 export default function ArticleBody({ content }: ArticleBodyProps) {
     return (
         <article
-            className="prose md:prose-lg py-8 container prose-img:border prose-img:mx-auto prose-img:border-base-200 prose-img:rounded-lg prose-p:break-words prose-a:break-all prose-pre:break-words prose-pre:cursor-text prose-code:break-words prose-code:whitespace-pre-wrap max-w-5xl mx-auto dark:prose-invert"
+            className="prose md:prose-lg py-12 container font-serif prose-headings:font-serif prose-headings:tracking-tight prose-p:text-editorial-800 dark:prose-p:text-editorial-200 prose-img:border prose-img:mx-auto prose-img:border-editorial-100 dark:prose-img:border-editorial-900 prose-img:rounded-sm prose-p:break-words prose-a:text-secondary prose-a:no-underline hover:prose-a:underline prose-pre:break-words prose-pre:cursor-text prose-code:break-words prose-code:whitespace-pre-wrap max-w-4xl mx-auto dark:prose-invert"
             data-pagefind-body
         >
             <ReactMarkdown remarkPlugins={[remarkGfm]}>

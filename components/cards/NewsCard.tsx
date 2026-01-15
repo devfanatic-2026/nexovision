@@ -35,34 +35,32 @@ export default function NewsCard({ article, index, showImpactBadge }: Props) {
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
                 {isImpact && (
-                    <div className="absolute top-2 right-2 bg-primary text-primary-content px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-lg z-20">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    <div className="absolute top-2 left-2 bg-chile-red text-white px-2 py-1 text-[10px] font-sans font-bold uppercase tracking-widest shadow-lg z-20 flex items-center gap-1.5 rounded-sm">
+                        <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                        </span>
                         Impacto
                     </div>
                 )}
             </div>
-            <div className="flex flex-col flex-1">
-                <h3 className="text-xl font-serif font-semibold lg:group-hover:underline line-clamp-2">
+            <div className="flex flex-col flex-1 gap-1">
+                <div className="flex items-center gap-2 text-[10px] font-sans font-bold uppercase tracking-wider text-secondary/70">
+                    <span>{categoryTitle}</span>
+                    <span className="w-1 h-1 bg-editorial-200 rounded-full"></span>
+                    <span className="text-editorial-400 font-medium tracking-normal lowercase">{article.minutesRead || '5 min'}</span>
+                </div>
+                <h3 className="text-xl font-serif font-bold leading-tight group-hover:underline decoration-secondary/30 underline-offset-4 line-clamp-2">
                     <a href={`/articles/${article.id}`}>
                         <span className="absolute inset-0 z-10 pointer-events-none"></span>
                         {article.data.title}
                     </a>
                 </h3>
-                <p className="text-sm text-base-content/80 line-clamp-3 text-pretty lg:mb-auto">
+                <p className="text-sm text-editorial-600 dark:text-editorial-400 line-clamp-3 text-pretty font-sans leading-relaxed mb-auto">
                     {article.data.description}
                 </p>
-                <div className="flex items-center text-xs text-base-content/80 mt-2">
-                    <span className="text-xs text-primary dark:text-secondary">
-                        {categoryTitle}
-                    </span>
-                    <Divider />
-                    <span className="text-xs text-base-content/80">
-                        {article.minutesRead || '5 min read'}
-                    </span>
-                    <Divider />
-                    <span className="text-xs text-base-content/80">
-                        {getDisplayDate(article.data.publishedTime)}
-                    </span>
+                <div className="flex items-center text-[10px] font-sans text-editorial-400 uppercase tracking-tight mt-2 opacity-80">
+                    {getDisplayDate(article.data.publishedTime)}
                 </div>
             </div>
         </article>

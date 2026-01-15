@@ -36,21 +36,20 @@ export default function MainHeadline({ article }: Props) {
                 />
             </div>
             <div className="flex flex-col gap-2">
-                <div>
-                    <h2 className="text-xl font-semibold lg:group-hover:underline underline-offset-2">
+                <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2 text-[10px] font-sans font-bold uppercase tracking-[0.2em] text-secondary">
+                        <span className="bg-secondary/10 px-2 py-0.5 rounded-sm">{categoryTitle}</span>
+                        <span className="text-editorial-500 font-medium tracking-normal">{getDisplayDate(article.data.publishedTime)}</span>
+                    </div>
+                    <h2 className="text-2xl md:text-4xl font-serif font-bold leading-tight tracking-tight lg:group-hover:underline underline-offset-4 decoration-secondary">
                         <a href={`/articles/${article.id}`}>
                             <span className="absolute inset-0 z-10 pointer-events-none"></span>
                             {article.data.title}
                         </a>
                     </h2>
-                    <p className="text-base-content/90 text-base max-w-lg">
+                    <p className="text-editorial-700 dark:text-editorial-300 text-base md:text-lg font-sans leading-relaxed line-clamp-3">
                         {article.data.description}
                     </p>
-                </div>
-                <div className="flex items-center text-xs text-base-content/80 mt-2">
-                    <span className="text-primary dark:text-secondary">{categoryTitle}</span>
-                    <Divider />
-                    <span>{getDisplayDate(article.data.publishedTime)}</span>
                 </div>
             </div>
         </article>

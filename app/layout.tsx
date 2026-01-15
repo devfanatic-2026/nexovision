@@ -12,6 +12,8 @@ export default function RootLayout({ children, currentPath }: { children: React.
     return (
         <>
             <head>
+                <meta name="color-scheme" content="light" />
+                <meta name="theme-color" content="#ffffff" />
                 <link rel="stylesheet" href="/styles.css" />
             </head>
             <div id="root" className="min-h-screen flex flex-col bg-base-100 text-base-content overflow-x-hidden">
