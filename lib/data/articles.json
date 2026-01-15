@@ -1,0 +1,305 @@
+[
+  {
+    "id": "10-tips-for-better-time-management",
+    "data": {
+      "isDraft": false,
+      "isMainHeadline": false,
+      "isSubHeadline": true,
+      "isCategoryMainHeadline": false,
+      "isCategorySubHeadline": true,
+      "description": "Learn how to optimize your schedule and accomplish more each day.",
+      "title": "10 Tips for Better Time Management",
+      "cover": "/assets/images/articles/10-tips-for-better-time-management/cover.avif",
+      "category": {
+        "id": "productivity"
+      },
+      "publishedTime": "2024-11-14T00:00:00.000Z",
+      "authors": [
+        "olivier-brown",
+        "jane-doe"
+      ]
+    },
+    "content": "Time management is essential for achieving your goals efficiently. Here are ten practical tips to make the most of your time.\n\n## 1. Prioritize Your Tasks\n\nUse a method like the Eisenhower Matrix to identify urgent and important tasks.\n\n\n\n[https://www.youtube.com/watch?v=MX4yy1dTVYg](https://www.youtube.com/watch?v=MX4yy1dTVYg)\n\n...\n",
+    "minutesRead": "1 min read",
+    "lastModified": "2026-01-15T16:16:25.382Z"
+  },
+  {
+    "id": "a-function-s-existential-crisis",
+    "data": {
+      "isDraft": false,
+      "isMainHeadline": false,
+      "isSubHeadline": false,
+      "isCategoryMainHeadline": false,
+      "isCategorySubHeadline": true,
+      "description": "A lighthearted guide to recursion—aka that thing you call within itself until it forgets why it started.",
+      "title": "A Functions Existential Crisis",
+      "cover": "/assets/images/articles/a-function-s-existential-crisis/cover.avif",
+      "category": {
+        "id": "programming"
+      },
+      "publishedTime": "2025-04-14T23:39:00.000Z",
+      "authors": [
+        "jane-doe"
+      ]
+    },
+    "content": "Welcome to recursion, where functions call themselves like lost souls trying to find meaning. We’ll cover what recursion is, how it works, and how to keep your brain from crashing like your code.\n",
+    "minutesRead": "1 min read",
+    "lastModified": "2026-01-15T16:16:25.359Z"
+  },
+  {
+    "id": "exploring-the-benefits-of-daily-meditation",
+    "data": {
+      "isDraft": false,
+      "isMainHeadline": false,
+      "isSubHeadline": true,
+      "isCategoryMainHeadline": false,
+      "isCategorySubHeadline": true,
+      "description": "Discover how a daily meditation practice can improve your mental clarity and well-being.",
+      "title": "Exploring the Benefits of Daily Meditation",
+      "cover": "/assets/images/articles/exploring-the-benefits-of-daily-meditation/cover.avif",
+      "category": {
+        "id": "wellness"
+      },
+      "publishedTime": "2024-11-18T00:00:00.000Z",
+      "authors": [
+        "emily-devis"
+      ]
+    },
+    "content": "Meditation is a simple practice with profound benefits. Learn how dedicating just a few minutes each day can transform your life.\n\n## What Is Meditation?\n\nMeditation is the art of focusing your mind and achieving a heightened state of awareness.\n\n...\n",
+    "minutesRead": "1 min read",
+    "lastModified": "2026-01-15T16:16:25.375Z"
+  },
+  {
+    "id": "how-to-build-a-capsule-wardrobe",
+    "data": {
+      "isDraft": false,
+      "isMainHeadline": false,
+      "isSubHeadline": true,
+      "isCategoryMainHeadline": false,
+      "isCategorySubHeadline": true,
+      "description": "Streamline your wardrobe with timeless pieces that suit your style.",
+      "title": "How to Build a Capsule Wardrobe",
+      "cover": "/assets/images/articles/how-to-build-a-capsule-wardrobe/cover.avif",
+      "category": {
+        "id": "wellness"
+      },
+      "publishedTime": "2024-11-19T00:00:00.000Z",
+      "authors": [
+        "chloe-nguyen"
+      ]
+    },
+    "content": "A capsule wardrobe is about owning fewer clothes that offer endless outfit possibilities. Learn how to curate your perfect wardrobe.\n\n## Why Choose a Capsule Wardrobe?\n\nSimplifying your wardrobe saves time, money, and reduces decision fatigue while ensuring you always feel confident in what you wear.\n\n...\n",
+    "minutesRead": "1 min read",
+    "lastModified": "2026-01-15T16:16:25.399Z"
+  },
+  {
+    "id": "javascript-math-is-a-lie",
+    "data": {
+      "isDraft": false,
+      "isMainHeadline": false,
+      "isSubHeadline": false,
+      "isCategoryMainHeadline": false,
+      "isCategorySubHeadline": true,
+      "description": "A hilariously painful journey through floating point math in JavaScript. Yes, 0.1 + 0.2 ≠ 0.3.",
+      "title": "JavaScript Math is a Lie",
+      "cover": "/assets/images/articles/java-script-math-is-a-lie/cover.avif",
+      "category": {
+        "id": "programming"
+      },
+      "publishedTime": "2025-04-15T04:43:00.000Z",
+      "authors": [
+        "liam-leonard",
+        "jane-doe"
+      ]
+    },
+    "content": "Ever tried `0.1 + 0.2 === 0.3` in JS? Yeah, it returns false. In this satirical-yet-informative piece, we dig into why JavaScript math feels like it’s gaslighting us and how to work around it without losing your mind.\n",
+    "minutesRead": "1 min read",
+    "lastModified": "2026-01-15T16:16:25.362Z"
+  },
+  {
+    "id": "mastering-time-management",
+    "data": {
+      "isDraft": false,
+      "isMainHeadline": false,
+      "isSubHeadline": true,
+      "isCategoryMainHeadline": false,
+      "isCategorySubHeadline": true,
+      "description": "Learn practical strategies to manage your time and increase productivity.",
+      "title": "Mastering Time Management",
+      "cover": "/assets/images/articles/mastering-time-management/cover.avif",
+      "category": {
+        "id": "productivity"
+      },
+      "publishedTime": "2024-11-16T00:00:00.000Z",
+      "authors": [
+        "liam-leonard"
+      ]
+    },
+    "content": "Time is our most valuable resource, yet it often feels like there’s never enough of it. Mastering time management can help you achieve more with less stress.\n\n## Why Time Management Matters\n\nEffective time management is key to balancing your personal and professional life, reducing stress, and achieving your goals.\n\n...\n",
+    "minutesRead": "1 min read",
+    "lastModified": "2026-01-15T16:16:25.403Z"
+  },
+  {
+    "id": "promises-in-javascript-trust-issues-in-code",
+    "data": {
+      "isDraft": false,
+      "isMainHeadline": false,
+      "isSubHeadline": false,
+      "isCategoryMainHeadline": false,
+      "isCategorySubHeadline": true,
+      "description": " An absurdly fun breakdown of promises, async/await, and why your code never waits when you want it to.",
+      "title": "Promises in JavaScript: Trust Issues in Code",
+      "cover": "/assets/images/articles/promises-in-javascript-trust-issues-in-code/cover.avif",
+      "category": {
+        "id": "programming"
+      },
+      "publishedTime": "2025-04-14T03:42:00.000Z",
+      "authors": [
+        "john-smith"
+      ]
+    },
+    "content": "Promises in JavaScript are like the friend who says they’ll help you move and shows up three hours late. In this article, we unpack promises, async/await, and how to stop chaining `.then()` like it’s a bad habit.\n",
+    "minutesRead": "1 min read",
+    "lastModified": "2026-01-15T16:16:25.389Z"
+  },
+  {
+    "id": "the-art-of-minimalist-living",
+    "data": {
+      "isDraft": false,
+      "isMainHeadline": false,
+      "isSubHeadline": true,
+      "isCategoryMainHeadline": false,
+      "isCategorySubHeadline": true,
+      "description": "Discover how minimalism can bring clarity and purpose to your life.",
+      "title": "The Art of Minimalist Living",
+      "cover": "/assets/images/articles/the-art-of-minimalist-living/cover.avif",
+      "category": {
+        "id": "lifestyle"
+      },
+      "publishedTime": "2024-11-15T00:00:00.000Z",
+      "authors": [
+        "maria-gonzalez"
+      ]
+    },
+    "content": "Minimalism isn’t just about owning fewer things; it’s a mindset that emphasizes intentional living. Learn how to embrace minimalism and its benefits.\n\n## What Is Minimalism?\n\nMinimalism is a lifestyle that encourages you to focus on what truly matters by eliminating excess.\n\n...\n",
+    "minutesRead": "1 min read",
+    "lastModified": "2026-01-15T16:16:25.378Z"
+  },
+  {
+    "id": "the-basics-of-personal-finance",
+    "data": {
+      "isDraft": false,
+      "isMainHeadline": false,
+      "isSubHeadline": true,
+      "isCategoryMainHeadline": false,
+      "isCategorySubHeadline": true,
+      "description": "Understand the fundamentals of budgeting, saving, and investing for a secure future.",
+      "title": "The Basics of Personal Finance",
+      "cover": "/assets/images/articles/the-basics-of-personal-finance/cover.avif",
+      "category": {
+        "id": "finance"
+      },
+      "publishedTime": "2024-11-17T00:00:00.000Z",
+      "authors": [
+        "john-smith"
+      ]
+    },
+    "content": "Personal finance is about more than just numbers; it’s about building habits that lead to financial freedom. Start your journey with these basics.\n\n## Budgeting 101\n\nCreating and sticking to a budget is the foundation of financial health. Learn how to allocate your income wisely.\n\n...\n",
+    "minutesRead": "1 min read",
+    "lastModified": "2026-01-15T16:16:25.366Z"
+  },
+  {
+    "id": "the-benefits-of-meditation",
+    "data": {
+      "isDraft": false,
+      "isMainHeadline": false,
+      "isSubHeadline": true,
+      "isCategoryMainHeadline": false,
+      "isCategorySubHeadline": true,
+      "description": "Explore how meditation can enhance your mental and physical health.",
+      "title": "The Benefits of Meditation",
+      "cover": "/assets/images/articles/the-benefits-of-meditation/cover.avif",
+      "category": {
+        "id": "health"
+      },
+      "publishedTime": "2024-11-12T00:00:00.000Z",
+      "authors": [
+        "sofia-martinez"
+      ]
+    },
+    "content": "Meditation is a powerful tool for achieving mindfulness and reducing stress. This article delves into the science behind meditation and its practical benefits.\n\n## Why Meditate?\n\nMeditation helps improve focus, reduce anxiety, and foster a sense of inner peace.\n\n...\n",
+    "minutesRead": "1 min read",
+    "lastModified": "2026-01-15T16:16:25.385Z"
+  },
+  {
+    "id": "top-5-web-development-frameworks-for-2025",
+    "data": {
+      "isDraft": false,
+      "isMainHeadline": false,
+      "isSubHeadline": true,
+      "isCategoryMainHeadline": false,
+      "isCategorySubHeadline": true,
+      "description": "A comparison of the most popular frameworks for modern web development.",
+      "title": "Top 5 Web Development Frameworks for 2025",
+      "cover": "/assets/images/articles/top-5-web-development-frameworks-for-2025/cover.avif",
+      "category": {
+        "id": "technology"
+      },
+      "publishedTime": "2024-11-13T00:00:00.000Z",
+      "authors": [
+        "rajesh-patel"
+      ]
+    },
+    "content": "Frameworks simplify the process of web development by providing pre-built tools and structures. Let’s compare React, Vue.js, Angular, Svelte, and Next.js.\n\n## React\n\nReact is a declarative, component-based JavaScript library for building user interfaces.\n\n...\n",
+    "minutesRead": "1 min read",
+    "lastModified": "2026-01-15T16:16:25.370Z"
+  },
+  {
+    "id": "understanding-java-script-closures",
+    "data": {
+      "isDraft": false,
+      "isMainHeadline": true,
+      "isSubHeadline": false,
+      "isCategoryMainHeadline": false,
+      "isCategorySubHeadline": true,
+      "description": "An in-depth look at closures in JavaScript and their applications.",
+      "title": "Understanding JavaScript Closures",
+      "cover": "/assets/images/articles/understanding-java-script-closures/cover.avif",
+      "category": {
+        "id": "programming"
+      },
+      "publishedTime": "2024-11-11T00:00:00.000Z",
+      "authors": [
+        "ahmed-khan",
+        "jane-doe"
+      ]
+    },
+    "content": "Closures are a fundamental concept in JavaScript that allow functions to access variables from their outer scope. This article explains closures, their practical uses, and common pitfalls.\n\n## What Are Closures?\n\nA closure is the combination of a function bundled together with references to its surrounding state.\n\n```js\nfunction outerFunction(outerVariable) {\n    return function innerFunction(innerVariable) {\n        console.log(`Outer Variable: ${outerVariable}`);\n        console.log(`Inner Variable: ${innerVariable}`);\n    };\n}\n\nconst closureExample = outerFunction(\"I am from outerFunction\");\n\n// Calling the inner function with the closure\nclosureExample(\"I am from innerFunction\");\n\n```\n",
+    "minutesRead": "1 min read",
+    "lastModified": "2026-01-15T16:16:25.392Z"
+  },
+  {
+    "id": "why-does-this-hate-me-demystifying-java-script-s-this",
+    "data": {
+      "isDraft": false,
+      "isMainHeadline": false,
+      "isSubHeadline": false,
+      "isCategoryMainHeadline": false,
+      "isCategorySubHeadline": true,
+      "description": "Why JavaScript's `this` keyword breaks brains and hearts—explained with relatable memes.",
+      "title": "Why Does this Hate Me? Demystifying JavaScripts this",
+      "cover": "/assets/images/articles/why-does-this-hate-me-demystifying-java-script-s-this/cover.avif",
+      "category": {
+        "id": "programming"
+      },
+      "publishedTime": "2025-04-15T10:36:00.000Z",
+      "authors": [
+        "jane-doe",
+        "john-smith"
+      ]
+    },
+    "content": "Ah yes, the infamous `this` keyword in JavaScript—responsible for more broken code and debugging tears than any other. In this article, we’ll laugh through the pain and explain what `this` actually means in different contexts.\n",
+    "minutesRead": "1 min read",
+    "lastModified": "2026-01-15T16:16:25.396Z"
+  }
+]

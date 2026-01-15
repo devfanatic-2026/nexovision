@@ -1,0 +1,51 @@
+[
+  {
+    "id": "finance",
+    "data": {
+      "title": "Finanzas",
+      "path": "finance"
+    }
+  },
+  {
+    "id": "health",
+    "data": {
+      "title": "Salud",
+      "path": "health"
+    }
+  },
+  {
+    "id": "lifestyle",
+    "data": {
+      "title": "Estilo de Vida",
+      "path": "lifestyle"
+    }
+  },
+  {
+    "id": "productivity",
+    "data": {
+      "title": "Productividad",
+      "path": "productivity"
+    }
+  },
+  {
+    "id": "programming",
+    "data": {
+      "title": "Programación",
+      "path": "programming"
+    }
+  },
+  {
+    "id": "technology",
+    "data": {
+      "title": "Tecnología",
+      "path": "technology"
+    }
+  },
+  {
+    "id": "wellness",
+    "data": {
+      "title": "Bienestar",
+      "path": "wellness"
+    }
+  }
+]
