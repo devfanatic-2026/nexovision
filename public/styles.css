@@ -739,8 +739,8 @@ html {
 body{
   font-family: Plus Jakarta Sans, Inter, system-ui, sans-serif;
   background-color: #ffffff !important;
-  color: #1A1A1A !important;
-  /* Forzar color de texto oscuro */
+  color: #1a1a1a !important;
+  /* Negro casi puro para máximo contraste */
 }
 
 h1,
@@ -751,7 +751,8 @@ h1,
     h6{
   font-family: Lora, Georgia, serif;
   letter-spacing: -0.02em;
-  color: #1A1A1A !important;
+  color: #1a1a1a !important;
+  /* Encabezados más oscuros y autoritarios */
 }
 
 .container{
@@ -2952,6 +2953,11 @@ h1,
   margin-right: auto;
 }
 
+.my-8{
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
 .mb-1{
   margin-bottom: 0.25rem;
 }
@@ -3046,6 +3052,10 @@ h1,
   height: 0.5rem;
 }
 
+.h-6{
+  height: 1.5rem;
+}
+
 .h-\[125px\]{
   height: 125px;
 }
@@ -3088,6 +3098,10 @@ h1,
 
 .w-full{
   width: 100%;
+}
+
+.min-w-\[180px\]{
+  min-width: 180px;
 }
 
 .max-w-4xl{
@@ -3276,6 +3290,10 @@ h1,
 
 .overflow-x-hidden{
   overflow-x: hidden;
+}
+
+.whitespace-nowrap{
+  white-space: nowrap;
 }
 
 .text-nowrap{
@@ -3534,6 +3552,10 @@ h1,
 
 .text-center{
   text-align: center;
+}
+
+.text-right{
+  text-align: right;
 }
 
 .font-sans{
@@ -3798,6 +3820,10 @@ h1,
 
 .duration-700{
   transition-duration: 700ms;
+}
+
+.ease-in-out{
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @media (hover: hover){
@@ -4208,6 +4234,11 @@ h1,
   outline-offset: 2px;
 }
 
+.group:hover .group-hover\:-translate-y-6{
+  --tw-translate-y: -1.5rem;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
 .group:hover .group-hover\:scale-105{
   --tw-scale-x: 1.05;
   --tw-scale-y: 1.05;
@@ -4251,13 +4282,16 @@ h1,
   letter-spacing: -0.02em;
 }
 
+.prose-headings\:text-neutral :is(:where(h1, h2, h3, h4, h5, h6, th):not(:where([class~="not-prose"],[class~="not-prose"] *))){
+  color: var(--color-neutral);
+}
+
 .prose-p\:break-words :is(:where(p):not(:where([class~="not-prose"],[class~="not-prose"] *))){
   overflow-wrap: break-word;
 }
 
-.prose-p\:text-editorial-800 :is(:where(p):not(:where([class~="not-prose"],[class~="not-prose"] *))){
-  --tw-text-opacity: 1;
-  color: rgb(45 45 45 / var(--tw-text-opacity, 1));
+.prose-p\:text-neutral :is(:where(p):not(:where([class~="not-prose"],[class~="not-prose"] *))){
+  color: var(--color-neutral);
 }
 
 .prose-a\:text-secondary :is(:where(a):not(:where([class~="not-prose"],[class~="not-prose"] *))){
@@ -4460,11 +4494,6 @@ h1,
   .dark\:text-editorial-400{
     --tw-text-opacity: 1;
     color: rgb(163 163 154 / var(--tw-text-opacity, 1));
-  }
-
-  .dark\:prose-p\:text-editorial-200 :is(:where(p):not(:where([class~="not-prose"],[class~="not-prose"] *))){
-    --tw-text-opacity: 1;
-    color: rgb(226 226 222 / var(--tw-text-opacity, 1));
   }
 
   .dark\:prose-img\:border-editorial-900 :is(:where(img):not(:where([class~="not-prose"],[class~="not-prose"] *))){

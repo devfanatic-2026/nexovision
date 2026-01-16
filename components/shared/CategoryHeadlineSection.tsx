@@ -6,6 +6,7 @@ import HeaderSection from './HeaderSection';
 
 interface Props {
     title: string;
+    inspire?: string;
     mainArticle: Article | null;
     subHeadlines: Article[];
     link_url?: string;
@@ -15,6 +16,7 @@ interface Props {
 
 export default function CategoryHeadlineSection({
     title,
+    inspire,
     mainArticle,
     subHeadlines,
     link_url,
@@ -26,8 +28,9 @@ export default function CategoryHeadlineSection({
     return (
         <section className="container mx-auto px-4 space-y-4">
             <HeaderSection
-                title={showCategoryPrefix ? `Categoría: ${title}` : title}
-                link_title={link_title || `Ver ${title}`}
+                title={title}
+                subtitle={inspire}
+                link_title={link_title || `Ver más`}
                 link_url={link_url}
             />
             <div className="grid grid-cols-1 gap-6 md:grid-cols-10">

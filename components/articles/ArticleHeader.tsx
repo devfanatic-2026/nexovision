@@ -7,13 +7,6 @@ import { ResourcesAdd } from '../icons/ResourcesAdd';
 import { Calendar04 } from '../icons/Calendar04';
 import { Time04 } from '../icons/Time04';
 import Divider from '../bases/Divider';
-import { image } from '@float.js/core';
-
-// Configure Float images
-image.configure({
-    quality: 80,
-});
-
 interface ArticleHeaderProps {
     article: any;
     readingTime: string;
@@ -25,19 +18,15 @@ export default function ArticleHeader({ article, readingTime }: ArticleHeaderPro
     const mainHeadline = articlesHandler.mainHeadline();
     const isImpact = article.data.isMainHeadline && mainHeadline.id !== article.id;
 
-    const coverProps = image.props({
-        src: article.data.cover,
-        alt: article.data.cover_alt || "article cover",
-        width: 1200,
-        height: 540,
-        className: "w-full h-full object-cover object-center",
-        loading: "eager"
-    });
-
     return (
         <section className="mb-12 flex flex-col gap-8 pb-8 border-b border-editorial-100 dark:border-editorial-900">
             <div className="container px-0 max-w-5xl overflow-hidden aspect-[21/9] rounded-sm relative bg-editorial-100 dark:bg-editorial-900">
-                <img {...coverProps} className="w-full h-full object-cover transition-transform duration-700 hover:scale-102" />
+                <img
+                    src={article.data.cover}
+                    alt={article.data.cover_alt || "article cover"}
+                    className="w-full h-full object-cover transition-transform duration-700 hover:scale-102"
+                    loading="eager"
+                />
                 {isImpact && (
                     <div className="absolute top-6 left-6 bg-primary text-white px-4 py-1.5 text-[10px] font-sans font-bold uppercase tracking-[0.2em] shadow-2xl z-20 flex items-center gap-2">
                         <span className="relative flex h-2 w-2">
@@ -70,32 +59,26 @@ export default function ArticleHeader({ article, readingTime }: ArticleHeaderPro
 
                 <div className="flex flex-wrap items-center justify-between gap-6 pt-6 border-t border-editorial-50 dark:border-editorial-900/50">
                     <div className="flex flex-wrap gap-6">
-                        {authors.map((author: any) => {
-                            const authorImgProps = image.props({
-                                src: author.data.avatar || "/assets/images/default-avatar.jpg",
-                                alt: author.data.name,
-                                width: 80,
-                                height: 80,
-                                className: "w-full h-full object-cover",
-                                loading: "eager"
-                            });
-
-                            return (
-                                <div key={author.id} className="flex items-center gap-3">
-                                    <a href={`/authors/${author.id}`} className="group flex items-center gap-3">
-                                        <div className="avatar">
-                                            <div className="w-10 rounded-full border border-editorial-200 group-hover:border-secondary transition-colors">
-                                                <img {...authorImgProps} />
-                                            </div>
+                        {authors.map((author: any) => (
+                            <div key={author.id} className="flex items-center gap-3">
+                                <a href={`/authors/${author.id}`} className="group flex items-center gap-3">
+                                    <div className="avatar">
+                                        <div className="w-10 rounded-full border border-editorial-200 group-hover:border-secondary transition-colors">
+                                            <img
+                                                src={author.data.avatar || "/assets/images/default-avatar.jpg"}
+                                                alt={author.data.name}
+                                                className="w-full h-full object-cover"
+                                                loading="eager"
+                                            />
                                         </div>
-                                        <div className="flex flex-col">
-                                            <span className="text-sm font-serif font-bold group-hover:text-secondary transition-colors leading-none">{author.data.name}</span>
-                                            <span className="text-[10px] font-sans font-bold uppercase tracking-tighter text-editorial-400">{author.data.role}</span>
-                                        </div>
-                                    </a>
-                                </div>
-                            );
-                        })}
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-sm font-serif font-bold group-hover:text-secondary transition-colors leading-none">{author.data.name}</span>
+                                        <span className="text-[10px] font-sans font-bold uppercase tracking-tighter text-editorial-400">{author.data.role}</span>
+                                    </div>
+                                </a>
+                            </div>
+                        ))}
                     </div>
                     <div className="flex items-center gap-2 text-[11px] font-sans font-bold uppercase tracking-widest text-editorial-400">
                         <Calendar04 size="14" />

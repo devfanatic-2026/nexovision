@@ -7,6 +7,7 @@ export interface Category {
         title: string;
         path: string;
         description?: string;
+        inspire?: string;
     };
     count?: number;
     latestArticles?: any[];
@@ -18,7 +19,8 @@ const categories: Category[] = rawCategories.map(cat => ({
     data: {
         title: cat.data.title,
         path: cat.data.path,
-        description: cat.data.description
+        description: cat.data.description,
+        inspire: cat.data.inspire
     }
 }));
 

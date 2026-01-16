@@ -1,51 +1,58 @@
 [
   {
-    "id": "finance",
+    "id": "economy",
     "data": {
-      "title": "Finanzas",
-      "path": "finance"
+      "title": "Economía",
+      "path": "economy",
+      "inspire": "Impulsando el desarrollo regional."
     }
   },
   {
-    "id": "health",
+    "id": "magazine",
     "data": {
-      "title": "Salud",
-      "path": "health"
+      "title": "Magazine",
+      "path": "magazine",
+      "inspire": "Cultura y entretención local."
     }
   },
   {
-    "id": "lifestyle",
+    "id": "police",
     "data": {
-      "title": "Estilo de Vida",
-      "path": "lifestyle"
+      "title": "Policial",
+      "path": "police",
+      "inspire": "Justicia y seguridad ciudadana."
     }
   },
   {
-    "id": "productivity",
+    "id": "region",
     "data": {
-      "title": "Productividad",
-      "path": "productivity"
+      "title": "Región",
+      "path": "region",
+      "inspire": "El corazón de Coquimbo."
     }
   },
   {
-    "id": "programming",
+    "id": "sports",
     "data": {
-      "title": "Programación",
-      "path": "programming"
+      "title": "Deportes",
+      "path": "sports",
+      "inspire": "Pasión en cada jugada."
     }
   },
   {
-    "id": "technology",
+    "id": "trends",
     "data": {
-      "title": "Tecnología",
-      "path": "technology"
+      "title": "Tendencias",
+      "path": "trends",
+      "inspire": "Lo que marca la pauta."
     }
   },
   {
-    "id": "wellness",
+    "id": "world",
     "data": {
-      "title": "Bienestar",
-      "path": "wellness"
+      "title": "Mundo",
+      "path": "world",
+      "inspire": "Crónicas globales sin fronteras."
     }
   }
 ]

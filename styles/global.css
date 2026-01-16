@@ -26,8 +26,8 @@
     body {
         @apply font-sans;
         background-color: #ffffff !important;
-        color: #1A1A1A !important;
-        /* Forzar color de texto oscuro */
+        color: #1a1a1a !important;
+        /* Negro casi puro para máximo contraste */
     }
 
     h1,
@@ -37,7 +37,8 @@
     h5,
     h6 {
         @apply font-serif tracking-tight;
-        color: #1A1A1A !important;
+        color: #1a1a1a !important;
+        /* Encabezados más oscuros y autoritarios */
     }
 }
 

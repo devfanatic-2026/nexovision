@@ -15,28 +15,32 @@ export const SITE = {
 
 export const NAVIGATION_LINKS: Link[] = [
     {
-        href: "/categories/technology",
-        text: "Tecnología",
+        href: "/categories/region",
+        text: "Región",
     },
     {
-        href: "/categories/programming",
-        text: "Programación",
+        href: "/categories/police",
+        text: "Policial",
     },
     {
-        href: "/categories/lifestyle",
-        text: "Estilo de vida",
+        href: "/categories/world",
+        text: "Mundo",
     },
     {
-        href: "/categories/productivity",
-        text: "Productividad",
+        href: "/categories/magazine",
+        text: "Magazine",
     },
     {
-        href: "/categories/health",
-        text: "Salud",
+        href: "/categories/trends",
+        text: "Tendencias",
     },
     {
-        href: "/categories/finance",
-        text: "Finanzas",
+        href: "/categories/sports",
+        text: "Deportes",
+    },
+    {
+        href: "/categories/economy",
+        text: "Economía",
     },
 ];
 

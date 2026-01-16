@@ -25,11 +25,10 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
                 <div className="pt-8">
                     <CategoryHeadlineSection
                         title={category.data.title}
+                        inspire={category.data.inspire}
                         mainArticle={catMain}
                         subHeadlines={catSubs}
                         showCategoryPrefix={true}
-                        link_title={`Compartir ${category.data.title}`}
-                        link_url="#"
                     />
                 </div>
 

@@ -16,6 +16,7 @@ export default function Home() {
 
     const latestArticles = articlesHandler.allArticles()
         .filter(a => !featuredIds.has(a.id))
+        .filter(a => a.data.isMainHeadline || a.data.isSubHeadline || a.data.isCategoryMainHeadline || a.data.isCategorySubHeadline)
         .slice(0, 6);
     const topAuthors = authorsHandler.limitAuthors(6);
     const categories = categoriesHandler.allCategories();
@@ -64,7 +65,9 @@ export default function Home() {
 
             {/* Category Sections */}
             {categories.map((category) => {
-                const categoryArticles = articlesHandler.allArticles().filter(a => a.data.category.id === category.id);
+                const categoryArticles = articlesHandler.allArticles()
+                    .filter(a => a.data.category.id === category.id)
+                    .filter(a => a.data.isMainHeadline || a.data.isSubHeadline || a.data.isCategoryMainHeadline || a.data.isCategorySubHeadline);
 
                 if (categoryArticles.length === 0) return null;
 
@@ -77,8 +80,9 @@ export default function Home() {
                         {categoryArticles.length < 5 ? (
                             <section className="container mx-auto px-4 space-y-4">
                                 <HeaderSection
-                                    title={`Categoría: ${category.data.title}`}
-                                    link_title={`Ver ${category.data.title}`}
+                                    title={category.data.title}
+                                    subtitle={category.data.inspire}
+                                    link_title="Ver más"
                                     link_url={`/categories/${category.id}`}
                                 />
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -94,8 +98,10 @@ export default function Home() {
                         ) : (
                             <CategoryHeadlineSection
                                 title={category.data.title}
+                                inspire={category.data.inspire}
                                 mainArticle={articlesHandler.mainHeadline(category.id)}
                                 subHeadlines={articlesHandler.subHeadlines(category.id)}
+                                link_title="Ver más"
                                 link_url={`/categories/${category.id}`}
                             />
                         )}

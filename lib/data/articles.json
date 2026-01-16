@@ -1,305 +1,324 @@
 [
   {
-    "id": "10-tips-for-better-time-management",
-    "data": {
-      "isDraft": false,
-      "isMainHeadline": false,
-      "isSubHeadline": true,
-      "isCategoryMainHeadline": false,
-      "isCategorySubHeadline": true,
-      "description": "Learn how to optimize your schedule and accomplish more each day.",
-      "title": "10 Tips for Better Time Management",
-      "cover": "/assets/images/articles/10-tips-for-better-time-management/cover.avif",
-      "category": {
-        "id": "productivity"
-      },
-      "publishedTime": "2024-11-14T00:00:00.000Z",
-      "authors": [
-        "olivier-brown",
-        "jane-doe"
-      ]
-    },
-    "content": "Time management is essential for achieving your goals efficiently. Here are ten practical tips to make the most of your time.\n\n## 1. Prioritize Your Tasks\n\nUse a method like the Eisenhower Matrix to identify urgent and important tasks.\n\n\n\n[https://www.youtube.com/watch?v=MX4yy1dTVYg](https://www.youtube.com/watch?v=MX4yy1dTVYg)\n\n...\n",
-    "minutesRead": "1 min read",
-    "lastModified": "2026-01-15T16:16:25.382Z"
-  },
-  {
-    "id": "a-function-s-existential-crisis",
+    "id": "agenda-cultural-alternativa",
     "data": {
       "isDraft": false,
       "isMainHeadline": false,
       "isSubHeadline": false,
       "isCategoryMainHeadline": false,
-      "isCategorySubHeadline": true,
-      "description": "A lighthearted guide to recursion—aka that thing you call within itself until it forgets why it started.",
-      "title": "A Functions Existential Crisis",
-      "cover": "/assets/images/articles/a-function-s-existential-crisis/cover.avif",
+      "isCategorySubHeadline": false,
+      "description": "Una mirada a los artistas locales que están exponiendo sus obras en las galerías menos conocidas de La Serena.",
+      "title": "Agenda Cultural: Galerías y espacios alternativos",
+      "cover": "https://cdn.elobservatodo.cl/sites/elobservatodo.cl/files/imagecache/opengraph/imagen_noticia/whatsapp_image_2026-01-14_at_16.29.30_2.jpeg",
       "category": {
-        "id": "programming"
+        "id": "magazine"
       },
-      "publishedTime": "2025-04-14T23:39:00.000Z",
+      "publishedTime": "2026-01-14T00:00:00.000Z",
       "authors": [
         "jane-doe"
       ]
     },
-    "content": "Welcome to recursion, where functions call themselves like lost souls trying to find meaning. We’ll cover what recursion is, how it works, and how to keep your brain from crashing like your code.\n",
+    "content": "El arte en La Serena no solo se vive en los grandes teatros. Existe un circuito de galerías alternativas y espacios culturales independientes que ofrecen una mirada distinta.\n\nEste artículo, al no tener banderas de titularidad activa, se reserva exclusivamente para los lectores que exploran la categoría de \"Magazine\", demostrando la jerarquización inteligente del contenido en nuestra plataforma.\n\nAquí revisamos el trabajo de tres artistas emergentes que están utilizando materiales reciclados para sus esculturas, una tendencia que ha crecido en la conurbación durante los últimos meses.\n",
     "minutesRead": "1 min read",
-    "lastModified": "2026-01-15T16:16:25.359Z"
+    "lastModified": "2026-01-15T20:05:36.416Z"
   },
   {
-    "id": "exploring-the-benefits-of-daily-meditation",
-    "data": {
-      "isDraft": false,
-      "isMainHeadline": false,
-      "isSubHeadline": true,
-      "isCategoryMainHeadline": false,
-      "isCategorySubHeadline": true,
-      "description": "Discover how a daily meditation practice can improve your mental clarity and well-being.",
-      "title": "Exploring the Benefits of Daily Meditation",
-      "cover": "/assets/images/articles/exploring-the-benefits-of-daily-meditation/cover.avif",
-      "category": {
-        "id": "wellness"
-      },
-      "publishedTime": "2024-11-18T00:00:00.000Z",
-      "authors": [
-        "emily-devis"
-      ]
-    },
-    "content": "Meditation is a simple practice with profound benefits. Learn how dedicating just a few minutes each day can transform your life.\n\n## What Is Meditation?\n\nMeditation is the art of focusing your mind and achieving a heightened state of awareness.\n\n...\n",
-    "minutesRead": "1 min read",
-    "lastModified": "2026-01-15T16:16:25.375Z"
-  },
-  {
-    "id": "how-to-build-a-capsule-wardrobe",
-    "data": {
-      "isDraft": false,
-      "isMainHeadline": false,
-      "isSubHeadline": true,
-      "isCategoryMainHeadline": false,
-      "isCategorySubHeadline": true,
-      "description": "Streamline your wardrobe with timeless pieces that suit your style.",
-      "title": "How to Build a Capsule Wardrobe",
-      "cover": "/assets/images/articles/how-to-build-a-capsule-wardrobe/cover.avif",
-      "category": {
-        "id": "wellness"
-      },
-      "publishedTime": "2024-11-19T00:00:00.000Z",
-      "authors": [
-        "chloe-nguyen"
-      ]
-    },
-    "content": "A capsule wardrobe is about owning fewer clothes that offer endless outfit possibilities. Learn how to curate your perfect wardrobe.\n\n## Why Choose a Capsule Wardrobe?\n\nSimplifying your wardrobe saves time, money, and reduces decision fatigue while ensuring you always feel confident in what you wear.\n\n...\n",
-    "minutesRead": "1 min read",
-    "lastModified": "2026-01-15T16:16:25.399Z"
-  },
-  {
-    "id": "javascript-math-is-a-lie",
+    "id": "breves-region-semana",
     "data": {
       "isDraft": false,
       "isMainHeadline": false,
       "isSubHeadline": false,
       "isCategoryMainHeadline": false,
-      "isCategorySubHeadline": true,
-      "description": "A hilariously painful journey through floating point math in JavaScript. Yes, 0.1 + 0.2 ≠ 0.3.",
-      "title": "JavaScript Math is a Lie",
-      "cover": "/assets/images/articles/java-script-math-is-a-lie/cover.avif",
+      "isCategorySubHeadline": false,
+      "description": "Resumen de las actividades comunitarias menores que ocurrieron durante la semana en el centro de Coquimbo.",
+      "title": "Breves de la Región: Actividades comunitarias de la semana",
+      "cover": "https://cdn.elobservatodo.cl/sites/elobservatodo.cl/files/imagecache/opengraph/imagen_noticia/sem_1.jpeg",
       "category": {
-        "id": "programming"
+        "id": "region"
       },
-      "publishedTime": "2025-04-15T04:43:00.000Z",
-      "authors": [
-        "liam-leonard",
-        "jane-doe"
-      ]
-    },
-    "content": "Ever tried `0.1 + 0.2 === 0.3` in JS? Yeah, it returns false. In this satirical-yet-informative piece, we dig into why JavaScript math feels like it’s gaslighting us and how to work around it without losing your mind.\n",
-    "minutesRead": "1 min read",
-    "lastModified": "2026-01-15T16:16:25.362Z"
-  },
-  {
-    "id": "mastering-time-management",
-    "data": {
-      "isDraft": false,
-      "isMainHeadline": false,
-      "isSubHeadline": true,
-      "isCategoryMainHeadline": false,
-      "isCategorySubHeadline": true,
-      "description": "Learn practical strategies to manage your time and increase productivity.",
-      "title": "Mastering Time Management",
-      "cover": "/assets/images/articles/mastering-time-management/cover.avif",
-      "category": {
-        "id": "productivity"
-      },
-      "publishedTime": "2024-11-16T00:00:00.000Z",
-      "authors": [
-        "liam-leonard"
-      ]
-    },
-    "content": "Time is our most valuable resource, yet it often feels like there’s never enough of it. Mastering time management can help you achieve more with less stress.\n\n## Why Time Management Matters\n\nEffective time management is key to balancing your personal and professional life, reducing stress, and achieving your goals.\n\n...\n",
-    "minutesRead": "1 min read",
-    "lastModified": "2026-01-15T16:16:25.403Z"
-  },
-  {
-    "id": "promises-in-javascript-trust-issues-in-code",
-    "data": {
-      "isDraft": false,
-      "isMainHeadline": false,
-      "isSubHeadline": false,
-      "isCategoryMainHeadline": false,
-      "isCategorySubHeadline": true,
-      "description": " An absurdly fun breakdown of promises, async/await, and why your code never waits when you want it to.",
-      "title": "Promises in JavaScript: Trust Issues in Code",
-      "cover": "/assets/images/articles/promises-in-javascript-trust-issues-in-code/cover.avif",
-      "category": {
-        "id": "programming"
-      },
-      "publishedTime": "2025-04-14T03:42:00.000Z",
-      "authors": [
-        "john-smith"
-      ]
-    },
-    "content": "Promises in JavaScript are like the friend who says they’ll help you move and shows up three hours late. In this article, we unpack promises, async/await, and how to stop chaining `.then()` like it’s a bad habit.\n",
-    "minutesRead": "1 min read",
-    "lastModified": "2026-01-15T16:16:25.389Z"
-  },
-  {
-    "id": "the-art-of-minimalist-living",
-    "data": {
-      "isDraft": false,
-      "isMainHeadline": false,
-      "isSubHeadline": true,
-      "isCategoryMainHeadline": false,
-      "isCategorySubHeadline": true,
-      "description": "Discover how minimalism can bring clarity and purpose to your life.",
-      "title": "The Art of Minimalist Living",
-      "cover": "/assets/images/articles/the-art-of-minimalist-living/cover.avif",
-      "category": {
-        "id": "lifestyle"
-      },
-      "publishedTime": "2024-11-15T00:00:00.000Z",
-      "authors": [
-        "maria-gonzalez"
-      ]
-    },
-    "content": "Minimalism isn’t just about owning fewer things; it’s a mindset that emphasizes intentional living. Learn how to embrace minimalism and its benefits.\n\n## What Is Minimalism?\n\nMinimalism is a lifestyle that encourages you to focus on what truly matters by eliminating excess.\n\n...\n",
-    "minutesRead": "1 min read",
-    "lastModified": "2026-01-15T16:16:25.378Z"
-  },
-  {
-    "id": "the-basics-of-personal-finance",
-    "data": {
-      "isDraft": false,
-      "isMainHeadline": false,
-      "isSubHeadline": true,
-      "isCategoryMainHeadline": false,
-      "isCategorySubHeadline": true,
-      "description": "Understand the fundamentals of budgeting, saving, and investing for a secure future.",
-      "title": "The Basics of Personal Finance",
-      "cover": "/assets/images/articles/the-basics-of-personal-finance/cover.avif",
-      "category": {
-        "id": "finance"
-      },
-      "publishedTime": "2024-11-17T00:00:00.000Z",
-      "authors": [
-        "john-smith"
-      ]
-    },
-    "content": "Personal finance is about more than just numbers; it’s about building habits that lead to financial freedom. Start your journey with these basics.\n\n## Budgeting 101\n\nCreating and sticking to a budget is the foundation of financial health. Learn how to allocate your income wisely.\n\n...\n",
-    "minutesRead": "1 min read",
-    "lastModified": "2026-01-15T16:16:25.366Z"
-  },
-  {
-    "id": "the-benefits-of-meditation",
-    "data": {
-      "isDraft": false,
-      "isMainHeadline": false,
-      "isSubHeadline": true,
-      "isCategoryMainHeadline": false,
-      "isCategorySubHeadline": true,
-      "description": "Explore how meditation can enhance your mental and physical health.",
-      "title": "The Benefits of Meditation",
-      "cover": "/assets/images/articles/the-benefits-of-meditation/cover.avif",
-      "category": {
-        "id": "health"
-      },
-      "publishedTime": "2024-11-12T00:00:00.000Z",
+      "publishedTime": "2026-01-14T00:00:00.000Z",
       "authors": [
         "sofia-martinez"
       ]
     },
-    "content": "Meditation is a powerful tool for achieving mindfulness and reducing stress. This article delves into the science behind meditation and its practical benefits.\n\n## Why Meditate?\n\nMeditation helps improve focus, reduce anxiety, and foster a sense of inner peace.\n\n...\n",
+    "content": "Esta es una noticia de prueba para demostrar el comportamiento de los artículos que no son destacados. \n\nSegún las reglas de Nexovisión, este artículo no debería aparecer en la página principal (Home), pero sí debería ser visible en la parte inferior de la sección de la categoría \"Región\", permitiendo una navegación mas profunda sin saturar la portada.\n\nEn esta sección se detallan las pequeñas ferias, reuniones de vecinos y avisos de utilidad pública que, aunque no son titulares nacionales o regionales de gran impacto, forman parte del tejido informativo local.\n",
     "minutesRead": "1 min read",
-    "lastModified": "2026-01-15T16:16:25.385Z"
+    "lastModified": "2026-01-15T20:05:34.414Z"
   },
   {
-    "id": "top-5-web-development-frameworks-for-2025",
+    "id": "busqueda-turista-valle-elqui",
     "data": {
       "isDraft": false,
       "isMainHeadline": false,
-      "isSubHeadline": true,
+      "isSubHeadline": false,
       "isCategoryMainHeadline": false,
       "isCategorySubHeadline": true,
-      "description": "A comparison of the most popular frameworks for modern web development.",
-      "title": "Top 5 Web Development Frameworks for 2025",
-      "cover": "/assets/images/articles/top-5-web-development-frameworks-for-2025/cover.avif",
+      "description": "Más de 30 rescatistas y equipos especializados continúan la búsqueda de un turista polaco en el Valle del Elqui.",
+      "title": "Actualización búsqueda de turista: “Estamos trabajando arduamente para ubicarlo con vida”",
+      "cover": "https://diarioeldia-s3.cdn.net.ar/s3i233/2026/01/diarioeldia/images/02/43/60/2436048_6b0cd23b64d91fade912994d343309da62b80a1ac0575419b450826cc66af104/lg.webp?_v=v3-38",
       "category": {
-        "id": "technology"
+        "id": "region"
       },
-      "publishedTime": "2024-11-13T00:00:00.000Z",
+      "publishedTime": "2026-01-14T00:00:00.000Z",
+      "authors": [
+        "john-smith"
+      ]
+    },
+    "content": "Carabineros entregó una actualización sobre las labores de búsqueda del turista de nacionalidad polaca extraviado en el sector cordillerano de Juntas del Toro, en el Valle del Elqui. El teniente coronel José Ramírez detalló el despliegue activo en la zona.\n\nLas labores de rastreo se retomaron a las 05:00 horas con personal del GOPE, rescatistas del Socorro Andino y una patrulla del Ejército. Además, se cuenta con el apoyo de un dron para ampliar el rango de búsqueda en sectores de difícil acceso.\n\nLos operativos se desarrollan durante las horas de luz natural y siempre que las condiciones climáticas lo permitan, considerando que el viento es la principal dificultad en alta montaña. Los excursionistas se registraron el 11 de enero con fecha de retorno el 14, lo que no ocurrió.\n\n“Estamos trabajando arduamente para lograr ubicar a esta persona y encontrarla en buen estado y con vida”, enfatizó el oficial Ramírez.\n\nhttps://www.youtube.com/watch?v=dQw4w9WgXcQ\n",
+    "minutesRead": "1 min read",
+    "lastModified": "2026-01-15T20:04:33.656Z"
+  },
+  {
+    "id": "carnaval-elquino-programacion",
+    "data": {
+      "isDraft": false,
+      "isMainHeadline": false,
+      "isSubHeadline": false,
+      "isCategoryMainHeadline": false,
+      "isCategorySubHeadline": true,
+      "description": "Vicuña dio el vamos al Carnaval Elquino 2026 con Alanis Lagos, Joe Vasconcellos y Alberto Plaza en la parrilla.",
+      "title": "Alanis Lagos, Joe Vasconcellos y Alberto Plaza lideran parrilla: La programación del Carnaval Elquino 2026",
+      "cover": "https://diarioeldia-s3.cdn.net.ar/s3i233/2026/01/diarioeldia/images/02/43/60/2436048_6b0cd23b64d91fade912994d343309da62b80a1ac0575419b450826cc66af104/lg.webp?_v=v3-38",
+      "category": {
+        "id": "region"
+      },
+      "publishedTime": "2026-01-14T00:00:00.000Z",
+      "authors": [
+        "sofia-martinez"
+      ]
+    },
+    "content": "Vicuña dio el vamos oficial al Carnaval Elquino 2026, una de las celebraciones más tradicionales del Valle de Elqui, que este verano contará con una destacada parrilla artística encabezada por Alanis Lagos, Joe Vasconcellos y Alberto Plaza.\n\nEl lanzamiento oficial se realizó en la terraza del Hotel Terral y fue encabezado por el alcalde de Vicuña, Mario Aros Carvajal, junto a autoridades comunales y representantes de las corporaciones municipales.\n\nLa fiesta se extenderá por un mes con diversas actividades culturales, deportivas y territoriales, buscando consolidar a Vicuña como el epicentro del verano en el Valle de Elqui.\n\nhttps://www.youtube.com/watch?v=dQw4w9WgXcQ\n",
+    "minutesRead": "1 min read",
+    "lastModified": "2026-01-15T20:04:33.656Z"
+  },
+  {
+    "id": "chilemx-motocross-2026",
+    "data": {
+      "isDraft": false,
+      "isMainHeadline": false,
+      "isSubHeadline": false,
+      "isCategoryMainHeadline": false,
+      "isCategorySubHeadline": true,
+      "description": "El Campeonato Nacional de Motocross inició su temporada en el Faro Monumental, consolidando a la región como polo deportivo.",
+      "title": "La Serena proyecta un gran año tuerca con el lanzamiento del ChileMX 2026",
+      "cover": "https://diarioeldia-s3.cdn.net.ar/s3i233/2026/01/diarioeldia/images/02/43/60/2436076_451e226440c4d04c39f3e5db07e094423f6404f76e9e2cafd624b047ff747711/lg.webp?_v=v3-38",
+      "category": {
+        "id": "sports"
+      },
+      "publishedTime": "2026-01-14T00:00:00.000Z",
       "authors": [
         "rajesh-patel"
       ]
     },
-    "content": "Frameworks simplify the process of web development by providing pre-built tools and structures. Let’s compare React, Vue.js, Angular, Svelte, and Next.js.\n\n## React\n\nReact is a declarative, component-based JavaScript library for building user interfaces.\n\n...\n",
+    "content": "Con un masivo marco de público y un espectáculo de alto nivel, ayer se realizó en el Faro Monumental de La Serena el lanzamiento oficial del Campeonato Nacional de Motocross Gran Nacional ChileMX 2026, dando inicio a una temporada inédita para el motociclismo chileno.\n\nEl ChileMX 2026 contempla ocho fechas oficiales en ocho regiones distintas del país. El lanzamiento en la Región de Coquimbo representó un hito sin precedentes, al ser la primera vez que el certamen se presenta oficialmente fuera de la zona central.\n\nEl gobernador regional, Cristóbal Juliá, valoró el impacto del evento: “Estamos muy contentos por la cantidad de gente que llegó y por cómo este tipo de actividades activa el sector turístico y comercial. Demuestra que en la región no todo es fútbol”.\n\nDesde la organización, el productor general Patricio Cabrera destacó: “Queremos que La Serena se transforme en un epicentro del motorsport y en un semillero de grandes pilotos. 2026 se viene increíble”.\n\nhttps://www.youtube.com/watch?v=dQw4w9WgXcQ\n",
     "minutesRead": "1 min read",
-    "lastModified": "2026-01-15T16:16:25.370Z"
+    "lastModified": "2026-01-15T20:04:33.657Z"
   },
   {
-    "id": "understanding-java-script-closures",
-    "data": {
-      "isDraft": false,
-      "isMainHeadline": true,
-      "isSubHeadline": false,
-      "isCategoryMainHeadline": false,
-      "isCategorySubHeadline": true,
-      "description": "An in-depth look at closures in JavaScript and their applications.",
-      "title": "Understanding JavaScript Closures",
-      "cover": "/assets/images/articles/understanding-java-script-closures/cover.avif",
-      "category": {
-        "id": "programming"
-      },
-      "publishedTime": "2024-11-11T00:00:00.000Z",
-      "authors": [
-        "ahmed-khan",
-        "jane-doe"
-      ]
-    },
-    "content": "Closures are a fundamental concept in JavaScript that allow functions to access variables from their outer scope. This article explains closures, their practical uses, and common pitfalls.\n\n## What Are Closures?\n\nA closure is the combination of a function bundled together with references to its surrounding state.\n\n```js\nfunction outerFunction(outerVariable) {\n    return function innerFunction(innerVariable) {\n        console.log(`Outer Variable: ${outerVariable}`);\n        console.log(`Inner Variable: ${innerVariable}`);\n    };\n}\n\nconst closureExample = outerFunction(\"I am from outerFunction\");\n\n// Calling the inner function with the closure\nclosureExample(\"I am from innerFunction\");\n\n```\n",
-    "minutesRead": "1 min read",
-    "lastModified": "2026-01-15T16:16:25.392Z"
-  },
-  {
-    "id": "why-does-this-hate-me-demystifying-java-script-s-this",
+    "id": "donacion-organos-la-serena",
     "data": {
       "isDraft": false,
       "isMainHeadline": false,
       "isSubHeadline": false,
       "isCategoryMainHeadline": false,
       "isCategorySubHeadline": true,
-      "description": "Why JavaScript's `this` keyword breaks brains and hearts—explained with relatable memes.",
-      "title": "Why Does this Hate Me? Demystifying JavaScripts this",
-      "cover": "/assets/images/articles/why-does-this-hate-me-demystifying-java-script-s-this/cover.avif",
+      "description": "La Región de Coquimbo se consolidó como la segunda con mayor tasa de donación de órganos en Chile durante 2025.",
+      "title": "Donación de órganos en La Serena: dos decisiones que dieron vida a al menos nueve personas",
+      "cover": "https://cdn.elobservatodo.cl/sites/elobservatodo.cl/files/imagecache/opengraph/imagen_noticia/2_49.jpeg",
       "category": {
-        "id": "programming"
+        "id": "trends"
       },
-      "publishedTime": "2025-04-15T10:36:00.000Z",
+      "publishedTime": "2026-01-14T00:00:00.000Z",
       "authors": [
-        "jane-doe",
+        "maria-gonzalez"
+      ]
+    },
+    "content": "La donación de órganos es uno de los actos de mayor generosidad humana. En 2025, la Región de Coquimbo se consolidó como la segunda con mayor tasa de donación de órganos en Chile, con 15 procesos efectivos.\n\nDentro de ese contexto, dos procuramientos realizados en el Hospital de La Serena marcaron un punto de inflexión institucional y humano. Durante años, el recinto serenense contaba con equipos capacitados, pero no había logrado concretar donaciones efectivas.\n\nEse escenario cambió cuando, en medio de dos pérdidas inesperadas, familias optaron por transformar el dolor en una oportunidad de vida para otros. Estas decisiones permitieron que al menos nueve personas en lista de espera nacional recibieran los trasplantes necesarios para continuar sus vidas.\n\nhttps://www.youtube.com/watch?v=dQw4w9WgXcQ\n",
+    "minutesRead": "1 min read",
+    "lastModified": "2026-01-15T20:04:33.657Z"
+  },
+  {
+    "id": "luna-de-sangre-2026",
+    "data": {
+      "isDraft": false,
+      "isMainHeadline": false,
+      "isSubHeadline": true,
+      "isCategoryMainHeadline": true,
+      "isCategorySubHeadline": false,
+      "description": "El 2026 traerá un intenso calendario astronómico con eclipses solares y lunares y la esperada Luna de Sangre.",
+      "title": "Luna de Sangre, eclipses y estrellas fugaces: los imperdibles del calendario astronómico 2026",
+      "cover": "https://diarioeldia-s3.cdn.net.ar/s3i233/2026/01/diarioeldia/images/02/43/62/2436228_494bc9137c0805b3aa6e765d7c122dc028ce9bc954876829eeb56ff46da8e1ab/lg.webp?_v=v3-38",
+      "category": {
+        "id": "trends"
+      },
+      "publishedTime": "2026-01-09T00:00:00.000Z",
+      "authors": [
+        "maria-gonzalez"
+      ]
+    },
+    "content": "El 2026 se perfila como un año imperdible para los amantes de la astronomía. Los próximos meses prometen aún más espectáculo, con eclipses, conjunciones planetarias y lluvias de meteoros que podrán observarse desde distintos puntos de Chile.\n\nEl año comenzará con una intensa actividad celeste. Enero abrirá el calendario con la primera Luna llena el día 3, seguida por la lluvia de meteoros Cuadrántidas. A ello se suma la oposición de Júpiter el 10 de enero, instancia ideal para observar al gigante gaseoso.\n\nNo obstante, los fenómenos más esperados llegarán durante el primer trimestre. El 17 de febrero se producirá un eclipse solar parcial, mientras que el 3 de marzo el cielo regalará un eclipse lunar total, conocido popularmente como “Luna de Sangre”.\n\nLas lluvias de estrellas también tendrán un rol protagónico. Destacan las Líridas en abril, las Eta Acuáridas en mayo y las Delta Acuáridas del Sur en julio. El ciclo se cerrará en diciembre con las famosas Gemínidas.\n\nhttps://www.youtube.com/watch?v=dQw4w9WgXcQ\n",
+    "minutesRead": "1 min read",
+    "lastModified": "2026-01-15T20:04:33.657Z"
+  },
+  {
+    "id": "mini-tsunami-argentina",
+    "data": {
+      "isDraft": false,
+      "isMainHeadline": true,
+      "isSubHeadline": false,
+      "isCategoryMainHeadline": true,
+      "isCategorySubHeadline": false,
+      "description": "Una persona murió y 35 resultaron heridas tras el impacto de una ola gigante en Santa Clara del Mar.",
+      "title": "\"Mini tsunami\": Un muerto y más de 30 heridos tras impacto de ola de 5 metros en playa de Argentina",
+      "cover": "https://diarioeldia-s3.cdn.net.ar/s3i233/2025/03/diarioeldia/images/01/60/91/1609126_7ecb970a2ec5682bda697161907236b4d98824fda0d7246157812b57c88a47c1/lg.webp?_v=v3-38",
+      "category": {
+        "id": "world"
+      },
+      "publishedTime": "2026-01-13T00:00:00.000Z",
+      "authors": [
+        "sofia-martinez"
+      ]
+    },
+    "content": "Una persona murió y 35 personas resultaron heridas al ser arrastradas este lunes por una ola de entre 5 y 6 metros que por sorpresa impactó en una playa de la localidad bonaerense de Santa Clara del Mar (Argentina), sobre aguas del Atlántico. Medios locales lo catalogaron como un “mini tsunami”.\n\nEl evento se registró en horas de la tarde, en momentos en que la playa estaba colmada de turistas, cuando una fuerte ola, según los testigos, tomó por sorpresa a las personas y las arrastró con violencia.\n\nFuentes del Ministerio de Seguridad de la provincia de Buenos Aires confirmaron que una persona falleció tras ser impactada por la ola en la playa de Santa Clara del Mar, localidad turística ubicada a 386 kilómetros al sur de la capital argentina.\n\nMedios locales informaron que la víctima fatal es un joven turista que se golpeó contra unas rocas al ser arrastrado por las aguas. Por el fenómeno en el mar, cuyas causas aún se desconocen, resultaron afectadas otras 35 personas, con heridas leves en su mayoría.\n\nLas playas fueron evacuadas en forma preventiva. En la vecina ciudad de Mar del Plata también se registraron olas inusualmente grandes.\n\nhttps://www.youtube.com/watch?v=dQw4w9WgXcQ\n",
+    "minutesRead": "1 min read",
+    "lastModified": "2026-01-15T20:04:33.657Z"
+  },
+  {
+    "id": "orquesta-camara-guayacan",
+    "data": {
+      "isDraft": false,
+      "isMainHeadline": false,
+      "isSubHeadline": true,
+      "isCategoryMainHeadline": true,
+      "isCategorySubHeadline": false,
+      "description": "El espectáculo se realizará este domingo y reunirá música inspirada en Piratas del Caribe en la bahía de Coquimbo.",
+      "title": "Orquesta de Cámara de Guayacán ofrecerá inédito concierto a bordo del “Holandés Errante” en Coquimbo",
+      "cover": "https://diarioeldia-s3.cdn.net.ar/s3i233/2026/01/diarioeldia/images/02/43/62/2436297_4fed91e53f4064f47ffa97650f0d3301bb96ed5b7ab8c67d0941d632bbba2683/lg.webp?_v=v3-38",
+      "category": {
+        "id": "region"
+      },
+      "publishedTime": "2026-01-14T00:00:00.000Z",
+      "authors": [
         "john-smith"
       ]
     },
-    "content": "Ah yes, the infamous `this` keyword in JavaScript—responsible for more broken code and debugging tears than any other. In this article, we’ll laugh through the pain and explain what `this` actually means in different contexts.\n",
+    "content": "Un hito cultural inédito vivirá la conurbación este domingo 18 de enero, cuando la Orquesta de Cámara de Guayacán realice un concierto a bordo de la embarcación “El Holandés Errante”, iniciativa pionera en la Región de Coquimbo que unirá música, patrimonio y turismo en un solo espectáculo.\n\nAsí lo explicó Luciano Urén, coordinador de la Orquesta quien detalló que el zarpe está programado para las 18:30 horas, mientras que el público deberá presentarse a las 18:00 horas para el proceso de embarque. “Esta iniciativa nace gracias a un convenio de colaboración entre Radio Guayacán y la embarcación del Holandés Errante”, señaló.\n\nEl repertorio será interpretado por niñas, niños y jóvenes que integran la Orquesta de Cámara de Guayacán, provenientes principalmente del sector. Según explicó Urén, se trata de un programa trabajado durante todo el año formativo 2025, que marca el inicio oficial de la temporada de conciertos de verano 2026.\n\nLa música tendrá una duración aproximada de 45 minutos, mientras que el recorrido completo se extenderá por cerca de dos horas, incluyendo un trayecto por la bahía de Coquimbo y un espectáculo temático a bordo.\n\nhttps://www.youtube.com/watch?v=dQw4w9WgXcQ\n",
     "minutesRead": "1 min read",
-    "lastModified": "2026-01-15T16:16:25.396Z"
+    "lastModified": "2026-01-15T20:04:33.657Z"
+  },
+  {
+    "id": "percusion-teatro-vicuna",
+    "data": {
+      "isDraft": false,
+      "isMainHeadline": false,
+      "isSubHeadline": false,
+      "isCategoryMainHeadline": true,
+      "isCategorySubHeadline": false,
+      "description": "Vibrante jornada cultural en el Teatro Municipal de Vicuña con la presentación del dúo TA! Otra Percusión.",
+      "title": "TA! Otra Percusión llenó de ritmo el Teatro Municipal de Vicuña",
+      "cover": "https://cdn.elobservatodo.cl/sites/elobservatodo.cl/files/imagecache/opengraph/imagen_noticia/whatsapp_image_2026-01-14_at_16.29.30_2.jpeg",
+      "category": {
+        "id": "magazine"
+      },
+      "publishedTime": "2026-01-14T00:00:00.000Z",
+      "authors": [
+        "jane-doe"
+      ]
+    },
+    "content": "El Teatro Municipal de Vicuña fue escenario de una vibrante jornada cultural con la presentación de TA! Otra Percusión, dúo que llegó a la comuna con su espectáculo “TA!La”, una propuesta musical innovadora que combina ritmo, creatividad y una estrecha conexión con el público.\n\nEl espectáculo destacó por su lenguaje escénico contemporáneo y su capacidad de construir atmósferas sonoras diversas a través de distintos momentos musicales. Mediante la percusión y la interacción directa con las y los asistentes, el dúo logró generar una experiencia dinámica y envolvente.\n\nSKA, integrante del dúo, señaló que “nos encanta empezar el 2026 tocando acá. Este último espectáculo, al ser de música latinoamericana, tiene un poco de esta tierra, de estos árboles, de este sol. Es muy importante para nosotros comenzar el año aquí”.\n\nhttps://www.youtube.com/watch?v=dQw4w9WgXcQ\n",
+    "minutesRead": "1 min read",
+    "lastModified": "2026-01-15T20:04:33.657Z"
+  },
+  {
+    "id": "queen-sinfonico-la-serena",
+    "data": {
+      "isDraft": false,
+      "isMainHeadline": false,
+      "isSubHeadline": false,
+      "isCategoryMainHeadline": false,
+      "isCategorySubHeadline": true,
+      "description": "El próximo 24 de enero el Coliseo Monumental será escenario de un tributo sinfónico al legado de Queen.",
+      "title": "Queen Sinfónico llega a La Serena con un show que une rock y talento local",
+      "cover": "https://diarioeldia-s3.cdn.net.ar/s3i233/2026/01/diarioeldia/images/02/43/58/2435873_cb0ad6f7cd002c2f667e1c07afb9583be7b011fb5c07a1ddb7b23287380d181e/lg.webp?_v=v3-38",
+      "category": {
+        "id": "magazine"
+      },
+      "publishedTime": "2026-01-13T00:00:00.000Z",
+      "authors": [
+        "jane-doe"
+      ]
+    },
+    "content": "El próximo 24 de enero, a las 20:00 horas, en el Coliseo Monumental de La Serena será el escenario donde el legado de Queen cobrará vida en un tributo sinfónico. El espectáculo promete ser una experiencia única e irrepetible.\n\nVive Queen Sinfónico presenta versiones renovadas de los grandes himnos de la banda británica, cuidadosamente adaptadas al lenguaje sinfónico. Canciones icónicas como Bohemian Rhapsody, We Will Rock You y We Are the Champions cobran una nueva vida gracias a arreglos sinfónicos originales.\n\nLos arreglos y la dirección musical están a cargo del maestro Eduardo Gajardo Schmidlin, quien ha creado una propuesta que respeta la esencia original de Queen, incorporando nuevas capas de profundidad y emoción.\n\nEl espectáculo contará con la participación de destacados artistas invitados, encabezados por la voz de Juan Pablo Bañares, “El Jota”, semifinalista de Got Talent Chile 2024. Acompañan el Coro y la Orquesta Sinfónica del Centro de Innovación Musical La Serena.\n\nhttps://www.youtube.com/watch?v=dQw4w9WgXcQ\n",
+    "minutesRead": "1 min read",
+    "lastModified": "2026-01-15T20:04:33.657Z"
+  },
+  {
+    "id": "semaforos-coquimbo-la-serena",
+    "data": {
+      "isDraft": false,
+      "isMainHeadline": false,
+      "isSubHeadline": true,
+      "isCategoryMainHeadline": true,
+      "isCategorySubHeadline": false,
+      "description": "Menores tiempos de desplazamiento y gestión en tiempo real son los resultados de la integración de 21 semáforos en la conurbación.",
+      "title": "Integración de 21 cruces semaforizados mejora la movilidad en Coquimbo y La Serena",
+      "cover": "https://cdn.elobservatodo.cl/sites/elobservatodo.cl/files/imagecache/opengraph/imagen_noticia/sem_1.jpeg",
+      "category": {
+        "id": "region"
+      },
+      "publishedTime": "2026-01-14T00:00:00.000Z",
+      "authors": [
+        "sofia-martinez"
+      ]
+    },
+    "content": "Menores tiempos de desplazamiento, mayor seguridad vial y una gestión del tránsito en tiempo real son los principales resultados del proyecto de normalización e integración de semáforos desarrollado por la Unidad Operativa de Control de Tránsito (UOCT) en la conurbación Coquimbo–La Serena.\n\nLa iniciativa permitió incorporar 21 cruces semaforizados al sistema de control centralizado de la UOCT, fortaleciendo la coordinación entre intersecciones ubicadas en ejes estructurantes y sectores de alta circulación vehicular y peatonal. Con esta incorporación, la conurbación alcanza un 86% de sus semáforos conectados.\n\nEl proyecto consideró no solo la conexión tecnológica, sino también la modernización de los equipos, incluyendo cámaras de control de tránsito y sistemas de respaldo energético para asegurar la operatividad ante cortes de luz.\n\nhttps://www.youtube.com/watch?v=dQw4w9WgXcQ\n",
+    "minutesRead": "1 min read",
+    "lastModified": "2026-01-15T20:04:33.658Z"
+  },
+  {
+    "id": "vehiculos-robados-coquimbo",
+    "data": {
+      "isDraft": false,
+      "isMainHeadline": false,
+      "isSubHeadline": false,
+      "isCategoryMainHeadline": false,
+      "isCategorySubHeadline": true,
+      "description": "Carabineros ha recuperado una veintena de vehículos en lo que va del año mediante operativos de investigación.",
+      "title": "Dos vehículos robados fueron recuperados en Coquimbo tras intensos operativos de Carabineros",
+      "cover": "https://diarioeldia-s3.cdn.net.ar/s3i233/2026/01/diarioeldia/images/02/43/40/2434006_88bad2c00022b6b3b94d4957b2bd7546b6e61f3a46000af53590f293dcf35c20/lg.webp?_v=v3-38",
+      "category": {
+        "id": "police"
+      },
+      "publishedTime": "2026-01-14T00:00:00.000Z",
+      "authors": [
+        "ahmed-khan"
+      ]
+    },
+    "content": "Intenso e imparable ha sido el trabajo de Carabineros en la región de Coquimbo, para recuperar vehículos robados en distintas partes del país. La policía uniformada ya ha recuperado una veintena de vehículos en lo que va del año, con un promedio de dos móviles por día.\n\nLos más recientes fueron el resultado de un despliegue encabezado por la SIP de la Segunda Comisaría Coquimbo, quienes localizaron en la Parte Alta de la ciudad una moto que mantenía encargo desde agosto de 2024. El móvil fue incautado, mientras que la mujer que lo manipulaba fue detenida.\n\nApenas un par de horas más tarde, en la ruta 5 con La Cantera, los carabineros de civil detectaron un vehículo sospechoso, confirmando que mantenía encargo por robo desde noviembre de 2025. Se procedió a la detención del conductor, un hombre de 33 años con antecedentes por tráfico de drogas.\n\nhttps://www.youtube.com/watch?v=dQw4w9WgXcQ\n",
+    "minutesRead": "1 min read",
+    "lastModified": "2026-01-15T20:04:33.658Z"
+  },
+  {
+    "id": "verano-deportes-tierras-blancas",
+    "data": {
+      "isDraft": false,
+      "isMainHeadline": false,
+      "isSubHeadline": false,
+      "isCategoryMainHeadline": false,
+      "isCategorySubHeadline": true,
+      "description": "Deporte y recreación gratuita recorre los barrios de Tierras Blancas durante enero para disfrutar en familia.",
+      "title": "“Verano de Diversión y Deportes”: recreación gratuita recorre Tierras Blancas en enero",
+      "cover": "https://cdn.elobservatodo.cl/sites/elobservatodo.cl/files/imagecache/opengraph/imagen_noticia/foto_5_6.jpeg",
+      "category": {
+        "id": "sports"
+      },
+      "publishedTime": "2026-01-14T00:00:00.000Z",
+      "authors": [
+        "rajesh-patel"
+      ]
+    },
+    "content": "Cuando las vacaciones llegan pero el viaje no, el barrio se transforma en el principal punto de encuentro. Bajo esa premisa, Tierras Blancas se prepara para un enero marcado por el deporte, la recreación y la vida en comunidad.\n\nLas actividades están pensadas para disfrutar en familia y al aire libre, con el objetivo de fomentar la actividad física y el buen uso del tiempo libre en los sectores más poblados de Coquimbo.\n\nEl programa incluye juegos inflables, monitores deportivos y actividades con agua para paliar las altas temperaturas del verano, recorriendo distintos puntos estratégicos del sector para acercar la diversión a la puerta de los hogares de los vecinos.\n\nhttps://www.youtube.com/watch?v=dQw4w9WgXcQ\n",
+    "minutesRead": "1 min read",
+    "lastModified": "2026-01-15T20:04:33.658Z"
   }
 ]
