@@ -15,8 +15,8 @@ export default function TopHeader() {
                 </a>
             </div>
 
-            {/* Menu Icon - Mobile Only and positioned to the right */}
-            <div className="absolute right-4 md:hidden">
+            {/* Menu Icon - Mobile Only and positioned to the left */}
+            <div className="absolute left-4 md:hidden">
                 <a
                     href={`/mobile/menu?returnUrl=${encodeURIComponent(pathname || '/')}`}
                     aria-label="Menu"

@@ -5,13 +5,13 @@
   "private": true,
   "scripts": {
     "prebuild": "node scripts/pre-build.js",
-    "dev": "npm run prebuild && node framework/float-js/packages/core/dist/cli/index.js dev",
+    "dev": "npm run prebuild && node ../framework/float-js/packages/core/dist/cli/index.js dev",
     "build": "npm run prebuild && float build",
     "start": "float start",
     "float": "float"
   },
   "dependencies": {
-    "@float.js/core": "file:./framework/float-js/packages/core",
+    "@float.js/core": "file:../framework/float-js/packages/core",
     "@pagefind/default-ui": "^1.3.0",
     "date-fns": "^4.1.0",
     "gray-matter": "^4.0.3",

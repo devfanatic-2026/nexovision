@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { categoriesHandler } from "../../../lib/handlers/categories";
 
 /**
@@ -9,25 +9,6 @@ import { categoriesHandler } from "../../../lib/handlers/categories";
 export default function MobileMenuPage() {
     // 1. Data Fetching
     const categories = categoriesHandler.allCategories();
-
-    // 2. Navigation Logic (Client-Side)
-    const [returnUrl, setReturnUrl] = useState('/');
-
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const params = new URLSearchParams(window.location.search);
-            const url = params.get('returnUrl');
-            if (url) {
-                setReturnUrl(url);
-            }
-        }
-    }, []);
-
-    const isActive = (href: string) => {
-        if (href === '/' && returnUrl === '/') return true;
-        if (href !== '/' && (returnUrl === href || returnUrl.startsWith(href + '/'))) return true;
-        return false;
-    };
 
     return (
         <main className="min-h-screen bg-white text-black font-sans flex flex-col selection:bg-[#00A859]/30">
@@ -64,9 +45,10 @@ export default function MobileMenuPage() {
                 </div>
                 <div className="flex-1 flex justify-end">
                     <a
-                        href={returnUrl}
+                        href="/"
                         className="w-10 h-10 flex items-center justify-end active:scale-90 transition-transform"
                         aria-label="Cerrar Menú"
+                        id="close-menu-link"
                     >
                         <span className="material-symbols-outlined text-4xl text-black">close</span>
                     </a>
@@ -91,40 +73,26 @@ export default function MobileMenuPage() {
                 <div className="flex flex-col">
                     {/* Home Item */}
                     <a className="group py-8 menu-divider flex justify-between items-center transition-all" href="/">
-                        <span className={`text-4xl font-serif font-medium transition-colors ${isActive('/')
-                            ? 'text-[#00A859] italic'
-                            : 'text-black hover:text-[#00A859]'
-                            }`}>
+                        <span className="text-4xl font-serif font-medium text-black hover:text-[#00A859] transition-colors">
                             Inicio
                         </span>
-                        {isActive('/') && (
-                            <div className="w-2 h-2 rounded-full bg-[#00A859] shadow-[0_0_8px_rgba(0,168,89,0.5)]"></div>
-                        )}
                     </a>
 
                     {/* Dynamic Categories */}
                     {categories.map((category) => {
                         const href = `/categories/${category.id}`;
-                        const active = isActive(href);
                         return (
                             <a
                                 key={category.id}
                                 className="group py-8 menu-divider flex justify-between items-center transition-all hover:bg-zinc-50/50 px-2 -mx-2 rounded-lg"
                                 href={href}
                             >
-                                <span className={`text-4xl font-serif transition-colors ${active
-                                    ? 'text-[#00A859] italic font-medium'
-                                    : 'text-black group-hover:text-[#00A859]'
-                                    }`}>
+                                <span className="text-4xl font-serif text-black group-hover:text-[#00A859] transition-colors">
                                     {category.data.title}
                                 </span>
-                                {active ? (
-                                    <div className="w-2 h-2 rounded-full bg-[#00A859] shadow-[0_0_8px_rgba(0,168,89,0.5)]"></div>
-                                ) : (
-                                    <span className="material-symbols-outlined text-zinc-300 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
-                                        arrow_forward_ios
-                                    </span>
-                                )}
+                                <span className="material-symbols-outlined text-zinc-300 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
+                                    arrow_forward_ios
+                                </span>
                             </a>
                         )
                     })}
@@ -133,6 +101,51 @@ export default function MobileMenuPage() {
 
             {/* Removed internal footer as global footer is now maintained */}
             <div className="pb-10"></div>
+
+            {/* Client-side script to handle returnUrl logic */}
+            <script
+                dangerouslySetInnerHTML={{
+                    __html: `
+                        (function() {
+                            if (typeof window !== 'undefined') {
+                                const params = new URLSearchParams(window.location.search);
+                                const returnUrl = params.get('returnUrl') || '/';
+
+                                // Update the close button href with the returnUrl
+                                const closeLink = document.getElementById('close-menu-link');
+                                if (closeLink) {
+                                    closeLink.href = returnUrl;
+                                }
+
+                                // Add active state highlighting based on current URL
+                                const currentPath = window.location.pathname;
+                                const navLinks = document.querySelectorAll('nav a');
+
+                                navLinks.forEach(link => {
+                                    const href = link.getAttribute('href');
+                                    if (href === currentPath || (href === '/' && currentPath === '/')) {
+                                        // Add active styling - we'll add this dynamically
+                                        if (link.querySelector('span')) {
+                                            const span = link.querySelector('span');
+                                            span.classList.add('text-[#00A859]', 'italic');
+                                            if (href === '/') {
+                                                span.classList.add('font-medium');
+                                            }
+
+                                            // Add active indicator
+                                            if (href === '/') {
+                                                const indicator = document.createElement('div');
+                                                indicator.className = 'w-2 h-2 rounded-full bg-[#00A859] shadow-[0_0_8px_rgba(0,168,89,0.5)]';
+                                                link.appendChild(indicator);
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                        })();
+                    `
+                }}
+            />
 
         </main>
     );
