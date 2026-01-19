@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "prebuild": "node scripts/pre-build.js",
-    "dev": "npm run prebuild && float dev",
+    "dev": "npm run prebuild && node framework/float-js/packages/core/dist/cli/index.js dev",
     "build": "npm run prebuild && float build",
     "start": "float start",
     "float": "float"
