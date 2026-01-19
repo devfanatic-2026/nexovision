@@ -6,13 +6,8 @@ export default function TopHeader() {
     const { pathname } = useFloatRouter();
 
     return (
-        <div className="flex items-center justify-between py-6 border-b border-editorial-200 mb-8 container">
-            {/* Search Icon */}
-            <div className="flex-1">
-                <SearchIcon className="w-5 h-5" />
-            </div>
-
-            {/* Brand */}
+        <div className="flex items-center justify-between py-6 container relative">
+            {/* Branding - Always Centered */}
             <div className="flex-1 flex justify-center">
                 <a href="/" className="text-3xl font-serif font-bold tracking-tighter">
                     <span className="text-black">Nexo</span>
@@ -20,8 +15,8 @@ export default function TopHeader() {
                 </a>
             </div>
 
-            {/* Menu Icon */}
-            <div className="flex-1 flex justify-end">
+            {/* Menu Icon - Mobile Only and positioned to the right */}
+            <div className="absolute right-4 md:hidden">
                 <a
                     href={`/mobile/menu?returnUrl=${encodeURIComponent(pathname || '/')}`}
                     aria-label="Menu"

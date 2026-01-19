@@ -23,7 +23,7 @@ export default function RootLayout({ children, currentPath = '' }: { children: R
                 <main className="flex-grow">
                     {children}
                 </main>
-                {!currentPath.includes('mobile/menu') && <Footer />}
+                <Footer />
             </div>
         </>
     );
