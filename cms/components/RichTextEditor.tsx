@@ -24,11 +24,36 @@ const YoutubeComponent = ({ node, getPos, deleteNode }: any) => {
             </div>
             <button
                 type="button"
-                className="delete-btn absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white p-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                className="delete-btn absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white p-1.5 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10"
                 onClick={() => deleteNode()}
                 title="Eliminar video"
             >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </NodeViewWrapper>
+    );
+};
+
+
+// Custom Image Component with Delete Button
+const ImageComponent = ({ node, deleteNode }: any) => {
+    return (
+        <NodeViewWrapper className="node-image relative group inline-block max-w-full my-4">
+            <img
+                src={node.attrs.src}
+                alt={node.attrs.alt}
+                title={node.attrs.title}
+                className="rounded-lg shadow-md max-w-full block h-auto"
+            />
+            <button
+                type="button"
+                className="delete-btn absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white p-1.5 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                onClick={() => deleteNode()}
+                title="Eliminar imagen"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
@@ -102,7 +127,11 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
                 openOnClick: false,
                 autolink: true,
             }),
-            Image,
+            Image.extend({
+                addNodeView() {
+                    return ReactNodeViewRenderer(ImageComponent)
+                },
+            }),
             Youtube.configure({
                 controls: true,
                 allowFullscreen: true,
@@ -130,35 +159,33 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
         if (editor && content) {
             // Find plain text youtube links and replace them with Youtube Embed Nodes
             // We use a regex to scan the current content of the editor
-            // Since we rely on Tiptap state, we should check what's actually in the doc.
-
-            // However, useFloatData passes 'content' initially.
-            // If the content is just HTML string with <p>https://youtube...</p>, Tiptap sees text.
-
-            // To be robust:
-            // 1. Get raw text of the editor
-            // 2. Find matches
-            // 3. Replace ranges with nodes
-
-            // Simpler approach for "on load":
-            // Iterate over the document nodes, find text nodes with just a youtube link, and replace them.
 
             editor.commands.command(({ tr, state, dispatch }) => {
                 let modified = false;
                 state.doc.descendants((node, pos) => {
                     if (node.isText && node.text) {
-                        const youtubeRegex = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?([a-zA-Z0-9_-]+)(?:&.*)?$/;
-                        const match = node.text.trim().match(youtubeRegex);
-                        if (match) {
-                            if (dispatch) {
-                                const videoId = match[1];
+                        // Regex handles both [label](url) and plain url
+                        const combinedRegex = /(?:\[([^\]]*)\]\()?((?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?([a-zA-Z0-9_-]{11})(?:&.*)?)\)?/g;
+
+                        let match;
+                        const localReplacements: { from: number, to: number, videoId: string }[] = [];
+
+                        while ((match = combinedRegex.exec(node.text)) !== null) {
+                            localReplacements.push({
+                                from: pos + match.index,
+                                to: pos + match.index + match[0].length,
+                                videoId: match[3]
+                            });
+                        }
+
+                        if (localReplacements.length > 0 && dispatch) {
+                            // Sort in reverse to not mess up positions during replacement
+                            for (let i = localReplacements.length - 1; i >= 0; i--) {
+                                const { from, to, videoId } = localReplacements[i];
                                 const src = `https://www.youtube.com/embed/${videoId}`;
-                                // Replace the text node with a youtube node
-                                tr.replaceWith(pos, pos + node.nodeSize,
-                                    state.schema.nodes.youtube.create({ src })
-                                );
-                                modified = true;
+                                tr.replaceWith(from, to, state.schema.nodes.youtube.create({ src }));
                             }
+                            modified = true;
                         }
                     }
                 });
@@ -166,6 +193,7 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
             });
         }
     }, [editor, content]);
+
 
     // Handle Youtube Modal Submit
     const addYoutubeVideoFromModal = () => {
