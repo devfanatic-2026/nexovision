@@ -61,17 +61,11 @@ export const POST = typedRoute({
             bio: data.bio || '',
         };
 
-        if (data.id) {
-            const existing = await repo.findBySlug(data.slug); // Assuming checking by slug or id, logic might need adjustment but repositories usually find by id. Let's trust findBySlug or update logic.
-            // Actually repo.update takes slug.
-            // Let's optimize: try update if ID passed? Or simplify to always create if no existing logic.
-            // Given limitations, let's just attempt create for now or proper update logic:
-            try {
-                await repo.update(data.slug, author);
-                return json({ message: 'Author updated successfully', id: author.id });
-            } catch (e) {
-                // Fallback to Create if update fails or not found?
-            }
+        const existing = await repo.findBySlug(data.slug);
+
+        if (existing) {
+            await repo.update(data.slug, author);
+            return json({ message: 'Author updated successfully', id: author.id });
         }
 
         await repo.create(author);

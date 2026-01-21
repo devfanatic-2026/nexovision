@@ -9,8 +9,8 @@
         "start": "float start",
         "build:css": "tailwindcss -i app/globals.css -o public/styles.css",
         "watch:css": "tailwindcss -i app/globals.css -o public/styles.css --watch",
-        "migrate": "tsx scripts/cli-migrate.ts",
-        "import:data": "tsx scripts/cli-import.ts"
+        "seed": "tsx scripts/seed.ts",
+        "export": "tsx scripts/export-data.ts"
     },
     "dependencies": {
         "@float.js/core": "file:../framework/float-js/packages/core",
@@ -23,7 +23,6 @@
         "@tiptap/starter-kit": "^2.27.2",
         "clsx": "^2.1.1",
         "dotenv": "^16.4.5",
-        "gray-matter": "^4.0.3",
         "jszip": "^3.10.1",
         "lucide-react": "^0.446.0",
         "react": "^18.3.1",

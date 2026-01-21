@@ -22,6 +22,7 @@ export const GET = async () => {
 
 export const POST = typedRoute({
     body: f.object({
+        id: f.string().optional(),
         slug: f.string().min(2),
         title: f.string().min(1),
         inspire: f.string().optional(),
@@ -31,7 +32,7 @@ export const POST = typedRoute({
         const db = await initializeDb();
         const data = req.validated.body;
         const category = {
-            id: randomUUID(),
+            id: data.id || randomUUID(),
             slug: data.slug,
             title: data.title,
             inspire: data.inspire || '',
