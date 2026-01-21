@@ -34,6 +34,8 @@ export async function initializeDb(): Promise<Database> {
       name TEXT NOT NULL,
       job TEXT,
       avatar TEXT,
+      avatar_is_local INTEGER DEFAULT 0,
+      avatar_base64 TEXT,
       bio TEXT
     );
 
@@ -52,6 +54,8 @@ export async function initializeDb(): Promise<Database> {
       title TEXT NOT NULL,
       description TEXT,
       cover TEXT,
+      cover_is_local INTEGER DEFAULT 0,
+      cover_base64 TEXT,
       category_id TEXT,
       published_time TEXT,
       is_draft INTEGER DEFAULT 0,
@@ -69,6 +73,20 @@ export async function initializeDb(): Promise<Database> {
       PRIMARY KEY (article_id, author_id),
       FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE,
       FOREIGN KEY (author_id) REFERENCES authors(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS tags (
+      id TEXT PRIMARY KEY,
+      slug TEXT UNIQUE NOT NULL,
+      name TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS article_tags (
+      article_id TEXT NOT NULL,
+      tag_id TEXT NOT NULL,
+      PRIMARY KEY (article_id, tag_id),
+      FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE,
+      FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
     );
   `);
 

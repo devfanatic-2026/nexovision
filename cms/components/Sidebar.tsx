@@ -8,6 +8,7 @@ import {
     PlusIcon,
     ChartBarIcon
 } from '@heroicons/react/24/outline';
+import { Link } from './ui/Link';
 
 const navigation = [
     { name: 'Dashboard', href: '/', icon: ChartBarIcon },
@@ -31,12 +32,12 @@ export function Sidebar() {
 
             {/* New Article Button */}
             <div className="px-4 pt-6 pb-4">
-                <a href="/articles/new/edit">
-                    <button className="w-full flex items-center justify-center gap-2 bg-primary-500 text-white px-4 py-3 rounded-lg hover:bg-primary-600 transition-colors duration-200 font-medium shadow-sm hover:shadow-md">
+                <Link href="/articles/new/edit" className="block">
+                    <div className="w-full flex items-center justify-center gap-2 bg-primary-500 text-white px-4 py-3 rounded-lg hover:bg-primary-600 transition-colors duration-200 font-medium shadow-sm hover:shadow-md cursor-pointer">
                         <PlusIcon className="h-5 w-5" />
                         Nuevo Artículo
-                    </button>
-                </a>
+                    </div>
+                </Link>
             </div>
 
             {/* Navigation */}
@@ -45,7 +46,7 @@ export function Sidebar() {
                     const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
 
                     return (
-                        <a
+                        <Link
                             key={item.name}
                             href={item.href}
                             className={clsx(
@@ -57,7 +58,7 @@ export function Sidebar() {
                         >
                             <item.icon className={clsx('h-5 w-5', isActive ? 'text-primary-600' : 'text-gray-400')} />
                             {item.name}
-                        </a>
+                        </Link>
                     );
                 })}
             </nav>

@@ -1,11 +1,41 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useEditor, EditorContent } from '@tiptap/react';
+import { useEditor, EditorContent, NodeViewWrapper, ReactNodeViewRenderer } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
 import Image from '@tiptap/extension-image';
-// Heroicons removed in favor of inline SVGs to avoid dependency issues
+import Youtube from '@tiptap/extension-youtube';
+import { clsx } from 'clsx';
+import { Input } from './ui/Input';
+import { Button } from './ui/Button';
+
+// Custom Youtube Component
+const YoutubeComponent = ({ node, getPos, deleteNode }: any) => {
+    return (
+        <NodeViewWrapper className="node-youtube relative group">
+            <div data-youtube-video className="w-full aspect-video rounded-lg overflow-hidden bg-gray-100 relative">
+                <iframe
+                    src={node.attrs.src}
+                    className="w-full h-full"
+                    allowFullScreen
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                />
+            </div>
+            <button
+                type="button"
+                className="delete-btn absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white p-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                onClick={() => deleteNode()}
+                title="Eliminar video"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </NodeViewWrapper>
+    );
+};
+
 
 function ListBulletIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -47,7 +77,7 @@ function ItalicIcon(props: React.SVGProps<SVGSVGElement>) {
         </svg>
     );
 }
-import { clsx } from 'clsx';
+
 
 interface RichTextEditorProps {
     content: string;
@@ -56,6 +86,8 @@ interface RichTextEditorProps {
 
 export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
     const [isMounted, setIsMounted] = useState(false);
+    const [youtubeModalOpen, setYoutubeModalOpen] = useState(false);
+    const [youtubeUrl, setYoutubeUrl] = useState('');
 
     useEffect(() => {
         setIsMounted(true);
@@ -63,13 +95,26 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
 
     const editor = useEditor({
         extensions: [
-            StarterKit,
+            StarterKit.configure({
+                // Ensure nodes are not dropped
+            }),
             Link.configure({
                 openOnClick: false,
+                autolink: true,
             }),
             Image,
+            Youtube.configure({
+                controls: true,
+                allowFullscreen: true,
+                nocookie: true,
+                inline: false, // Ensure block rendering behavior
+            }).extend({
+                addNodeView() {
+                    return ReactNodeViewRenderer(YoutubeComponent)
+                },
+            }),
         ],
-        content,
+        content: content,
         onUpdate: ({ editor }) => {
             onChange(editor.getHTML());
         },
@@ -79,6 +124,57 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
             },
         },
     });
+
+    // Helper to auto-convert Youtube links in content on initial load
+    useEffect(() => {
+        if (editor && content) {
+            // Find plain text youtube links and replace them with Youtube Embed Nodes
+            // We use a regex to scan the current content of the editor
+            // Since we rely on Tiptap state, we should check what's actually in the doc.
+
+            // However, useFloatData passes 'content' initially.
+            // If the content is just HTML string with <p>https://youtube...</p>, Tiptap sees text.
+
+            // To be robust:
+            // 1. Get raw text of the editor
+            // 2. Find matches
+            // 3. Replace ranges with nodes
+
+            // Simpler approach for "on load":
+            // Iterate over the document nodes, find text nodes with just a youtube link, and replace them.
+
+            editor.commands.command(({ tr, state, dispatch }) => {
+                let modified = false;
+                state.doc.descendants((node, pos) => {
+                    if (node.isText && node.text) {
+                        const youtubeRegex = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?([a-zA-Z0-9_-]+)(?:&.*)?$/;
+                        const match = node.text.trim().match(youtubeRegex);
+                        if (match) {
+                            if (dispatch) {
+                                const videoId = match[1];
+                                const src = `https://www.youtube.com/embed/${videoId}`;
+                                // Replace the text node with a youtube node
+                                tr.replaceWith(pos, pos + node.nodeSize,
+                                    state.schema.nodes.youtube.create({ src })
+                                );
+                                modified = true;
+                            }
+                        }
+                    }
+                });
+                return modified;
+            });
+        }
+    }, [editor, content]);
+
+    // Handle Youtube Modal Submit
+    const addYoutubeVideoFromModal = () => {
+        if (youtubeUrl && editor) {
+            editor.chain().focus().setYoutubeVideo({ src: youtubeUrl }).run();
+            setYoutubeModalOpen(false);
+            setYoutubeUrl('');
+        }
+    };
 
     // SSR fallback: show textarea until client-side hydration
     if (!isMounted || !editor) {
@@ -125,7 +221,7 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
     };
 
     return (
-        <div className="border border-gray-300 rounded-lg overflow-hidden">
+        <div className="border border-gray-300 rounded-lg overflow-hidden relative">
             {/* Toolbar */}
             <div className="bg-gray-50 border-b border-gray-300 p-2 flex gap-1 flex-wrap">
                 <MenuButton
@@ -199,12 +295,56 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
                 >
                     <ChatBubbleLeftIcon className="h-5 w-5" />
                 </MenuButton>
+                <div className="w-px bg-gray-300 mx-1" />
+
+                <MenuButton
+                    onClick={() => setYoutubeModalOpen(true)}
+                    active={editor.isActive('youtube')}
+                >
+                    <span className="text-sm font-bold text-red-600">YT</span>
+                </MenuButton>
             </div>
 
             {/* Editor Content */}
             <div className="bg-white p-4 min-h-[400px]">
                 <EditorContent editor={editor} />
             </div>
+
+            {/* Youtube Modal - DaisyUI */}
+            {youtubeModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                    <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 animate-in fade-in zoom-in duration-200">
+                        <h3 className="text-lg font-bold mb-4">Insertar Video de YouTube</h3>
+                        <div className="space-y-4">
+                            <Input
+                                label="URL del video"
+                                placeholder="https://www.youtube.com/watch?v=..."
+                                value={youtubeUrl}
+                                onChange={(e) => setYoutubeUrl(e.target.value)}
+                                autoFocus
+                            />
+                            <div className="flex justify-end gap-2">
+                                <Button
+                                    variant="ghost"
+                                    onClick={() => {
+                                        setYoutubeModalOpen(false);
+                                        setYoutubeUrl('');
+                                    }}
+                                >
+                                    Cancelar
+                                </Button>
+                                <Button
+                                    variant="primary"
+                                    onClick={addYoutubeVideoFromModal}
+                                    disabled={!youtubeUrl}
+                                >
+                                    Insertar
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

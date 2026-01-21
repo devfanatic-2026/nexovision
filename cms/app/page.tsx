@@ -1,7 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Button } from '../components/ui/Button';
+import { Link } from '../components/ui/Link';
+
+function formatDate(date: string) {
+  if (!date) return '—';
+  const timestamp = Number(date); // Handle "1768348800000.0"
+  const d = isNaN(timestamp) ? new Date(date) : new Date(timestamp);
+
+  if (isNaN(d.getTime())) return '—';
+  return d.toLocaleDateString('es-ES', { dateStyle: 'long', timeZone: 'UTC' });
+}
 
 // Inline SVGs for stability
 function PencilIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -135,12 +144,12 @@ export default function DashboardPage() {
 
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-semibold text-gray-800">Últimos Artículos</h2>
-        <a href="/articles/new/edit">
-          <Button variant="primary">
+        <Link href="/articles/new/edit">
+          <div className="inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-primary-500 text-white hover:bg-primary-600 focus:ring-primary-500 px-4 py-2 text-base cursor-pointer">
             <PencilIcon className="h-4 w-4 mr-2" />
             Nuevo Artículo
-          </Button>
-        </a>
+          </div>
+        </Link>
       </div>
 
       {/* Articles List */}
@@ -186,7 +195,7 @@ export default function DashboardPage() {
                       )}
                       <span className="flex items-center gap-1">
                         <CalendarIcon className="h-4 w-4" />
-                        {new Date(article.published_time).toLocaleDateString('es-ES')}
+                        {formatDate(article.published_time)}
                       </span>
                     </div>
 
@@ -204,12 +213,12 @@ export default function DashboardPage() {
                   </div>
 
                   <div className="flex gap-2 flex-shrink-0">
-                    <a href={`/articles/${article.slug}/edit`}>
-                      <Button variant="secondary" size="sm">
+                    <Link href={`/articles/${article.slug}/edit`}>
+                      <div className="inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-gray-200 text-gray-700 hover:bg-gray-300 focus:ring-gray-500 px-3 py-1.5 text-sm cursor-pointer">
                         <PencilIcon className="h-4 w-4" />
                         Editar
-                      </Button>
-                    </a>
+                      </div>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -220,11 +229,11 @@ export default function DashboardPage() {
         {safeArticles.length === 0 && (
           <div className="text-center py-12">
             <p className="text-gray-500 text-lg">No hay artículos para mostrar</p>
-            <a href="/articles/new/edit" className="mt-4 inline-block">
-              <Button variant="primary">
+            <Link href="/articles/new/edit" className="mt-4 inline-block">
+              <div className="inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-primary-500 text-white hover:bg-primary-600 focus:ring-primary-500 px-4 py-2 text-base cursor-pointer">
                 Crear tu primer artículo
-              </Button>
-            </a>
+              </div>
+            </Link>
           </div>
         )}
       </div>

@@ -4,6 +4,7 @@ import React from 'react';
 import { useFloatData } from '@float.js/core';
 import { ArticleEditor } from '../../../../components/ArticleEditor';
 import { Button } from '../../../../components/ui/Button';
+import { Link } from '../../../../components/ui/Link';
 
 function ArrowLeftIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -42,12 +43,12 @@ export default function ArticleEditPage({ params }: { params: { slug: string } }
         return (
             <div className="flex flex-col items-center justify-center h-screen gap-4">
                 <h2 className="text-xl font-semibold text-gray-900">Artículo no encontrado</h2>
-                <a href="/">
+                <Link href="/">
                     <Button variant="ghost">
                         <ArrowLeftIcon className="h-5 w-5 mr-2" />
                         Volver al inicio
                     </Button>
-                </a>
+                </Link>
             </div>
         );
     }

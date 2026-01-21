@@ -1,7 +1,5 @@
 'use client';
 
-import { Button } from '../../components/ui/Button';
-
 // Inline SVGs for stability
 function PencilIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -44,19 +42,19 @@ function PlusIcon(props: React.SVGProps<SVGSVGElement>) {
 }
 
 import { useFloatData } from '@float.js/core';
+import { Link } from '../../components/ui/Link';
 
-// ... icons ...
+function formatDate(date: string) {
+    if (!date) return '—';
+    const timestamp = Number(date);
+    const d = isNaN(timestamp) ? new Date(date) : new Date(timestamp);
+
+    if (isNaN(d.getTime())) return '—';
+    return d.toLocaleDateString('es-ES', { dateStyle: 'long', timeZone: 'UTC' });
+}
 
 export default function ArticlesPage() {
     const { data: articles, isLoading: loading } = useFloatData<any[]>('/api/articles');
-
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center h-screen">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
-            </div>
-        );
-    }
 
     return (
         <div className="p-8">
@@ -65,12 +63,12 @@ export default function ArticlesPage() {
                     <h1 className="text-3xl font-bold text-gray-900 mb-2">Artículos</h1>
                     <p className="text-gray-600">Gestiona todo el contenido de tu sitio</p>
                 </div>
-                <a href="/articles/new/edit">
-                    <Button variant="primary">
+                <Link href="/articles/new/edit">
+                    <div className="inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-primary-500 text-white hover:bg-primary-600 focus:ring-primary-500 px-4 py-2 text-base cursor-pointer">
                         <PlusIcon className="h-4 w-4 mr-2" />
                         Nuevo Artículo
-                    </Button>
-                </a>
+                    </div>
+                </Link>
             </div>
 
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
@@ -138,16 +136,16 @@ export default function ArticlesPage() {
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center gap-2">
                                             <CalendarIcon className="h-4 w-4 text-gray-400" />
-                                            {new Date(article.published_time).toLocaleDateString()}
+                                            {formatDate(article.published_time)}
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        <a href={`/articles/${article.slug}/edit`}>
-                                            <Button variant="secondary" size="sm">
+                                        <Link href={`/articles/${article.slug}/edit`}>
+                                            <div className="inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-gray-200 text-gray-700 hover:bg-gray-300 focus:ring-gray-500 px-3 py-1.5 text-sm cursor-pointer">
                                                 <PencilIcon className="h-4 w-4" />
                                                 <span className="hidden sm:inline ml-1">Editar</span>
-                                            </Button>
-                                        </a>
+                                            </div>
+                                        </Link>
                                     </td>
                                 </tr>
                             ))}

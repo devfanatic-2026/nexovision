@@ -6,6 +6,8 @@ export interface Author {
     name: string;
     job: string;
     avatar: string;
+    avatar_is_local?: number;
+    avatar_base64?: string;
     bio: string;
 }
 
@@ -31,8 +33,12 @@ export class AuthorRepository extends BaseRepository<Author> {
     }
 
     async create(author: Author): Promise<void> {
-        const sql = 'INSERT INTO authors (id, slug, name, job, avatar, bio) VALUES (?, ?, ?, ?, ?, ?)';
-        await this.run(sql, [author.id, author.slug, author.name, author.job, author.avatar, author.bio]);
+        const sql = 'INSERT INTO authors (id, slug, name, job, avatar, avatar_is_local, avatar_base64, bio) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+        await this.run(sql, [
+            author.id, author.slug, author.name, author.job, author.avatar,
+            author.avatar_is_local || 0, author.avatar_base64 || null,
+            author.bio
+        ]);
     }
 
     async update(slug: string, author: Partial<Author>): Promise<void> {
