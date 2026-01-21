@@ -16,6 +16,7 @@ export default defineConfig([
       'middleware/index': 'src/middleware/index.ts',
       'ssg/index': 'src/ssg/index.ts',
       'analytics/index': 'src/analytics/index.ts',
+      'hooks/use-store': 'src/hooks/use-store.ts',
     },
     format: ['esm'],
     dts: true,

@@ -15,6 +15,8 @@ export interface FloatStore<T> {
   setState: SetState<T>;
   subscribe: Subscribe;
   reset: () => void;
+  undo?: () => void;
+  redo?: () => void;
 }
 
 export interface FloatStoreOptions<T> {
@@ -23,7 +25,7 @@ export interface FloatStoreOptions<T> {
   /** Custom equality function */
   equals?: (a: any, b: any) => boolean;
   /** Middleware */
-  middleware?: (set: SetState<T>, get: GetState<T>) => SetState<T>;
+  middleware?: (set: SetState<T>, get: GetState<T>, store: any) => SetState<T>;
 }
 
 /**
@@ -48,7 +50,7 @@ export function createFloatStore<T extends object>(
   const { persist, middleware } = options;
 
   // Initialize state
-  let state: T = typeof initialState === 'function' 
+  let state: T = typeof initialState === 'function'
     ? (initialState as () => T)()
     : initialState;
 
@@ -92,7 +94,7 @@ export function createFloatStore<T extends object>(
 
   // Apply middleware
   if (middleware) {
-    setState = middleware(setState, getState);
+    setState = middleware(setState, getState, useStore);
   }
 
   const subscribe: Subscribe = (listener) => {
@@ -163,23 +165,67 @@ export const floatMiddleware = {
   /**
    * Add undo/redo capability
    */
-  undoable: <T>(maxHistory = 10) => {
-    const history: T[] = [];
+  undoable: <T extends object>(maxHistory = 10) => {
+    let history: T[] = [];
     let index = -1;
+    let isInternalUpdate = false;
 
-    return (set: SetState<T>, get: GetState<T>): SetState<T> => {
+    return (set: SetState<T>, get: GetState<T>, store: any): SetState<T> => {
+      // Initialize history with current state
+      history = [get()];
+      index = 0;
+
+      // Create control functions
+      const undo = () => {
+        if (index > 0) {
+          isInternalUpdate = true;
+          index--;
+          set(history[index]);
+          isInternalUpdate = false;
+        }
+      };
+
+      const redo = () => {
+        if (index < history.length - 1) {
+          isInternalUpdate = true;
+          index++;
+          set(history[index]);
+          isInternalUpdate = false;
+        }
+      };
+
+      const clearHistory = () => {
+        history = [get()];
+        index = 0;
+      };
+
+      const canUndo = () => index > 0;
+      const canRedo = () => index < history.length - 1;
+
+      // Expose to store
+      store.undo = undo;
+      store.redo = redo;
+      store.clearHistory = clearHistory;
+      store.canUndo = canUndo;
+      store.canRedo = canRedo;
+
       return (partial) => {
-        const current = get();
-        
-        // Add to history
-        history.splice(index + 1);
-        history.push(current);
+        if (isInternalUpdate) return set(partial);
+
+        // Wipe future history if we're moving forward
+        if (index < history.length - 1) {
+          history = history.slice(0, index + 1);
+        }
+
+        // Apply change and push to history
+        set(partial);
+        history.push(get());
+
         if (history.length > maxHistory) {
           history.shift();
+        } else {
+          index++;
         }
-        index = history.length - 1;
-
-        set(partial);
       };
     };
   },
