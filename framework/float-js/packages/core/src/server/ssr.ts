@@ -10,6 +10,7 @@ import type { Route } from '../router/index.js';
 import { transformFile } from '../build/transform.js';
 import { RouterProvider } from '../hooks/use-router.js';
 import { isClientComponent } from '../build/detect-client.js';
+import { getRegistry } from './registry.js';
 
 export interface RenderOptions {
   hmrScript?: string;
@@ -263,27 +264,15 @@ function generateHtmlDocument(options: HtmlDocumentOptions): string {
   // Generate meta tags
   const metaTags = generateMetaTags(metadata);
 
-  // Import map for resolving React modules in the browser
+  // Import map for resolving modules in the browser
+  // We include common framework dependencies and project dependencies
+  const registry = getRegistry();
+  const defaultImports = registry.getImportMap().imports;
+
   const importMap = hydrationData ? `
   <script type="importmap">
   {
-    "imports": {
-      "react": "https://esm.sh/react@18.3.1",
-      "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
-      "react/jsx-runtime": "https://esm.sh/react@18.3.1/jsx-runtime",
-      "@heroicons/react/24/outline": "https://esm.sh/@heroicons/react@2.1.1/24/outline",
-      "@headlessui/react": "https://esm.sh/@headlessui/react@1.7.18",
-      "clsx": "https://esm.sh/clsx@2.1.1",
-      "date-fns": "https://esm.sh/date-fns@3.3.1",
-      "date-fns/locale": "https://esm.sh/date-fns@3.3.1/locale",
-      "@tiptap/react": "https://esm.sh/@tiptap/react@2.2.4",
-      "@tiptap/starter-kit": "https://esm.sh/@tiptap/starter-kit@2.2.4",
-      "@tiptap/extension-link": "https://esm.sh/@tiptap/extension-link@2.2.4",
-      "@tiptap/extension-image": "https://esm.sh/@tiptap/extension-image@2.2.4",
-      "@float.js/core": "/__float/dist/client/index.js",
-      "jszip": "https://esm.sh/jszip@3.10.1",
-      "@tiptap/extension-youtube": "https://esm.sh/@tiptap/extension-youtube@2.2.4"
-    }
+    "imports": ${JSON.stringify(defaultImports, null, 2)}
   }
   </script>
   ` : '';

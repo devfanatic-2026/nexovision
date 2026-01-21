@@ -13,6 +13,7 @@ import mime from 'mime-types';
 import { scanRoutes, matchRoute, type Route } from '../router/index.js';
 import { renderPage } from './ssr.js';
 import { transformFile } from '../build/transform.js';
+import { getRegistry } from './registry.js';
 import { FLOAT_INDICATOR_SCRIPT } from '../client/float-indicator.js';
 import { FLOAT_ERROR_OVERLAY } from '../client/error-overlay.js';
 import { generateWelcomePage } from '../client/welcome-page.js';
@@ -41,6 +42,7 @@ export async function createDevServer(options: DevServerOptions): Promise<DevSer
   let server: http.Server | null = null;
   let wss: WebSocketServer | null = null;
   const clients = new Set<WebSocket>();
+  const registry = getRegistry(rootDir);
 
   // Scan routes on startup
   async function refreshRoutes() {
@@ -64,6 +66,9 @@ export async function createDevServer(options: DevServerOptions): Promise<DevSer
     } catch (error) {
       console.error(pc.red('Failed to scan routes:'), error);
     }
+
+    // Scan dependencies for dynamic import map
+    await registry.scan();
   }
 
   // Notify all clients to reload
@@ -147,16 +152,17 @@ ${FLOAT_ERROR_OVERLAY}
         pathname.startsWith('/components/') ||
         pathname.startsWith('/lib/') ||
         pathname.startsWith('/src/') ||
-        pathname.match(/^\/(?:[\w-\[\]]+\/)*page$/) // legacy match for root pages
+        pathname.match(/^\/(?:[\w-\[\]%]+\/)*page$/) // legacy match for root pages
       ) {
         let filePath = '';
 
         // Handle special case for page routes (e.g. /float-test/page)
-        if (pathname.match(/^\/(?:[\w-\[\]]+\/)*page$/)) {
-          filePath = path.join(rootDir, 'app', pathname + '.tsx');
+        if (pathname.match(/^\/(?:[\w-\[\]%]+\/)*page$/)) {
+          const decodedPath = decodeURIComponent(pathname);
+          filePath = path.join(rootDir, 'app', decodedPath + '.tsx');
         } else {
           // Standard resolution
-          filePath = resolveFilePath(rootDir, pathname);
+          filePath = resolveFilePath(rootDir, decodeURIComponent(pathname));
         }
 
         if (filePath && fs.existsSync(filePath)) {
@@ -480,6 +486,7 @@ if (!data) {
         path.join(rootDir, 'app/**/*.{ts,tsx,js,jsx}'),
         path.join(rootDir, 'components/**/*.{ts,tsx,js,jsx}'),
         path.join(rootDir, 'lib/**/*.{ts,tsx,js,jsx}'),
+        path.join(rootDir, 'package.json'),
       ],
       {
         ignored: /node_modules/,
@@ -493,6 +500,11 @@ if (!data) {
       // Check if it's a route file
       if (filePath.includes('/app/')) {
         await refreshRoutes();
+      }
+
+      if (filePath.endsWith('package.json')) {
+        console.log(pc.yellow(`\n  📦 Dependencies changed, re-scanning...`));
+        await registry.scan();
       }
 
       notifyClients('reload');
