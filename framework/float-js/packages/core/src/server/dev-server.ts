@@ -137,8 +137,8 @@ ${FLOAT_ERROR_OVERLAY}
 
     try {
       // Serve app modules as ES modules for client-side dynamic imports  
-      // Match patterns like /float-test/page
-      if (pathname.match(/^\/[\w-]+\/page$/)) {
+      // Match patterns like /page, /float-test/page, /articles/[slug]/edit/page
+      if (pathname.match(/^\/(?:[\w-\[\]]+\/)*page$/)) {
         const appFilePath = path.join(rootDir, 'app', pathname + '.tsx');
         if (fs.existsSync(appFilePath)) {
           try {

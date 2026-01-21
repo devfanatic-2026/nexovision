@@ -1,6 +1,3 @@
-'use client';
-
-import { useState, useEffect } from 'react';
 import {
   PencilIcon,
   CalendarIcon,
@@ -8,42 +5,19 @@ import {
   FolderIcon
 } from '@heroicons/react/24/outline';
 import { Button } from '../components/ui/Button';
+import { initializeDb } from '../src/lib/database';
+import { ArticleRepository } from '../src/lib/repositories/article.repository';
 
-interface Article {
-  id: string;
-  slug: string;
-  title: string;
-  description: string;
-  cover: string;
-  category_title?: string;
-  author_names?: string;
-  published_time: string;
-  is_draft: number;
-  is_main_headline: number;
-  is_sub_headline: number;
-}
+// Server Component (no 'use client')
+export default async function DashboardPage() {
+  // Initialize DB and Repository
+  const db = await initializeDb();
+  const articleRepo = new ArticleRepository(db);
 
-export default function DashboardPage() {
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<'all' | 'published' | 'draft'>('all');
+  // Fetch data directly
+  const articles = await articleRepo.findAllWithRelations();
 
-  useEffect(() => {
-    fetch('/api/articles')
-      .then(res => res.json())
-      .then(data => {
-        setArticles(data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
-
-  const filteredArticles = articles.filter(article => {
-    if (filter === 'published') return article.is_draft === 0;
-    if (filter === 'draft') return article.is_draft === 1;
-    return true;
-  });
-
+  // Calculate stats
   const stats = {
     total: articles.length,
     published: articles.filter(a => a.is_draft === 0).length,
@@ -51,19 +25,11 @@ export default function DashboardPage() {
     mainHeadlines: articles.filter(a => a.is_main_headline === 1).length,
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
-      </div>
-    );
-  }
-
   return (
     <div className="p-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
-        <p className="text-gray-600">Gestiona tus artículos, autores y categorías</p>
+        <p className="text-gray-600">Gestiona tus artículos, autores y categorías (SSR)</p>
       </div>
 
       {/* Stats Cards */}
@@ -125,34 +91,19 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="flex gap-2 mb-6">
-        <Button
-          variant={filter === 'all' ? 'primary' : 'ghost'}
-          size="sm"
-          onClick={() => setFilter('all')}
-        >
-          Todos ({stats.total})
-        </Button>
-        <Button
-          variant={filter === 'published' ? 'primary' : 'ghost'}
-          size="sm"
-          onClick={() => setFilter('published')}
-        >
-          Publicados ({stats.published})
-        </Button>
-        <Button
-          variant={filter === 'draft' ? 'primary' : 'ghost'}
-          size="sm"
-          onClick={() => setFilter('draft')}
-        >
-          Borradores ({stats.drafts})
-        </Button>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-semibold text-gray-800">Últimos Artículos</h2>
+        <a href="/articles/new/edit">
+          <Button variant="primary">
+            <PencilIcon className="h-4 w-4 mr-2" />
+            Nuevo Artículo
+          </Button>
+        </a>
       </div>
 
       {/* Articles List */}
       <div className="space-y-4">
-        {filteredArticles.map((article) => (
+        {articles.slice(0, 10).map((article) => (
           <div
             key={article.id}
             className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md hover:border-primary-200 transition-all duration-200"
@@ -224,7 +175,7 @@ export default function DashboardPage() {
           </div>
         ))}
 
-        {filteredArticles.length === 0 && (
+        {articles.length === 0 && (
           <div className="text-center py-12">
             <p className="text-gray-500 text-lg">No hay artículos para mostrar</p>
             <a href="/articles/new/edit" className="mt-4 inline-block">
