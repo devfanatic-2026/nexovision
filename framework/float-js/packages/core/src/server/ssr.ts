@@ -280,7 +280,9 @@ function generateHtmlDocument(options: HtmlDocumentOptions): string {
       "@tiptap/starter-kit": "https://esm.sh/@tiptap/starter-kit@2.2.4",
       "@tiptap/extension-link": "https://esm.sh/@tiptap/extension-link@2.2.4",
       "@tiptap/extension-image": "https://esm.sh/@tiptap/extension-image@2.2.4",
-      "@float.js/core": "/__float/dist/client/index.js"
+      "@float.js/core": "/__float/dist/client/index.js",
+      "jszip": "https://esm.sh/jszip@3.10.1",
+      "@tiptap/extension-youtube": "https://esm.sh/@tiptap/extension-youtube@2.2.4"
     }
   }
   </script>

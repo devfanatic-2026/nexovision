@@ -73,12 +73,16 @@ export function useFloatRouter(): FloatRouter {
   const push = useCallback((url: string, options?: NavigateOptions) => {
     if (typeof window === 'undefined') return;
 
-    window.history.pushState({}, '', url);
-    window.dispatchEvent(new PopStateEvent('popstate'));
+    // TODO: Implement true SPA routing with client-side fetching
+    // For now, force a hard reload to ensure components load correctly
+    window.location.assign(url);
 
-    if (options?.scroll !== false) {
-      window.scrollTo(0, 0);
-    }
+    // window.history.pushState({}, '', url);
+    // window.dispatchEvent(new PopStateEvent('popstate'));
+
+    // if (options?.scroll !== false) {
+    //   window.scrollTo(0, 0);
+    // }
   }, []);
 
   const replace = useCallback((url: string, options?: NavigateOptions) => {
