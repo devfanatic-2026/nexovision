@@ -1,19 +1,62 @@
-import {
-    PencilIcon,
-    CalendarIcon,
-    UserIcon,
-    FolderIcon,
-    PlusIcon
-} from '@heroicons/react/24/outline';
-import { Button } from '../../components/ui/Button';
-import { initializeDb } from '../../src/lib/database';
-import { ArticleRepository } from '../../src/lib/repositories/article.repository';
+'use client';
 
-// Server Component
-export default async function ArticlesPage() {
-    const db = await initializeDb();
-    const articleRepo = new ArticleRepository(db);
-    const articles = await articleRepo.findAllWithRelations();
+import { Button } from '../../components/ui/Button';
+
+// Inline SVGs for stability
+function PencilIcon(props: React.SVGProps<SVGSVGElement>) {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+        </svg>
+    );
+}
+
+function CalendarIcon(props: React.SVGProps<SVGSVGElement>) {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0h18M5.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+        </svg>
+    );
+}
+
+function UserIcon(props: React.SVGProps<SVGSVGElement>) {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+        </svg>
+    );
+}
+
+function FolderIcon(props: React.SVGProps<SVGSVGElement>) {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+        </svg>
+    );
+}
+
+function PlusIcon(props: React.SVGProps<SVGSVGElement>) {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>
+    );
+}
+
+import { useFloatData } from '@float.js/core';
+
+// ... icons ...
+
+export default function ArticlesPage() {
+    const { data: articles, isLoading: loading } = useFloatData<any[]>('/api/articles');
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="p-8">
@@ -44,7 +87,7 @@ export default async function ArticlesPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
-                            {articles.map((article) => (
+                            {(articles || []).map((article) => (
                                 <tr key={article.id} className="hover:bg-gray-50 transition-colors">
                                     <td className="px-6 py-4 font-medium text-gray-900">
                                         <div className="flex items-center gap-3">
@@ -109,7 +152,7 @@ export default async function ArticlesPage() {
                                 </tr>
                             ))}
 
-                            {articles.length === 0 && (
+                            {(articles || []).length === 0 && (
                                 <tr>
                                     <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
                                         <div className="flex flex-col items-center justify-center gap-2">

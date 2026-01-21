@@ -6,7 +6,22 @@ import { Textarea } from './ui/Textarea';
 import { Button } from './ui/Button';
 import { Toggle } from './ui/Toggle';
 import { RichTextEditor } from './RichTextEditor';
-import { ArrowLeftIcon, CheckIcon } from '@heroicons/react/24/outline';
+
+function ArrowLeftIcon(props: React.SVGProps<SVGSVGElement>) {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+        </svg>
+    );
+}
+
+function CheckIcon(props: React.SVGProps<SVGSVGElement>) {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+        </svg>
+    );
+}
 
 interface Article {
     id: string;
@@ -168,13 +183,140 @@ export function ArticleEditor({ initialArticle, categories, isNew }: ArticleEdit
                                     rows={3}
                                 />
 
-                                <Input
-                                    label="Imagen de portada"
-                                    value={article.cover || ''}
-                                    onChange={(e) => setArticle({ ...article, cover: e.target.value })}
-                                    placeholder="https://..."
-                                    type="url"
-                                />
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Imagen de portada
+                                    </label>
+
+                                    <div className="space-y-3">
+                                        {/* Preview */}
+                                        {article.cover && (
+                                            <div className="relative w-full h-40 rounded-lg overflow-hidden border border-gray-200 group">
+                                                <img
+                                                    src={article.cover}
+                                                    alt="Cover preview"
+                                                    className="w-full h-full object-cover"
+                                                />
+                                                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center">
+                                                    <button
+                                                        onClick={() => setArticle({ ...article, cover: '' })}
+                                                        className="text-white opacity-0 group-hover:opacity-100 font-medium bg-black/50 px-3 py-1 rounded"
+                                                    >
+                                                        Eliminar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Upload / Input */}
+                                        <div
+                                            className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:bg-gray-50 transition-colors cursor-pointer"
+                                            onDragOver={(e) => e.preventDefault()}
+                                            onDrop={async (e) => {
+                                                e.preventDefault();
+                                                const file = e.dataTransfer.files[0];
+                                                if (file && file.type.startsWith('image/')) {
+                                                    const reader = new FileReader();
+                                                    reader.onload = async () => {
+                                                        const base64 = reader.result as string;
+                                                        setSaving(true);
+                                                        try {
+                                                            const res = await fetch('/api/upload', {
+                                                                method: 'POST',
+                                                                headers: { 'Content-Type': 'application/json' },
+                                                                body: JSON.stringify({ image: base64, filename: file.name })
+                                                            });
+                                                            const data = await res.json();
+                                                            if (data.url) {
+                                                                setArticle(prev => ({ ...prev, cover: data.url }));
+                                                            }
+                                                        } catch (err) {
+                                                            alert('Error uploading image');
+                                                        } finally {
+                                                            setSaving(false);
+                                                        }
+                                                    };
+                                                    reader.readAsDataURL(file);
+                                                }
+                                            }}
+                                            onClick={() => {
+                                                const input = document.createElement('input');
+                                                input.type = 'file';
+                                                input.accept = 'image/*';
+                                                input.onchange = async (e: any) => {
+                                                    const file = e.target.files[0];
+                                                    if (file) {
+                                                        const reader = new FileReader();
+                                                        reader.onload = async () => {
+                                                            const base64 = reader.result as string;
+                                                            setSaving(true);
+                                                            try {
+                                                                const res = await fetch('/api/upload', {
+                                                                    method: 'POST',
+                                                                    headers: { 'Content-Type': 'application/json' },
+                                                                    body: JSON.stringify({ image: base64, filename: file.name })
+                                                                });
+                                                                const data = await res.json();
+                                                                if (data.url) {
+                                                                    setArticle(prev => ({ ...prev, cover: data.url }));
+                                                                }
+                                                            } catch (err) {
+                                                                alert('Error uploading image');
+                                                            } finally {
+                                                                setSaving(false);
+                                                            }
+                                                        };
+                                                        reader.readAsDataURL(file);
+                                                    }
+                                                };
+                                                input.click();
+                                            }}
+                                        >
+                                            <div className="text-sm text-gray-500">
+                                                <p className="font-medium text-primary-600 mb-1">Arrastra una imagen aquí</p>
+                                                <p>o haz clic para subir</p>
+                                            </div>
+                                        </div>
+
+                                        <Input
+                                            value={article.cover || ''}
+                                            onChange={(e) => setArticle({ ...article, cover: e.target.value })}
+                                            placeholder="https://..."
+                                            type="url"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="pt-2 border-t border-gray-200">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            const mdx = `---
+title: ${article.title}
+slug: ${article.slug}
+date: ${article.published_time}
+description: "${article.description || ''}"
+cover: ${article.cover || ''}
+---
+
+${article.content || ''}`;
+                                            const blob = new Blob([mdx], { type: 'text/markdown' });
+                                            const url = URL.createObjectURL(blob);
+                                            const a = document.createElement('a');
+                                            a.href = url;
+                                            a.download = `${article.slug || 'article'}.mdx`;
+                                            document.body.appendChild(a);
+                                            a.click();
+                                            document.body.removeChild(a);
+                                        }}
+                                        className="w-full py-2 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center justify-center gap-2 transition-colors"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M7.5 12L12 16.5m0 0L16.5 12M12 16.5V3" />
+                                        </svg>
+                                        Descargar MDX
+                                    </button>
+                                </div>
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">

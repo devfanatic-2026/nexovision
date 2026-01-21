@@ -1,35 +1,77 @@
-import {
-  PencilIcon,
-  CalendarIcon,
-  UserIcon,
-  FolderIcon
-} from '@heroicons/react/24/outline';
+'use client';
+
+import { useState, useEffect } from 'react';
 import { Button } from '../components/ui/Button';
-import { initializeDb } from '../src/lib/database';
-import { ArticleRepository } from '../src/lib/repositories/article.repository';
 
-// Server Component (no 'use client')
-export default async function DashboardPage() {
-  // Initialize DB and Repository
-  const db = await initializeDb();
-  const articleRepo = new ArticleRepository(db);
+// Inline SVGs for stability
+function PencilIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+    </svg>
+  );
+}
 
-  // Fetch data directly
-  const articles = await articleRepo.findAllWithRelations();
+function CalendarIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0h18M5.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+    </svg>
+  );
+}
 
-  // Calculate stats
+function UserIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+    </svg>
+  );
+}
+
+function FolderIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+    </svg>
+  );
+}
+
+export default function DashboardPage() {
+  const [articles, setArticles] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/articles')
+      .then(res => res.json())
+      .then(data => {
+        setArticles(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
+  // Calculate stats safely
+  const safeArticles = articles || [];
   const stats = {
-    total: articles.length,
-    published: articles.filter(a => a.is_draft === 0).length,
-    drafts: articles.filter(a => a.is_draft === 1).length,
-    mainHeadlines: articles.filter(a => a.is_main_headline === 1).length,
+    total: safeArticles.length,
+    published: safeArticles.filter(a => a.is_draft === 0).length,
+    drafts: safeArticles.filter(a => a.is_draft === 1).length,
+    mainHeadlines: safeArticles.filter(a => a.is_main_headline === 1).length,
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
-        <p className="text-gray-600">Gestiona tus artículos, autores y categorías (SSR)</p>
+        <p className="text-gray-600">Gestiona tus artículos, autores y categorías (Cliente)</p>
       </div>
 
       {/* Stats Cards */}
@@ -103,7 +145,7 @@ export default async function DashboardPage() {
 
       {/* Articles List */}
       <div className="space-y-4">
-        {articles.slice(0, 10).map((article) => (
+        {safeArticles.slice(0, 10).map((article) => (
           <div
             key={article.id}
             className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md hover:border-primary-200 transition-all duration-200"
@@ -175,7 +217,7 @@ export default async function DashboardPage() {
           </div>
         ))}
 
-        {articles.length === 0 && (
+        {safeArticles.length === 0 && (
           <div className="text-center py-12">
             <p className="text-gray-500 text-lg">No hay artículos para mostrar</p>
             <a href="/articles/new/edit" className="mt-4 inline-block">

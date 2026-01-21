@@ -154,7 +154,29 @@
 
 /* TipTap Editor Styles */
 .ProseMirror {
-  @apply min-h-[400px] p-4 focus:outline-none;
+  @apply min-h-[400px] p-4 focus:outline-none text-black bg-white;
+  color: #000000 !important;
+  background-color: #ffffff !important;
+}
+
+.ProseMirror p,
+.ProseMirror h1,
+.ProseMirror h2,
+.ProseMirror h3,
+.ProseMirror ul,
+.ProseMirror ol,
+.ProseMirror li {
+  color: #000000 !important;
+}
+
+select {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+select option {
+  background-color: #ffffff !important;
+  color: #000000 !important;
 }
 
 .ProseMirror>* {

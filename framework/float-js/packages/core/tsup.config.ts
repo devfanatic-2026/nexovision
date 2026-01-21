@@ -6,6 +6,7 @@ export default defineConfig([
     entry: {
       'index': 'src/index.ts',
       'server/index': 'src/server/index.ts',
+      'client/index': 'src/client-entry.ts',
       'router/index': 'src/router/index.ts',
       'ai/index': 'src/ai/index.ts',
       'api/index': 'src/api/index.ts',

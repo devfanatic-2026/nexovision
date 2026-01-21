@@ -31,10 +31,10 @@ export class PersistentCache {
   constructor(rootDir: string = process.cwd()) {
     this.cacheDir = path.join(rootDir, '.float', 'cache');
     this.manifestPath = path.join(this.cacheDir, 'manifest.json');
-    
+
     // Ensure cache directory exists
     fs.mkdirSync(this.cacheDir, { recursive: true });
-    
+
     // Load or create manifest
     this.manifest = this.loadManifest();
   }
@@ -48,7 +48,7 @@ export class PersistentCache {
         // Invalid manifest, start fresh
       }
     }
-    
+
     return {
       version: '1.0',
       entries: {},
@@ -56,6 +56,11 @@ export class PersistentCache {
   }
 
   private saveManifest() {
+    // Ensure directory exists (in case it was deleted while running)
+    if (!fs.existsSync(this.cacheDir)) {
+      fs.mkdirSync(this.cacheDir, { recursive: true });
+    }
+
     fs.writeFileSync(
       this.manifestPath,
       JSON.stringify(this.manifest, null, 2)
@@ -129,7 +134,7 @@ export class PersistentCache {
 
     const cachePath = this.getKeyPath(key);
     const data = JSON.stringify(entry);
-    
+
     fs.writeFileSync(cachePath, data);
 
     // Update manifest
@@ -146,7 +151,7 @@ export class PersistentCache {
    */
   delete(key: string): boolean {
     const cachePath = this.getKeyPath(key);
-    
+
     if (fs.existsSync(cachePath)) {
       fs.unlinkSync(cachePath);
     }

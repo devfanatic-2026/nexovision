@@ -1,7 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { UserIcon } from '@heroicons/react/24/outline';
+import { useState } from 'react';
+import { useFloatData } from '@float.js/core';
+// Heroicons removed for stability
+function UserIcon(props: React.SVGProps<SVGSVGElement>) {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+        </svg>
+    );
+}
 
 interface Author {
     id: string;
@@ -13,18 +21,7 @@ interface Author {
 }
 
 export default function AuthorsPage() {
-    const [authors, setAuthors] = useState<Author[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        fetch('/api/authors')
-            .then(res => res.json())
-            .then(data => {
-                setAuthors(data);
-                setLoading(false);
-            })
-            .catch(() => setLoading(false));
-    }, []);
+    const { data: authors, isLoading: loading } = useFloatData<Author[]>('/api/authors');
 
     if (loading) {
         return (
@@ -42,7 +39,7 @@ export default function AuthorsPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {authors.map((author) => (
+                {(authors || []).map((author) => (
                     <div
                         key={author.id}
                         className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md hover:border-primary-200 transition-all duration-200"
@@ -74,7 +71,7 @@ export default function AuthorsPage() {
                 ))}
             </div>
 
-            {authors.length === 0 && (
+            {(authors || []).length === 0 && (
                 <div className="text-center py-12">
                     <p className="text-gray-500 text-lg">No hay autores registrados</p>
                 </div>

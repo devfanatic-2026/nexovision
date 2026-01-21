@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { FolderIcon } from '@heroicons/react/24/outline';
+import { useState } from 'react';
+import { useFloatData } from '@float.js/core';
 
 interface Category {
     id: string;
@@ -10,19 +10,17 @@ interface Category {
     inspire?: string;
 }
 
-export default function CategoriesPage() {
-    const [categories, setCategories] = useState<Category[]>([]);
-    const [loading, setLoading] = useState(true);
+// Heroicons removed for stability
+function FolderIcon(props: React.SVGProps<SVGSVGElement>) {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+        </svg>
+    );
+}
 
-    useEffect(() => {
-        fetch('/api/categories')
-            .then(res => res.json())
-            .then(data => {
-                setCategories(data);
-                setLoading(false);
-            })
-            .catch(() => setLoading(false));
-    }, []);
+export default function CategoriesPage() {
+    const { data: categories, isLoading: loading } = useFloatData<Category[]>('/api/categories');
 
     if (loading) {
         return (
@@ -40,7 +38,7 @@ export default function CategoriesPage() {
             </div>
 
             <div className="space-y-4 max-w-3xl">
-                {categories.map((category) => (
+                {(categories || []).map((category) => (
                     <div
                         key={category.id}
                         className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md hover:border-primary-200 transition-all duration-200"
@@ -62,7 +60,7 @@ export default function CategoriesPage() {
                 ))}
             </div>
 
-            {categories.length === 0 && (
+            {(categories || []).length === 0 && (
                 <div className="text-center py-12">
                     <p className="text-gray-500 text-lg">No hay categorías registradas</p>
                 </div>

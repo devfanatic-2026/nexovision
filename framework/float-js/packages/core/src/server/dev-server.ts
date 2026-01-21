@@ -17,7 +17,7 @@ import { FLOAT_INDICATOR_SCRIPT } from '../client/float-indicator.js';
 import { FLOAT_ERROR_OVERLAY } from '../client/error-overlay.js';
 import { generateWelcomePage } from '../client/welcome-page.js';
 import { generateDocsPage, generateLearnPage, generateExamplesPage } from '../client/docs-pages.js';
-import { processCSS, needsCSSProcessing } from '../build/css-processor.js';
+
 import { setupTailwind, checkTailwindSetup, getTailwindInstallCommand } from '../build/tailwind-setup.js';
 
 export interface DevServerOptions {
@@ -136,14 +136,33 @@ ${FLOAT_ERROR_OVERLAY}
     console.log(pc.dim(`  ${req.method} ${pathname}`));
 
     try {
-      // Serve app modules as ES modules for client-side dynamic imports  
-      // Match patterns like /page, /float-test/page, /articles/[slug]/edit/page
-      if (pathname.match(/^\/(?:[\w-\[\]]+\/)*page$/)) {
-        const appFilePath = path.join(rootDir, 'app', pathname + '.tsx');
-        if (fs.existsSync(appFilePath)) {
+      // Serve app modules and source files as ES modules
+      // This handles:
+      // - /app/... (pages, layouts)
+      // - /components/... (shared components)
+      // - /lib/... (utilities)
+      // - /src/... (framework internals)
+      if (
+        pathname.startsWith('/app/') ||
+        pathname.startsWith('/components/') ||
+        pathname.startsWith('/lib/') ||
+        pathname.startsWith('/src/') ||
+        pathname.match(/^\/(?:[\w-\[\]]+\/)*page$/) // legacy match for root pages
+      ) {
+        let filePath = '';
+
+        // Handle special case for page routes (e.g. /float-test/page)
+        if (pathname.match(/^\/(?:[\w-\[\]]+\/)*page$/)) {
+          filePath = path.join(rootDir, 'app', pathname + '.tsx');
+        } else {
+          // Standard resolution
+          filePath = resolveFilePath(rootDir, pathname);
+        }
+
+        if (filePath && fs.existsSync(filePath)) {
           try {
             console.log(pc.cyan(`  📦 Module: ${pathname}`));
-            const fileContent = fs.readFileSync(appFilePath, 'utf-8');
+            const fileContent = fs.readFileSync(filePath, 'utf-8');
 
             // Transform TSX to JavaScript using esbuild
             const esbuild = await import('esbuild');
@@ -162,6 +181,9 @@ ${FLOAT_ERROR_OVERLAY}
             return;
           } catch (error) {
             console.error(pc.red('Module transform error:'), error);
+            res.writeHead(500);
+            res.end('Transform error');
+            return;
           }
         }
       }
@@ -176,36 +198,17 @@ ${FLOAT_ERROR_OVERLAY}
         return;
       }
 
-      // Serve CSS files (with processing for Tailwind)
+      // Serve CSS files
       if (pathname.endsWith('.css')) {
         const cssPath = path.join(rootDir, 'app', pathname.replace(/^\//, ''));
         if (fs.existsSync(cssPath)) {
-          try {
-            const needsProcessing = needsCSSProcessing(cssPath, rootDir);
-            if (needsProcessing) {
-              const result = await processCSS(cssPath, rootDir);
-              res.writeHead(200, {
-                'Content-Type': 'text/css',
-                'Cache-Control': 'no-cache',
-              });
-              res.end(result.code);
-            } else {
-              const content = fs.readFileSync(cssPath, 'utf-8');
-              res.writeHead(200, {
-                'Content-Type': 'text/css',
-                'Cache-Control': 'no-cache',
-              });
-              res.end(content);
-            }
-            return;
-          } catch (error) {
-            console.error(pc.red('CSS processing error:'), error);
-            // Fallback to raw CSS
-            const content = fs.readFileSync(cssPath, 'utf-8');
-            res.writeHead(200, { 'Content-Type': 'text/css' });
-            res.end(content);
-            return;
-          }
+          const content = fs.readFileSync(cssPath, 'utf-8');
+          res.writeHead(200, {
+            'Content-Type': 'text/css',
+            'Cache-Control': 'no-cache',
+          });
+          res.end(content);
+          return;
         }
       }
 
@@ -297,6 +300,24 @@ if (!data) {
   }
 }
             `);
+            return;
+          }
+        }
+
+        // Serve framework dist files
+        if (pathname.startsWith('/__float/dist/')) {
+          const distPath = path.join(
+            path.dirname(new URL(import.meta.url).pathname),
+            '../' + pathname.replace('/__float/dist/', '')
+          );
+
+          if (fs.existsSync(distPath) && fs.statSync(distPath).isFile()) {
+            const content = fs.readFileSync(distPath, 'utf-8');
+            res.writeHead(200, {
+              'Content-Type': 'application/javascript',
+              'Cache-Control': 'no-cache'
+            });
+            res.end(content);
             return;
           }
         }
@@ -539,6 +560,32 @@ if (!data) {
 }
 
 // Helper functions
+function resolveFilePath(rootDir: string, pathname: string): string {
+  // If it has an extension, try it directly
+  if (path.extname(pathname)) {
+    return path.join(rootDir, pathname.replace(/^\//, ''));
+  }
+
+  // Try extensions
+  const extensions = ['.tsx', '.ts', '.jsx', '.js'];
+  for (const ext of extensions) {
+    const tryPath = path.join(rootDir, pathname.replace(/^\//, '') + ext);
+    if (fs.existsSync(tryPath)) {
+      return tryPath;
+    }
+  }
+
+  // Try index files
+  for (const ext of extensions) {
+    const tryPath = path.join(rootDir, pathname.replace(/^\//, ''), 'index' + ext);
+    if (fs.existsSync(tryPath)) {
+      return tryPath;
+    }
+  }
+
+  return '';
+}
+
 function getRequestBody(req: http.IncomingMessage): Promise<string> {
   return new Promise((resolve, reject) => {
     let body = '';
