@@ -5,7 +5,7 @@ const openApiSpec = {
     info: {
         title: 'Nexovisión CMS API',
         version: '1.0.0',
-        description: 'API for managing Nexovisión content (Articles, Authors, Categories)',
+        description: 'Database-driven CMS API for managing Nexovisión content (Articles, Authors, Categories)',
     },
     paths: {
         '/api/articles': {
@@ -50,14 +50,6 @@ const openApiSpec = {
         '/api/categories': {
             get: {
                 summary: 'List all categories',
-                responses: {
-                    200: { description: 'Success' }
-                }
-            }
-        },
-        '/api/sync': {
-            post: {
-                summary: 'Trigger manual database synchronization',
                 responses: {
                     200: { description: 'Success' }
                 }

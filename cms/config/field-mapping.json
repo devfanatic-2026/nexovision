@@ -1,0 +1,227 @@
+{
+    "version": "1.0",
+    "entities": {
+        "categories": {
+            "table": "categories",
+            "fields": {
+                "id": {
+                    "type": "TEXT",
+                    "required": true,
+                    "primary": true,
+                    "source": "id"
+                },
+                "slug": {
+                    "type": "TEXT",
+                    "required": true,
+                    "unique": true,
+                    "source": "slug"
+                },
+                "title": {
+                    "type": "TEXT",
+                    "required": true,
+                    "source": "frontmatter.title"
+                },
+                "inspire": {
+                    "type": "TEXT",
+                    "source": "frontmatter.inspire"
+                }
+            }
+        },
+        "authors": {
+            "table": "authors",
+            "fields": {
+                "id": {
+                    "type": "TEXT",
+                    "required": true,
+                    "primary": true,
+                    "source": "id"
+                },
+                "slug": {
+                    "type": "TEXT",
+                    "required": true,
+                    "unique": true,
+                    "source": "slug"
+                },
+                "name": {
+                    "type": "TEXT",
+                    "required": true,
+                    "source": "frontmatter.name"
+                },
+                "job": {
+                    "type": "TEXT",
+                    "source": "frontmatter.job"
+                },
+                "avatar": {
+                    "type": "TEXT",
+                    "source": "frontmatter.avatar"
+                },
+                "bio": {
+                    "type": "TEXT",
+                    "source": "frontmatter.bio"
+                }
+            },
+            "relations": {
+                "socials": {
+                    "type": "ONE_TO_MANY",
+                    "entity": "author_socials",
+                    "foreignKey": "author_id",
+                    "source": "frontmatter.socials"
+                }
+            }
+        },
+        "author_socials": {
+            "table": "author_socials",
+            "fields": {
+                "id": {
+                    "type": "TEXT",
+                    "required": true,
+                    "primary": true,
+                    "source": "id"
+                },
+                "author_id": {
+                    "type": "TEXT",
+                    "required": true,
+                    "source": "author_id"
+                },
+                "name": {
+                    "type": "TEXT",
+                    "required": true,
+                    "source": "name"
+                },
+                "url": {
+                    "type": "TEXT",
+                    "required": true,
+                    "source": "url"
+                },
+                "icon": {
+                    "type": "TEXT",
+                    "source": "icon"
+                }
+            },
+            "relations": {
+                "author": {
+                    "type": "BELONGS_TO",
+                    "entity": "authors",
+                    "foreignKey": "author_id",
+                    "onDelete": "CASCADE"
+                }
+            }
+        },
+        "articles": {
+            "table": "articles",
+            "fields": {
+                "id": {
+                    "type": "TEXT",
+                    "required": true,
+                    "primary": true,
+                    "source": "id"
+                },
+                "slug": {
+                    "type": "TEXT",
+                    "required": true,
+                    "unique": true,
+                    "source": "slug"
+                },
+                "title": {
+                    "type": "TEXT",
+                    "required": true,
+                    "source": "frontmatter.title"
+                },
+                "description": {
+                    "type": "TEXT",
+                    "source": "frontmatter.description"
+                },
+                "cover": {
+                    "type": "TEXT",
+                    "source": "frontmatter.cover"
+                },
+                "category_id": {
+                    "type": "TEXT",
+                    "source": "frontmatter.category"
+                },
+                "published_time": {
+                    "type": "TEXT",
+                    "source": "frontmatter.publishedTime"
+                },
+                "is_draft": {
+                    "type": "BOOLEAN",
+                    "default": 0,
+                    "source": "frontmatter.draft"
+                },
+                "is_main_headline": {
+                    "type": "BOOLEAN",
+                    "default": 0,
+                    "source": "frontmatter.isMainHeadline"
+                },
+                "is_sub_headline": {
+                    "type": "BOOLEAN",
+                    "default": 0,
+                    "source": "frontmatter.isSubHeadline"
+                },
+                "is_category_main_headline": {
+                    "type": "BOOLEAN",
+                    "default": 0,
+                    "source": "frontmatter.isCategoryMainHeadline"
+                },
+                "is_category_sub_headline": {
+                    "type": "BOOLEAN",
+                    "default": 0,
+                    "source": "frontmatter.isCategorySubHeadline"
+                },
+                "content": {
+                    "type": "TEXT",
+                    "source": "content"
+                }
+            },
+            "relations": {
+                "category": {
+                    "type": "BELONGS_TO",
+                    "entity": "categories",
+                    "foreignKey": "category_id",
+                    "onDelete": "SET NULL"
+                },
+                "authors": {
+                    "type": "MANY_TO_MANY",
+                    "entity": "authors",
+                    "through": "article_authors",
+                    "foreignKey": "article_id",
+                    "otherKey": "author_id",
+                    "source": "frontmatter.authors"
+                }
+            }
+        },
+        "article_authors": {
+            "table": "article_authors",
+            "fields": {
+                "article_id": {
+                    "type": "TEXT",
+                    "required": true,
+                    "source": "article_id"
+                },
+                "author_id": {
+                    "type": "TEXT",
+                    "required": true,
+                    "source": "author_id"
+                }
+            },
+            "primaryKey": [
+                "article_id",
+                "author_id"
+            ],
+            "relations": {
+                "article": {
+                    "type": "BELONGS_TO",
+                    "entity": "articles",
+                    "foreignKey": "article_id",
+                    "onDelete": "CASCADE"
+                },
+                "author": {
+                    "type": "BELONGS_TO",
+                    "entity": "authors",
+                    "foreignKey": "author_id",
+                    "onDelete": "CASCADE"
+                }
+            }
+        }
+    }
+}
