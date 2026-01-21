@@ -7,6 +7,7 @@ import { Button } from './ui/Button';
 import { Toggle } from './ui/Toggle';
 import { RichTextEditor } from './RichTextEditor';
 import { Link } from './ui/Link';
+import { useEditorStore } from '../lib/editor-store';
 
 
 function ArrowLeftIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -55,26 +56,29 @@ interface ArticleEditorProps {
 }
 
 export function ArticleEditor({ initialArticle, categories, isNew }: ArticleEditorProps) {
-    const [article, setArticle] = React.useState<Partial<Article>>(initialArticle || {
-        slug: '',
-        title: '',
-        description: '',
-        cover: '',
-        category_id: null,
-        published_time: new Date().toISOString().split('T')[0],
-        is_draft: 1,
-        is_main_headline: 0,
-        is_sub_headline: 0,
-        is_category_main_headline: 0,
-        is_category_sub_headline: 0,
-        content: '',
-        tags: []
-    });
+    const article = useEditorStore();
+    const setArticle = (updates: Partial<Article> | ((prev: Partial<Article>) => Partial<Article>)) => {
+        if (typeof updates === 'function') {
+            const current = useEditorStore.getState();
+            useEditorStore.setState(updates(current as any) as any);
+        } else {
+            useEditorStore.setState(updates as any);
+        }
+    };
 
     // If initialArticle is provided, we merge it with defaults to ensure controlled inputs
+    const initialized = React.useRef(false);
     React.useEffect(() => {
-        if (initialArticle) {
-            setArticle(prev => ({ ...prev, ...initialArticle }));
+        if (initialArticle && !initialized.current) {
+            useEditorStore.setState({
+                ...initialArticle,
+                tags: initialArticle.tags || [],
+                cover: initialArticle.cover || '',
+                published_time: initialArticle.published_time ?
+                    (isNaN(Number(initialArticle.published_time)) ? initialArticle.published_time : new Date(Number(initialArticle.published_time)).toISOString())
+                    : new Date().toISOString()
+            } as any);
+            initialized.current = true;
         }
     }, [initialArticle]);
 
@@ -89,11 +93,15 @@ export function ArticleEditor({ initialArticle, categories, isNew }: ArticleEdit
         setSaving(true);
 
         try {
+            // Fix date format for API if needed
+            const published_time = article.published_time?.split('T')[0];
+
             const response = await fetch('/api/articles', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     ...article,
+                    published_time,
                     slug: article.slug || article.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, ''),
                 }),
             });
@@ -237,6 +245,15 @@ ${content}`;
                                 <RichTextEditor
                                     content={article.content || ''}
                                     onChange={(content) => setArticle({ ...article, content })}
+                                    onTitleChange={(title) => setArticle(prev => ({ ...prev, title }))}
+                                    onDescriptionChange={(description) => setArticle(prev => ({ ...prev, description }))}
+                                    onDateChange={(date) => setArticle(prev => ({ ...prev, published_time: date }))}
+                                    category={categories.find(c => c.id === article.category_id)?.title}
+                                    tags={article.tags}
+                                    cover={article.cover}
+                                    onCoverChange={(cover) => setArticle(prev => ({ ...prev, cover }))}
+                                    isMainHeadline={article.is_main_headline === 1}
+                                    isCategoryMainHeadline={article.is_category_main_headline === 1}
                                 />
                             </div>
                         </div>
@@ -330,140 +347,134 @@ ${content}`;
                                             </div>
                                         </div>
 
-                                        <Input
-                                            value={article.cover || ''}
-                                            onChange={(e) => setArticle({ ...article, cover: e.target.value })}
-                                            placeholder="https://..."
-                                            type="url"
-                                        />
                                     </div>
                                 </div>
+                            </div>
 
-                                <div className="pt-2 border-t border-gray-200">
-                                    <button
-                                        type="button"
-                                        onClick={handleDownloadMdx}
-                                        className="w-full py-2 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center justify-center gap-2 transition-colors"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M7.5 12L12 16.5m0 0L16.5 12M12 16.5V3" />
-                                        </svg>
-                                        Descargar ZIP (MDX + Imágenes)
-                                    </button>
+                            <div className="pt-2 border-t border-gray-200">
+                                <button
+                                    type="button"
+                                    onClick={handleDownloadMdx}
+                                    className="w-full py-2 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center justify-center gap-2 transition-colors"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M7.5 12L12 16.5m0 0L16.5 12M12 16.5V3" />
+                                    </svg>
+                                    Descargar ZIP (MDX + Imágenes)
+                                </button>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Categoría
+                                </label>
+                                <select
+                                    value={article.category_id || ''}
+                                    onChange={(e) => setArticle({ ...article, category_id: e.target.value || null })}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                >
+                                    <option value="">Sin categoría</option>
+                                    {categories.map((cat) => (
+                                        <option key={cat.id} value={cat.id}>
+                                            {cat.title}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <Input
+                                label="Fecha de publicación"
+                                type="date"
+                                value={(() => {
+                                    if (!article.published_time) return '';
+                                    // Handle timestamp strings like "1768348800000.0"
+                                    const timestamp = Number(article.published_time);
+                                    if (!isNaN(timestamp)) {
+                                        return new Date(timestamp).toISOString().split('T')[0];
+                                    }
+                                    return article.published_time.split('T')[0];
+                                })()}
+                                onChange={(e) => setArticle({ ...article, published_time: e.target.value })}
+                            />
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Etiquetas (Tags)
+                                </label>
+                                <div className="flex flex-wrap gap-2 mb-2">
+                                    {article.tags?.map((tag, index) => (
+                                        <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            {tag}
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const newTags = [...(article.tags || [])];
+                                                    newTags.splice(index, 1);
+                                                    setArticle({ ...article, tags: newTags });
+                                                }}
+                                                className="ml-1 text-blue-600 hover:text-blue-800 focus:outline-none"
+                                            >
+                                                &times;
+                                            </button>
+                                        </span>
+                                    ))}
                                 </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Categoría
-                                    </label>
-                                    <select
-                                        value={article.category_id || ''}
-                                        onChange={(e) => setArticle({ ...article, category_id: e.target.value || null })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                                    >
-                                        <option value="">Sin categoría</option>
-                                        {categories.map((cat) => (
-                                            <option key={cat.id} value={cat.id}>
-                                                {cat.title}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-
                                 <Input
-                                    label="Fecha de publicación"
-                                    type="date"
-                                    value={(() => {
-                                        if (!article.published_time) return '';
-                                        // Handle timestamp strings like "1768348800000.0"
-                                        const timestamp = Number(article.published_time);
-                                        if (!isNaN(timestamp)) {
-                                            return new Date(timestamp).toISOString().split('T')[0];
-                                        }
-                                        return article.published_time.split('T')[0];
-                                    })()}
-                                    onChange={(e) => setArticle({ ...article, published_time: e.target.value })}
-                                />
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Etiquetas (Tags)
-                                    </label>
-                                    <div className="flex flex-wrap gap-2 mb-2">
-                                        {article.tags?.map((tag, index) => (
-                                            <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                {tag}
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        const newTags = [...(article.tags || [])];
-                                                        newTags.splice(index, 1);
-                                                        setArticle({ ...article, tags: newTags });
-                                                    }}
-                                                    className="ml-1 text-blue-600 hover:text-blue-800 focus:outline-none"
-                                                >
-                                                    &times;
-                                                </button>
-                                            </span>
-                                        ))}
-                                    </div>
-                                    <Input
-                                        placeholder="Escribe y presiona Enter..."
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                                e.preventDefault();
-                                                const val = e.currentTarget.value.trim();
-                                                if (val && !article.tags?.includes(val)) {
-                                                    setArticle({ ...article, tags: [...(article.tags || []), val] });
-                                                    e.currentTarget.value = '';
-                                                }
+                                    placeholder="Escribe y presiona Enter..."
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            const val = e.currentTarget.value.trim();
+                                            if (val && !article.tags?.includes(val)) {
+                                                setArticle({ ...article, tags: [...(article.tags || []), val] });
+                                                e.currentTarget.value = '';
                                             }
-                                        }}
-                                    />
-                                    <p className="mt-1 text-xs text-gray-500">Presiona Enter para agregar</p>
-                                </div>
+                                        }
+                                    }}
+                                />
+                                <p className="mt-1 text-xs text-gray-500">Presiona Enter para agregar</p>
                             </div>
                         </div>
+                    </div>
 
-                        <div className="bg-white rounded-xl border border-gray-200 p-6">
-                            <h2 className="text-lg font-semibold mb-4">Configuración</h2>
+                    <div className="bg-white rounded-xl border border-gray-200 p-6">
+                        <h2 className="text-lg font-semibold mb-4">Configuración</h2>
 
-                            <div className="space-y-4">
-                                <Toggle
-                                    enabled={article.is_draft === 0}
-                                    onChange={(enabled) => setArticle({ ...article, is_draft: enabled ? 0 : 1 })}
-                                    label="Publicado"
-                                    description="El artículo será visible en el sitio"
-                                />
+                        <div className="space-y-4">
+                            <Toggle
+                                enabled={article.is_draft === 0}
+                                onChange={(enabled) => setArticle({ ...article, is_draft: enabled ? 0 : 1 })}
+                                label="Publicado"
+                                description="El artículo será visible en el sitio"
+                            />
 
-                                <Toggle
-                                    enabled={article.is_main_headline === 1}
-                                    onChange={(enabled) => setArticle({ ...article, is_main_headline: enabled ? 1 : 0 })}
-                                    label="Titular Principal"
-                                    description="Aparece como titular principal"
-                                />
+                            <Toggle
+                                enabled={article.is_main_headline === 1}
+                                onChange={(enabled) => setArticle({ ...article, is_main_headline: enabled ? 1 : 0 })}
+                                label="Titular Principal"
+                                description="Aparece como titular principal"
+                            />
 
-                                <Toggle
-                                    enabled={article.is_sub_headline === 1}
-                                    onChange={(enabled) => setArticle({ ...article, is_sub_headline: enabled ? 1 : 0 })}
-                                    label="Sub-titular"
-                                    description="Aparece como sub-titular"
-                                />
+                            <Toggle
+                                enabled={article.is_sub_headline === 1}
+                                onChange={(enabled) => setArticle({ ...article, is_sub_headline: enabled ? 1 : 0 })}
+                                label="Sub-titular"
+                                description="Aparece como sub-titular"
+                            />
 
-                                <Toggle
-                                    enabled={article.is_category_main_headline === 1}
-                                    onChange={(enabled) => setArticle({ ...article, is_category_main_headline: enabled ? 1 : 0 })}
-                                    label="Titular de Categoría"
-                                    description="Titular principal en su categoría"
-                                />
+                            <Toggle
+                                enabled={article.is_category_main_headline === 1}
+                                onChange={(enabled) => setArticle({ ...article, is_category_main_headline: enabled ? 1 : 0 })}
+                                label="Titular de Categoría"
+                                description="Titular principal en su categoría"
+                            />
 
-                                <Toggle
-                                    enabled={article.is_category_sub_headline === 1}
-                                    onChange={(enabled) => setArticle({ ...article, is_category_sub_headline: enabled ? 1 : 0 })}
-                                    label="Sub-titular de Categoría"
-                                    description="Sub-titular en su categoría"
-                                />
-                            </div>
+                            <Toggle
+                                enabled={article.is_category_sub_headline === 1}
+                                onChange={(enabled) => setArticle({ ...article, is_category_sub_headline: enabled ? 1 : 0 })}
+                                label="Sub-titular de Categoría"
+                                description="Sub-titular en su categoría"
+                            />
                         </div>
                     </div>
                 </div>

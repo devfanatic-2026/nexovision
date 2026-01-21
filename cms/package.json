@@ -14,17 +14,29 @@
     },
     "dependencies": {
         "@float.js/core": "file:../framework/float-js/packages/core",
+        "@float.js/scraper": "file:../framework/floatjs-scraper",
         "@headlessui/react": "^1.7.18",
         "@heroicons/react": "^2.1.1",
+        "@mozilla/readability": "^0.5.0",
+        "@tiptap/extension-bubble-menu": "^2.27.2",
+        "@tiptap/extension-floating-menu": "^2.27.2",
         "@tiptap/extension-image": "^2.27.2",
         "@tiptap/extension-link": "^2.27.2",
         "@tiptap/extension-youtube": "^2.27.2",
         "@tiptap/react": "^2.27.2",
         "@tiptap/starter-kit": "^2.27.2",
+        "bindings": "^1.5.0",
+        "cheerio": "^1.0.0",
         "clsx": "^2.1.1",
         "dotenv": "^16.4.5",
+        "entities": "^6.0.1",
+        "jsdom": "^24.0.0",
         "jszip": "^3.10.1",
+        "lru-cache": "^10.4.3",
         "lucide-react": "^0.446.0",
+        "markdown-it": "^14.1.0",
+        "node-fetch": "^3.3.2",
+        "playwright": "^1.43.0",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
         "react-hot-toast": "^2.4.1",
@@ -36,6 +48,7 @@
     "devDependencies": {
         "@tailwindcss/typography": "^0.5.16",
         "@types/jszip": "^3.4.1",
+        "@types/markdown-it": "^14.1.2",
         "@types/react": "^18.3.12",
         "@types/react-dom": "^18.3.1",
         "@types/sqlite3": "^3.1.11",
@@ -46,5 +59,11 @@
         "tailwindcss": "^3.4.0",
         "tsx": "^4.19.1",
         "typescript": "^5.6.3"
+    },
+    "pnpm": {
+        "overrides": {
+            "entities": "^6.0.1",
+            "lru-cache": "^10.4.3"
+        }
     }
 }

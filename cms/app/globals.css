@@ -165,8 +165,15 @@
 .ProseMirror h3,
 .ProseMirror ul,
 .ProseMirror ol,
-.ProseMirror li {
+.ProseMirror li,
+.ProseMirror strong,
+.ProseMirror b {
   color: #000000 !important;
+}
+
+.ProseMirror strong,
+.ProseMirror b {
+  font-weight: 800 !important;
 }
 
 select {
