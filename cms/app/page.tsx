@@ -1,171 +1,240 @@
-import React from 'react';
-import { initializeDb } from '../src/lib/database.js';
-import { ArticleRepository } from '../src/lib/repositories/article.repository.js';
-import { Calendar, User, Tag, Eye, EyeOff, Star, LayoutGrid, Clock, ChevronRight } from 'lucide-react';
+'use client';
 
-async function fetchArticles() {
-  const db = await initializeDb();
-  const repo = new ArticleRepository(db);
-  return await repo.findAllWithRelations();
+import { useState, useEffect } from 'react';
+import {
+  PencilIcon,
+  CalendarIcon,
+  UserIcon,
+  FolderIcon
+} from '@heroicons/react/24/outline';
+import { Button } from '../components/ui/Button';
+
+interface Article {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  cover: string;
+  category_title?: string;
+  author_names?: string;
+  published_time: string;
+  is_draft: number;
+  is_main_headline: number;
+  is_sub_headline: number;
 }
 
-export default async function HomePage() {
-  const articles = await fetchArticles();
+export default function DashboardPage() {
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<'all' | 'published' | 'draft'>('all');
+
+  useEffect(() => {
+    fetch('/api/articles')
+      .then(res => res.json())
+      .then(data => {
+        setArticles(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
+  const filteredArticles = articles.filter(article => {
+    if (filter === 'published') return article.is_draft === 0;
+    if (filter === 'draft') return article.is_draft === 1;
+    return true;
+  });
+
+  const stats = {
+    total: articles.length,
+    published: articles.filter(a => a.is_draft === 0).length,
+    drafts: articles.filter(a => a.is_draft === 1).length,
+    mainHeadlines: articles.filter(a => a.is_main_headline === 1).length,
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-chile-paper text-chile-ink font-sans selection:bg-chile-blue/10">
-      {/* Header */}
-      <header className="max-w-5xl mx-auto pt-20 pb-12 px-6">
-        <div className="flex justify-between items-end border-b border-editorial-200 pb-8">
-          <div>
-            <h1 className="text-display-sm text-chile-blue mb-2 font-display italic">Nexovisión</h1>
-            <p className="text-xs uppercase tracking-widest text-editorial-500 font-bold">Content Management System</p>
-          </div>
-          <div className="flex gap-6">
-            <a href="/admin/articles" className="text-xs uppercase tracking-widest font-bold hover:text-chile-red transition-colors">Artículos</a>
-            <a href="/admin/categories" className="text-xs uppercase tracking-widest font-bold hover:text-chile-red transition-colors">Categorías</a>
-            <a href="/admin/authors" className="text-xs uppercase tracking-widest font-bold hover:text-chile-red transition-colors">Autores</a>
-          </div>
-        </div>
-      </header>
+    <div className="p-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
+        <p className="text-gray-600">Gestiona tus artículos, autores y categorías</p>
+      </div>
 
-      <main className="max-w-5xl mx-auto px-6 pb-24">
-        {/* Actions bar */}
-        <div className="flex justify-between items-center mb-12">
-          <div className="flex items-center gap-2 text-editorial-400">
-            <Clock className="w-4 h-4" />
-            <span className="text-xs uppercase tracking-widest font-bold">{articles.length} Artículos en total</span>
-          </div>
-          <button
-            id="sync-btn"
-            className="btn btn-primary btn-sm rounded-none px-8 font-black tracking-widest uppercase h-12"
-          >
-            Sincronizar
-          </button>
-        </div>
-
-        {/* Article Grid / List */}
-        <div className="space-y-12">
-          {articles.map((article) => (
-            <div key={article.id} className="group relative border-b border-editorial-100 pb-12 last:border-0">
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
-
-                {/* Image */}
-                <div className="md:col-span-4 lg:col-span-3">
-                  <div className="aspect-[4/3] bg-editorial-100 overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-700 shadow-editorial">
-                    {article.cover ? (
-                      <img
-                        src={article.cover}
-                        alt={article.title}
-                        className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-editorial-300">
-                        <LayoutGrid className="w-8 h-8 opacity-20" />
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="md:col-span-8 lg:col-span-9 flex flex-col h-full">
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {article.is_draft === 1 && (
-                      <span className="badge badge-warning badge-outline rounded-none text-[10px] font-black uppercase tracking-tighter">
-                        <EyeOff className="w-3 h-3 mr-1" /> Borrador
-                      </span>
-                    )}
-                    {article.is_main_headline === 1 && (
-                      <span className="badge badge-error rounded-none text-[10px] font-black uppercase tracking-tighter text-white">
-                        <Star className="w-3 h-3 mr-1 fill-current" /> Titular Principal
-                      </span>
-                    )}
-                    {article.is_sub_headline === 1 && (
-                      <span className="badge badge-info rounded-none text-[10px] font-black uppercase tracking-tighter text-white">
-                        Subtitular
-                      </span>
-                    )}
-                  </div>
-
-                  <h2 className="text-xl font-black text-chile-ink leading-tight mb-3 group-hover:text-chile-red transition-colors font-serif">
-                    {article.title}
-                  </h2>
-
-                  <p className="text-editorial-600 text-sm leading-relaxed mb-6 line-clamp-2 font-medium">
-                    {article.description}
-                  </p>
-
-                  <div className="mt-auto flex flex-wrap items-center gap-x-6 gap-y-2 text-[11px] uppercase tracking-wider font-bold text-editorial-400">
-                    <div className="flex items-center gap-1.5">
-                      <User className="w-3.5 h-3.5" />
-                      <span>{article.author_names || 'Admin'}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <Tag className="w-3.5 h-3.5" />
-                      <span className="text-chile-blue">{article.category_title || 'General'}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <Calendar className="w-3.5 h-3.5" />
-                      <span>{new Date(article.published_time).toLocaleDateString('es-CL', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-
-              <a
-                href={`/admin/editor/${article.slug}`}
-                className="absolute inset-0 z-0"
-                aria-label={`Editar ${article.title}`}
-              ></a>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600 mb-1">Total Artículos</p>
+              <p className="text-3xl font-bold text-gray-900">{stats.total}</p>
             </div>
-          ))}
+            <div className="h-12 w-12 bg-primary-100 rounded-lg flex items-center justify-center">
+              <svg className="h-6 w-6 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+              </svg>
+            </div>
+          </div>
         </div>
-      </main>
 
-      <footer className="max-w-5xl mx-auto px-6 py-12 border-t border-editorial-100 text-[10px] uppercase tracking-widest text-editorial-400 font-bold flex justify-between">
-        <div>Nexovisión CMS v2.0</div>
-        <div className="flex gap-4">
-          <a href="#" className="hover:text-chile-ink transition-colors">Documentación</a>
-          <a href="#" className="hover:text-chile-ink transition-colors">Soporte</a>
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600 mb-1">Publicados</p>
+              <p className="text-3xl font-bold text-green-600">{stats.published}</p>
+            </div>
+            <div className="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center">
+              <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          </div>
         </div>
-      </footer>
 
-      <script dangerouslySetInnerHTML={{
-        __html: `
-          document.addEventListener('DOMContentLoaded', function() {
-            const syncButton = document.getElementById('sync-btn');
-            if (syncButton) {
-              syncButton.addEventListener('click', async function() {
-                const button = this;
-                const originalText = button.textContent;
-                button.textContent = 'Sincronizando...';
-                button.disabled = true;
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600 mb-1">Borradores</p>
+              <p className="text-3xl font-bold text-yellow-600">{stats.drafts}</p>
+            </div>
+            <div className="h-12 w-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+              <svg className="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1-4L14 8m-2-2l4-4m0 0l4 4m-4-4v10" />
+              </svg>
+            </div>
+          </div>
+        </div>
 
-                try {
-                  const response = await fetch('/api/sync-action', {
-                    method: 'POST'
-                  });
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600 mb-1">Titulares</p>
+              <p className="text-3xl font-bold text-purple-600">{stats.mainHeadlines}</p>
+            </div>
+            <div className="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center">
+              <svg className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
 
-                  const result = await response.json();
+      {/* Filters */}
+      <div className="flex gap-2 mb-6">
+        <Button
+          variant={filter === 'all' ? 'primary' : 'ghost'}
+          size="sm"
+          onClick={() => setFilter('all')}
+        >
+          Todos ({stats.total})
+        </Button>
+        <Button
+          variant={filter === 'published' ? 'primary' : 'ghost'}
+          size="sm"
+          onClick={() => setFilter('published')}
+        >
+          Publicados ({stats.published})
+        </Button>
+        <Button
+          variant={filter === 'draft' ? 'primary' : 'ghost'}
+          size="sm"
+          onClick={() => setFilter('draft')}
+        >
+          Borradores ({stats.drafts})
+        </Button>
+      </div>
 
-                  if (result.success) {
-                    alert('Sincronización completada exitosamente');
-                    window.location.reload();
-                  } else {
-                    alert('Error en la sincronización: ' + result.message);
-                  }
-                } catch (error) {
-                  alert('Error de conexión: ' + error.message);
-                } finally {
-                  button.textContent = originalText;
-                  button.disabled = false;
-                }
-              });
-            }
-          });
-        `
-      }} />
+      {/* Articles List */}
+      <div className="space-y-4">
+        {filteredArticles.map((article) => (
+          <div
+            key={article.id}
+            className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md hover:border-primary-200 transition-all duration-200"
+          >
+            <div className="flex gap-6">
+              {article.cover && (
+                <div className="flex-shrink-0">
+                  <img
+                    src={article.cover}
+                    alt={article.title}
+                    className="w-32 h-24 object-cover rounded-lg"
+                  />
+                </div>
+              )}
+
+              <div className="flex-1 min-w-0">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                      {article.title}
+                    </h3>
+                    <p className="text-gray-600 text-sm line-clamp-2 mb-3">
+                      {article.description}
+                    </p>
+
+                    <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+                      {article.category_title && (
+                        <span className="flex items-center gap-1">
+                          <FolderIcon className="h-4 w-4" />
+                          {article.category_title}
+                        </span>
+                      )}
+                      {article.author_names && (
+                        <span className="flex items-center gap-1">
+                          <UserIcon className="h-4 w-4" />
+                          {article.author_names}
+                        </span>
+                      )}
+                      <span className="flex items-center gap-1">
+                        <CalendarIcon className="h-4 w-4" />
+                        {new Date(article.published_time).toLocaleDateString('es-ES')}
+                      </span>
+                    </div>
+
+                    <div className="flex gap-2 mt-3">
+                      {article.is_draft === 1 && (
+                        <span className="badge badge-warning">Borrador</span>
+                      )}
+                      {article.is_main_headline === 1 && (
+                        <span className="badge badge-primary">Titular Principal</span>
+                      )}
+                      {article.is_sub_headline === 1 && (
+                        <span className="badge badge-neutral">Sub-titular</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2 flex-shrink-0">
+                    <a href={`/articles/${article.slug}/edit`}>
+                      <Button variant="secondary" size="sm">
+                        <PencilIcon className="h-4 w-4" />
+                        Editar
+                      </Button>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {filteredArticles.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">No hay artículos para mostrar</p>
+            <a href="/articles/new/edit" className="mt-4 inline-block">
+              <Button variant="primary">
+                Crear tu primer artículo
+              </Button>
+            </a>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

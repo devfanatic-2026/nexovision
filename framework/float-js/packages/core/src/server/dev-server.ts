@@ -136,6 +136,36 @@ ${FLOAT_ERROR_OVERLAY}
     console.log(pc.dim(`  ${req.method} ${pathname}`));
 
     try {
+      // Serve app modules as ES modules for client-side dynamic imports  
+      // Match patterns like /float-test/page
+      if (pathname.match(/^\/[\w-]+\/page$/)) {
+        const appFilePath = path.join(rootDir, 'app', pathname + '.tsx');
+        if (fs.existsSync(appFilePath)) {
+          try {
+            console.log(pc.cyan(`  📦 Module: ${pathname}`));
+            const fileContent = fs.readFileSync(appFilePath, 'utf-8');
+
+            // Transform TSX to JavaScript using esbuild
+            const esbuild = await import('esbuild');
+            const result = await esbuild.transform(fileContent, {
+              loader: 'tsx',
+              format: 'esm',
+              jsx: 'automatic',
+              target: 'es2020'
+            });
+
+            res.writeHead(200, {
+              'Content-Type': 'application/javascript',
+              'Cache-Control': 'no-cache'
+            });
+            res.end(result.code);
+            return;
+          } catch (error) {
+            console.error(pc.red('Module transform error:'), error);
+          }
+        }
+      }
+
       // Serve static files from public/
       const publicFilePath = path.join(publicDir, pathname);
       if (fs.existsSync(publicFilePath) && fs.statSync(publicFilePath).isFile()) {
@@ -179,8 +209,98 @@ ${FLOAT_ERROR_OVERLAY}
         }
       }
 
-      // Serve /_float/ internal assets
-      if (pathname.startsWith('/_float/')) {
+      // Serve /__float/ internal assets
+      if (pathname.startsWith('/__float/')) {
+        // Serve hydration script
+        if (pathname === '/__float/hydrate.js') {
+          try {
+            const hydratePath = path.join(
+              path.dirname(new URL(import.meta.url).pathname),
+              '../client/hydrate.js'
+            );
+            const hydrateCode = fs.readFileSync(hydratePath, 'utf-8');
+            res.writeHead(200, {
+              'Content-Type': 'application/javascript',
+              'Cache-Control': 'no-cache'
+            });
+            res.end(hydrateCode);
+            return;
+          } catch {
+            // If built file doesn't exist, serve a proper hydration script
+            res.writeHead(200, {
+              'Content-Type': 'application/javascript',
+              'Cache-Control': 'no-cache'
+            });
+            res.end(`
+// Float.js Client-Side Hydration Runtime
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+
+console.log('[Float.js] Client hydration starting...');
+
+const data = window.__FLOAT_HYDRATION_DATA;
+if (!data) {
+  console.log('[Float.js] No hydration data found');
+} else {
+  console.log('[Float.js] Hydration data found:', data);
+  
+  // Find the client root element
+  const clientRoot = document.getElementById('__float_client_root');
+  
+  if (clientRoot) {
+    console.log('[Float.js] Client root found, loading component...');
+    
+    // Dynamically import and render the client component
+    const componentPath = data.componentPath;
+    
+    // Convert absolute path to relative app path
+    // e.g., /Users/.../cms/app/float-test/page.tsx -> /float-test/page
+    const appIndex = componentPath.lastIndexOf('/app/');
+    if (appIndex === -1) {
+      console.error('[Float.js] Could not find /app/ in path:', componentPath);
+    } else {
+      // Extract path after '/app/' and remove extension
+      const afterApp = componentPath.substring(appIndex + 5); // +5 to skip '/app/'
+      const modulePath = afterApp.replace(/\.tsx?$/, ''); // Remove .tsx or .ts
+      
+      console.log('[Float.js] Component path:', componentPath);
+      console.log('[Float.js] After /app/:', afterApp);
+      console.log('[Float.js] Module path:', modulePath);
+      console.log('[Float.js] Importing from:', '/' + modulePath);
+      
+      // Dynamically import the component (needs leading slash)
+      import('/' + modulePath).then((module) => {
+        console.log('[Float.js] Component loaded:', module);
+        const Component = module.default;
+        
+        if (!Component) {
+          console.error('[Float.js] No default export found in component');
+          return;
+        }
+        
+        // Create root and render
+        const root = createRoot(clientRoot);
+        root.render(React.createElement(Component, data.props || {}));
+        
+        console.log('[Float.js] Component rendered successfully!');
+      }).catch((error) => {
+        console.error('[Float.js] Failed to load component:', error);
+      });
+    }
+  } else {
+    console.log('[Float.js] No client root element found, full hydration...');
+    // Fallback to full page hydration
+    const container = document.getElementById('__float');
+    if (container) {
+      console.log('[Float.js] Hydrating full page');
+    }
+  }
+}
+            `);
+            return;
+          }
+        }
+
         // Handle internal float assets
         res.writeHead(200, { 'Content-Type': 'application/javascript' });
         res.end('// Float.js internal asset');

@@ -9,6 +9,7 @@ import { Writable } from 'node:stream';
 import type { Route } from '../router/index.js';
 import { transformFile } from '../build/transform.js';
 import { RouterProvider } from '../hooks/use-router.js';
+import { isClientComponent } from '../build/detect-client.js';
 
 export interface RenderOptions {
   hmrScript?: string;
@@ -36,6 +37,13 @@ export async function renderPage(
   void streaming; // Reserved for future streaming implementation
 
   try {
+    // Check if this is a client component
+    const isClient = isClientComponent(route.absolutePath);
+
+    if (isClient) {
+      console.log(`[Float.js] Client component detected, skipping SSR: ${route.filePath}`);
+    }
+
     // Load the page component
     const pageModule = await transformFile(route.absolutePath);
     const PageComponent = pageModule.default;
@@ -70,24 +78,37 @@ export async function renderPage(
 
     let element: React.ReactElement;
 
-    // Check if PageComponent is an async function
-    const isAsyncComponent = PageComponent.constructor?.name === 'AsyncFunction' ||
-                             PageComponent.prototype?.constructor?.name === 'AsyncFunction' ||
-                             (PageComponent.toString().includes('async ') && PageComponent.toString().includes('function'));
-
-    if (isAsyncComponent) {
-      // For async components, we need to resolve the promise first
-      const asyncResult = await PageComponent(props);
-
-      // Create a temporary component that renders the resolved JSX
-      const AsyncResolvedComponent = () => {
-        // The async component returns JSX directly, so we return it
-        return asyncResult;
+    // For client components, render a placeholder instead of executing the component
+    if (isClient) {
+      // Create a placeholder that will be hydrated on the client
+      const ClientPlaceholder = () => {
+        return React.createElement('div', {
+          id: '__float_client_root',
+          'data-component-path': route.absolutePath,
+          suppressHydrationWarning: true,
+        }, 'Loading...');
       };
-      element = React.createElement(AsyncResolvedComponent, {});
+      element = React.createElement(ClientPlaceholder, {});
     } else {
-      // For regular components, use the original flow
-      element = React.createElement(PageComponent, props);
+      // Check if PageComponent is an async function
+      const isAsyncComponent = PageComponent.constructor?.name === 'AsyncFunction' ||
+        PageComponent.prototype?.constructor?.name === 'AsyncFunction' ||
+        (PageComponent.toString().includes('async ') && PageComponent.toString().includes('function'));
+
+      if (isAsyncComponent) {
+        // For async components, we need to resolve the promise first
+        const asyncResult = await PageComponent(props);
+
+        // Create a temporary component that renders the resolved JSX
+        const AsyncResolvedComponent = () => {
+          // The async component returns JSX directly, so we return it
+          return asyncResult;
+        };
+        element = React.createElement(AsyncResolvedComponent, {});
+      } else {
+        // For regular components, use the original flow
+        element = React.createElement(PageComponent, props);
+      }
     }
 
     // Wrap with layouts (innermost to outermost)
@@ -117,12 +138,20 @@ export async function renderPage(
     // Render to HTML
     const content = renderToString(element);
 
-    // Generate full HTML document
+    // Prepare hydration data for client-side
+    const hydrationData = {
+      routerState,
+      props,
+      componentPath: route.absolutePath,
+    };
+
+    // Generate full HTML document with hydration support
     const html = generateHtmlDocument({
       content,
       metadata: pageMetadata,
       hmrScript: isDev ? hmrScript : '',
       isDev,
+      hydrationData,
     });
 
     return html;
@@ -148,8 +177,8 @@ export async function renderPageStream(
 
   // Check if PageComponent is an async function
   const isAsyncComponent = PageComponent.constructor?.name === 'AsyncFunction' ||
-                           PageComponent.prototype?.constructor?.name === 'AsyncFunction' ||
-                           (PageComponent.toString().includes('async ') && PageComponent.toString().includes('function'));
+    PageComponent.prototype?.constructor?.name === 'AsyncFunction' ||
+    (PageComponent.toString().includes('async ') && PageComponent.toString().includes('function'));
 
   let element: React.ReactElement;
 
@@ -208,13 +237,14 @@ interface HtmlDocumentOptions {
   isDev: boolean;
   styles?: string;
   scripts?: string[];
+  hydrationData?: any;
 }
 
 /**
  * Generate full HTML document
  */
 function generateHtmlDocument(options: HtmlDocumentOptions): string {
-  const { content, metadata, hmrScript, isDev, styles = '', scripts = [] } = options;
+  const { content, metadata, hmrScript, isDev, styles = '', scripts = [], hydrationData } = options;
 
   // Handle title which can be string or object with default/template
   let title = 'Float.js App';
@@ -233,6 +263,27 @@ function generateHtmlDocument(options: HtmlDocumentOptions): string {
   // Generate meta tags
   const metaTags = generateMetaTags(metadata);
 
+  // Import map for resolving React modules in the browser
+  const importMap = hydrationData ? `
+  <script type="importmap">
+  {
+    "imports": {
+      "react": "https://esm.sh/react@18.3.1",
+      "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
+      "react/jsx-runtime": "https://esm.sh/react@18.3.1/jsx-runtime"
+    }
+  }
+  </script>
+  ` : '';
+
+  // Serialize hydration data for client
+  const hydrationScript = hydrationData ? `
+  <script>
+    window.__FLOAT_HYDRATION_DATA = ${JSON.stringify(hydrationData)};
+  </script>
+  <script type="module" src="/__float/hydrate.js"></script>
+  ` : '';
+
   return `<!DOCTYPE html>
 <html lang="${metadata.lang || 'en'}">
 <head>
@@ -242,6 +293,7 @@ function generateHtmlDocument(options: HtmlDocumentOptions): string {
   ${description ? `<meta name="description" content="${escapeHtml(description)}">` : ''}
   ${metaTags}
   <meta name="generator" content="Float.js">
+  ${importMap}
   <style>
     /* Float.js Base Styles */
     *, *::before, *::after { box-sizing: border-box; }
@@ -271,6 +323,7 @@ function generateHtmlDocument(options: HtmlDocumentOptions): string {
 </head>
 <body>
   <div id="__float">${content}</div>
+  ${hydrationScript}
   ${hmrScript}
   ${scripts.map(src => `<script src="${src}"></script>`).join('\n  ')}
 </body>
