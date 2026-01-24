@@ -1,18 +1,18 @@
-
 import { NewsScraper } from '@float.js/scraper';
+import { LLMClient, type LLMProvider } from '../../../../lib/llm';
 
 export async function POST(req: Request) {
     try {
-        const { url, instruction, deepseek_key } = await req.json();
+        const { url, instruction, apiKey, provider = 'gemini' } = await req.json();
 
         if (!url) {
             return new Response(JSON.stringify({ error: 'URL is required' }), { status: 400 });
         }
 
-        // Initialize scraper with key (priority to request key -> env key)
-        const apiKey = deepseek_key || process.env.DEEPSEEK_API_KEY;
-
-        const scraper = new NewsScraper(apiKey);
+        // Initialize scraper. For analysis we don't *strictly* need a key if we do it manually via LLMClient,
+        // but if scraping needs it (some sites needed proxies/scraping-api), we pass it.
+        const scraperKey = provider === 'deepseek' ? apiKey : process.env.DEEPSEEK_API_KEY;
+        const scraper = new NewsScraper(scraperKey);
 
         // Step 1: Smart Scrape
         const scrapeResult = await scraper.scrape(url, {
@@ -25,11 +25,34 @@ export async function POST(req: Request) {
         }
 
         let analysis = null;
+        const client = new LLMClient(provider as LLMProvider, apiKey);
 
-        // Step 2: DeepSeek Analysis (if key provided)
-        if (apiKey) {
-            console.log(`[API] analyzing with DeepSeek for ${url}`);
-            analysis = await scraper.analyze(scrapeResult.article, instruction || '', apiKey);
+        // Step 2: Analysis using LLMClient (replaces scraper.analyze)
+        try {
+            console.log(`[API] analyzing with ${provider} for ${url}`);
+            const analysisPrompt = `
+             Analyze this news article:
+             Title: ${scrapeResult.article.title}
+             Content: ${scrapeResult.article.textContent}
+             
+             Instruction: ${instruction || 'Provide a summary and extracted entities.'}
+             
+             Output JSON with:
+             - summary (string)
+             - people (array of strings)
+             - organizations (array of strings)
+             - media (array of strings)
+             `;
+
+            const analysisRes = await client.chat({
+                system: 'You are a News Analyst. Output JSON.',
+                messages: [{ role: 'user', content: analysisPrompt }],
+                response_format: 'json_object'
+            });
+
+            analysis = JSON.parse(analysisRes.content.replace(/```json/g, '').replace(/```/g, ''));
+        } catch (e) {
+            console.error('Analysis failed', e);
         }
 
         await scraper.cleanup();

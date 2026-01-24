@@ -1,7 +1,7 @@
 import { createFloatStore } from '@float.js/core';
 
 interface AIState {
-    provider: 'openai' | 'anthropic' | 'deepseek';
+    provider: 'openai' | 'anthropic' | 'deepseek' | 'gemini';
     apiKey: string;
 }
 
@@ -11,7 +11,7 @@ interface AIState {
  */
 export const useAIStore = createFloatStore<AIState>(
     {
-        provider: 'deepseek',
+        provider: 'gemini',
         apiKey: '',
     },
     {

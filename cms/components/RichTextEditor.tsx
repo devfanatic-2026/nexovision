@@ -269,6 +269,10 @@ export function RichTextEditor({
     const [activeFilter, setActiveFilter] = useState<'all' | 'manual' | 'auto' | 'detached' | 'bookmarked'>('all');
     const [aiError, setAIError] = useState<string | null>(null);
 
+    // Batch Linking State
+    const [batchSelection, setBatchSelection] = useState<string[]>([]);
+    const isBatchMode = batchSelection.length > 0;
+
     // Decision Modals
     const [leavingSiteModal, setLeavingSiteModal] = useState<{ open: boolean, href: string } | null>(null);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -433,15 +437,12 @@ export function RichTextEditor({
 
     // AI Generation Logic (Free Chat)
     const handleAIGenerate = async () => {
-        if (!aiPrompt || !editor || !aiConfig.apiKey) return;
+        if (!aiPrompt || !editor) return;
 
         setIsGenerating(true);
         setAiModalOpen(false);
 
         try {
-            ai.use(aiConfig.provider);
-            ai.setKey(aiConfig.provider, aiConfig.apiKey);
-
             const agent = getAgentForCategory(category);
 
             const systemPrompt = `
@@ -457,12 +458,20 @@ export function RichTextEditor({
             editor.chain().focus().insertContent('<p class="ai-generating text-gray-400 italic">Generando respuesta con mi agente editorial...</p>').run();
 
             let fullContent = '';
-            for await (const chunk of ai.streamChat({
-                messages: [{ role: 'user', content: aiPrompt }],
-                system: systemPrompt,
-            })) {
-                fullContent += chunk;
-            }
+
+            // ALWAYS USE PROXY (Server-side key management)
+            const res = await fetch('/api/ai/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    messages: [{ role: 'user', content: aiPrompt }],
+                    system: systemPrompt,
+                    provider: aiConfig.provider
+                })
+            });
+            if (!res.ok) throw new Error(await res.text());
+            const data = await res.json();
+            fullContent = data.content || '';
 
             const html = editor.getHTML();
             // Convert to HTML if MD, or just use as is (renderer handles plain string too)
@@ -530,32 +539,49 @@ export function RichTextEditor({
         }
     };
 
-    const handleStackNews = (sourceId: string, targetId: string) => {
-        if (sourceId === targetId) return;
+    const handleBatchLink = () => {
+        if (batchSelection.length < 2) return;
+
         useNewsWorkbench.setState((prev: any) => {
             const cat = category || 'general';
             const groups = [...(prev.newsByCategories[cat] || [])];
-            const sourceIndex = groups.findIndex(g => g.id === sourceId);
+
+            // Find all selected groups
+            const selectedGroups = groups.filter(g => batchSelection.includes(g.id));
+            if (selectedGroups.length < 2) return prev;
+
+            // Target is the first one in the selection
+            const targetId = batchSelection[0];
             const targetIndex = groups.findIndex(g => g.id === targetId);
 
-            if (sourceIndex === -1 || targetIndex === -1) return prev;
-
-            const sourceGroup = groups[sourceIndex];
             const targetGroup = { ...groups[targetIndex] };
+            const otherGroups = selectedGroups.filter(g => g.id !== targetId);
 
-            // Point 2: Grouping of news -> 1 or more news
-            targetGroup.news = [...(targetGroup.news || []), ...(sourceGroup.news || [])];
+            // Merge all news into target
+            targetGroup.news = [...(targetGroup.news || []), ...otherGroups.flatMap(g => g.news || [])];
             targetGroup.type = 'manual';
-            groups[targetIndex] = targetGroup;
-            groups.splice(sourceIndex, 1);
+
+            // Remove others and update target
+            const newGroups = groups.filter(g => !batchSelection.includes(g.id) || g.id === targetId);
+            const finalIndex = newGroups.findIndex(g => g.id === targetId);
+            newGroups[finalIndex] = targetGroup;
 
             return {
                 newsByCategories: {
                     ...prev.newsByCategories,
-                    [cat]: groups
+                    [cat]: newGroups
                 }
             };
         });
+
+        setBatchSelection([]);
+        toast.success("Noticias vinculadas exitosamente");
+    };
+
+    const handleToggleBatchSelection = (id: string) => {
+        setBatchSelection(prev =>
+            prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+        );
     };
 
     const handleToggleSource = (groupId: string, newsIdx: number, sourceIdx: number) => {
@@ -654,24 +680,7 @@ export function RichTextEditor({
     };
 
 
-    // Drag and Drop Logic
-    const handleDragStart = (e: React.DragEvent, id: string) => {
-        e.dataTransfer.setData('text/plain', id);
-        e.dataTransfer.effectAllowed = 'link';
-    };
 
-    const handleDragOver = (e: React.DragEvent) => {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'link';
-    };
-
-    const handleDragDrop = (e: React.DragEvent, targetId: string) => {
-        e.preventDefault();
-        const sourceId = e.dataTransfer.getData('text/plain');
-        if (sourceId && sourceId !== targetId) {
-            handleStackNews(sourceId, targetId);
-        }
-    };
 
     // --- Helper: Insert Scraped/Hunted Content ---
     const insertScrapedContent = (data: any, sourceUrl: string, toastId?: string) => {
@@ -795,7 +804,9 @@ ${data.article.textContent}
 
             // AI Config
             ai.use(aiConfig.provider);
-            ai.setKey(aiConfig.provider, aiConfig.apiKey);
+            if (aiConfig.provider !== 'gemini') {
+                ai.setKey(aiConfig.provider, aiConfig.apiKey);
+            }
 
 
             let fullContent = '';
@@ -1254,7 +1265,10 @@ ${data.article.textContent}
                                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Filtrar por:</p>
                                     <div className="flex items-center gap-2">
                                         <button
-                                            onClick={() => setActiveFilter('all')}
+                                            onClick={() => {
+                                                if (isBatchMode) setBatchSelection([]);
+                                                setActiveFilter('all');
+                                            }}
                                             className={clsx(
                                                 "px-3 py-1 rounded-full text-[10px] font-bold transition-all border",
                                                 activeFilter === 'all' ? "bg-gray-900 text-white border-gray-900" : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"
@@ -1264,7 +1278,10 @@ ${data.article.textContent}
                                         </button>
                                         {hasBookmarked && (
                                             <button
-                                                onClick={() => setActiveFilter('bookmarked')}
+                                                onClick={() => {
+                                                    if (isBatchMode) setBatchSelection([]);
+                                                    setActiveFilter('bookmarked');
+                                                }}
                                                 className={clsx(
                                                     "px-3 py-1 rounded-full text-[10px] font-bold transition-all border flex items-center gap-1",
                                                     activeFilter === 'bookmarked' ? "bg-amber-500 text-white border-amber-500" : "bg-white text-amber-500 border-amber-200 hover:border-amber-300"
@@ -1275,7 +1292,10 @@ ${data.article.textContent}
                                         )}
                                         {hasManual && (
                                             <button
-                                                onClick={() => setActiveFilter('manual')}
+                                                onClick={() => {
+                                                    if (isBatchMode) setBatchSelection([]);
+                                                    setActiveFilter('manual');
+                                                }}
                                                 className={clsx(
                                                     "px-3 py-1 rounded-full text-[10px] font-bold transition-all border flex items-center gap-1",
                                                     activeFilter === 'manual' ? "bg-blue-600 text-white border-blue-600" : "bg-white text-blue-600 border-blue-200 hover:border-blue-300"
@@ -1286,7 +1306,10 @@ ${data.article.textContent}
                                         )}
                                         {hasAuto && (
                                             <button
-                                                onClick={() => setActiveFilter('auto')}
+                                                onClick={() => {
+                                                    if (isBatchMode) setBatchSelection([]);
+                                                    setActiveFilter('auto');
+                                                }}
                                                 className={clsx(
                                                     "px-3 py-1 rounded-full text-[10px] font-bold transition-all border flex items-center gap-1",
                                                     activeFilter === 'auto' ? "bg-red-500 text-white border-red-500" : "bg-white text-red-500 border-red-200 hover:border-red-300"
@@ -1297,7 +1320,10 @@ ${data.article.textContent}
                                         )}
                                         {hasDetached && (
                                             <button
-                                                onClick={() => setActiveFilter('detached')}
+                                                onClick={() => {
+                                                    if (isBatchMode) setBatchSelection([]);
+                                                    setActiveFilter('detached');
+                                                }}
                                                 className={clsx(
                                                     "px-3 py-1 rounded-full text-[10px] font-bold transition-all border flex items-center gap-1",
                                                     activeFilter === 'detached' ? "bg-amber-400 text-white border-amber-400" : "bg-white text-amber-400 border-amber-200 hover:border-amber-300"
@@ -1328,23 +1354,26 @@ ${data.article.textContent}
                                     return (
                                         <div
                                             key={group.id}
-                                            draggable
-                                            onDragStart={(e) => handleDragStart(e, group.id)}
-                                            onDragOver={handleDragOver}
-                                            onDrop={(e) => handleDragDrop(e, group.id)}
                                             className={clsx(
-                                                "group/card relative flex flex-col bg-white rounded-2xl border-2 transition-all duration-300 overflow-hidden cursor-grab active:cursor-grabbing",
-                                                group.selected
-                                                    ? "border-purple-600 shadow-xl scale-[1.02] z-10"
-                                                    : group.isBookmarked
-                                                        ? "border-amber-400 shadow-md shadow-amber-50"
-                                                        : (group.news || []).length > 1
-                                                            ? "border-blue-500 shadow-sm"
-                                                            : group.type === 'detached'
-                                                                ? "border-amber-400 shadow-sm"
-                                                                : "border-red-500 shadow-sm"
+                                                "group/card relative flex flex-col bg-white rounded-2xl border-2 transition-all duration-300 overflow-hidden",
+                                                batchSelection.includes(group.id)
+                                                    ? "border-blue-600 ring-4 ring-blue-100 scale-[1.02] shadow-xl z-10"
+                                                    : group.selected
+                                                        ? "border-purple-600 shadow-xl scale-[1.02] z-10"
+                                                        : group.isBookmarked
+                                                            ? "border-amber-400 shadow-md shadow-amber-50"
+                                                            : (group.news || []).length > 1
+                                                                ? "border-blue-500 shadow-sm"
+                                                                : group.type === 'detached'
+                                                                    ? "border-amber-400 shadow-sm"
+                                                                    : "border-red-500 shadow-sm",
+                                                isBatchMode && !batchSelection.includes(group.id) && "opacity-60 grayscale-[0.5]"
                                             )}
                                             onClick={() => {
+                                                if (isBatchMode) {
+                                                    handleToggleBatchSelection(group.id);
+                                                    return;
+                                                }
                                                 if ((group.news || []).length > 0) {
                                                     useNewsWorkbench.setState((prev: any) => {
                                                         const cat = category || 'general';
@@ -1357,7 +1386,21 @@ ${data.article.textContent}
                                                 }
                                             }}
                                         >
-                                            {/* Stack Badge (Point 3) */}
+                                            {/* Selection Overlay for Batch Mode */}
+                                            {isBatchMode && (
+                                                <div className="absolute top-3 left-3 z-30">
+                                                    <div className={clsx(
+                                                        "w-6 h-6 rounded-full flex items-center justify-center border-2 transition-all",
+                                                        batchSelection.includes(group.id) ? "bg-blue-600 border-blue-600 text-white shadow-lg" : "bg-white/80 border-gray-300"
+                                                    )}>
+                                                        {batchSelection.includes(group.id) && (
+                                                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4"><path d="M5 13l4 4L19 7" /></svg>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Stack Badge */}
                                             {(group.news || []).length > 1 && (
                                                 <div className="absolute top-3 left-3 z-20 flex items-center gap-1 bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg">
                                                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
@@ -1368,11 +1411,13 @@ ${data.article.textContent}
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
+                                                    if (isBatchMode) return;
                                                     handleToggleBookmark(group.id);
                                                 }}
                                                 className={clsx(
                                                     "absolute top-3 right-3 z-20 p-2 rounded-full backdrop-blur-md transition-all",
-                                                    group.isBookmarked ? "bg-amber-500 text-white scale-110 shadow-lg" : "bg-black/20 text-white hover:bg-black/40"
+                                                    group.isBookmarked ? "bg-amber-500 text-white scale-110 shadow-lg" : "bg-black/20 text-white hover:bg-black/40",
+                                                    isBatchMode && "cursor-not-allowed opacity-50"
                                                 )}
                                             >
                                                 <StarIcon className={clsx("w-4 h-4", group.isBookmarked && "fill-current")} />
@@ -1380,91 +1425,15 @@ ${data.article.textContent}
 
                                             <div className="h-40 relative bg-gray-100">
                                                 {(() => {
-                                                    // Point: Persistent Image Logic
                                                     const fallbackUrl = getFallbackImage(category);
-
-                                                    // If configured, use preferred image exclusively (no slideshow)
                                                     if (group.isConfigured && group.preferredImage) {
-                                                        return (
-                                                            <img
-                                                                src={group.preferredImage}
-                                                                className="w-full h-full object-cover"
-                                                                alt=""
-                                                                onError={(e) => {
-                                                                    const target = e.target as HTMLImageElement;
-                                                                    if (!target.src.includes(fallbackUrl)) target.src = fallbackUrl;
-                                                                }}
-                                                            />
-                                                        );
+                                                        return <img src={group.preferredImage} className="w-full h-full object-cover" alt="" />;
                                                     }
-
-                                                    // Otherwise use slideshow / active index logic
                                                     const activeNews = (group.news || [])[group.selectedIndex || 0] || (group.news || [])[0] || {};
                                                     const imgSrc = activeNews.image && !activeNews.image.includes('placeholder') ? activeNews.image : fallbackUrl;
-                                                    return (
-                                                        <img
-                                                            src={imgSrc}
-                                                            className="w-full h-full object-cover"
-                                                            alt=""
-                                                            onError={(e) => {
-                                                                const target = e.target as HTMLImageElement;
-                                                                if (!target.src.includes(fallbackUrl)) target.src = fallbackUrl;
-                                                            }}
-                                                        />
-                                                    );
+                                                    return <img src={imgSrc} className="w-full h-full object-cover" alt="" />;
                                                 })()}
                                                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                                                <div className="absolute bottom-3 left-3 right-3 text-white">
-                                                    <span className="text-[10px] font-bold uppercase tracking-widest opacity-80">
-                                                        {(group.news?.[group.selectedIndex || 0]?.sources?.[0]?.source) || (group.news?.[0]?.sources?.[0]?.source) || 'Agregador IA'}
-                                                    </span>
-                                                </div>
-
-                                                {/* Stack Navigation (Point 5) - Hide if Configured (Fixed Image) */}
-                                                {(group.news || []).length > 1 && !group.isConfigured && (
-                                                    <div className="absolute bottom-3 right-3 flex gap-1">
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                useNewsWorkbench.setState((prev: any) => {
-                                                                    const cat = category || 'general';
-                                                                    const groups = [...(prev.newsByCategories[cat] || [])];
-                                                                    const idx = groups.findIndex((g: NewsGroup) => g.id === group.id);
-                                                                    const g = { ...groups[idx] };
-                                                                    const newsCnt = (g.news || []).length;
-                                                                    if (newsCnt > 0) {
-                                                                        g.selectedIndex = (g.selectedIndex - 1 + newsCnt) % newsCnt;
-                                                                    }
-                                                                    groups[idx] = g;
-                                                                    return { newsByCategories: { ...prev.newsByCategories, [cat]: groups } };
-                                                                });
-                                                            }}
-                                                            className="p-1 bg-white/20 backdrop-blur-md rounded hover:bg-white/40 text-white"
-                                                        >
-                                                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3"><path d="M15 19l-7-7 7-7" /></svg>
-                                                        </button>
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                useNewsWorkbench.setState((prev: any) => {
-                                                                    const cat = category || 'general';
-                                                                    const groups = [...(prev.newsByCategories[cat] || [])];
-                                                                    const idx = groups.findIndex((g: NewsGroup) => g.id === group.id);
-                                                                    const g = { ...groups[idx] };
-                                                                    const newsCnt = (g.news || []).length;
-                                                                    if (newsCnt > 0) {
-                                                                        g.selectedIndex = (g.selectedIndex + 1) % newsCnt;
-                                                                    }
-                                                                    groups[idx] = g;
-                                                                    return { newsByCategories: { ...prev.newsByCategories, [cat]: groups } };
-                                                                });
-                                                            }}
-                                                            className="p-1 bg-white/20 backdrop-blur-md rounded hover:bg-white/40 text-white"
-                                                        >
-                                                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3"><path d="M9 5l7 7-7 7" /></svg>
-                                                        </button>
-                                                    </div>
-                                                )}
                                             </div>
 
                                             <div className="p-4 flex-1 flex flex-col">
@@ -1474,56 +1443,50 @@ ${data.article.textContent}
                                                 <p className="text-xs text-gray-500 line-clamp-3 mb-4 leading-relaxed">
                                                     {group.news?.[group.selectedIndex || 0]?.snippet || 'Sin descripción disponible'}
                                                 </p>
-
-                                                <div className="mt-auto space-y-2">
-                                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">Fuentes en esta noticia:</p>
-                                                    <div className="flex flex-wrap gap-1.5">
-                                                        {(group.news?.[group.selectedIndex || 0]?.sources || []).map((src, i: number) => (
-                                                            <div key={i} className="flex items-center gap-1 pl-2 pr-2 py-1 bg-gray-50 rounded-md border border-gray-100">
-                                                                <span className={clsx(
-                                                                    "text-[10px] font-medium transition-colors",
-                                                                    src.disabled ? "text-gray-300" : "text-gray-600"
-                                                                )}>
-                                                                    {src.source}
-                                                                </span>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
                                             </div>
 
-                                            {/* Actions Overlay (Linking) */}
-                                            <div className="absolute inset-0 bg-purple-600/10 opacity-0 group-hover/card:opacity-100 pointer-events-none transition-opacity" />
-
                                             {/* Card Footer Actions */}
-                                            <div className="p-3 border-t border-gray-100 bg-gray-50 text-[10px] text-gray-400 font-medium flex justify-between items-center">
-                                                <span className="flex items-center gap-1">
-                                                    <svg className="w-3 h-3 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" /></svg>
-                                                    Arrastra para vincular
-                                                </span>
-
-                                                <div className="flex items-center gap-2">
+                                            <div className="p-3 border-t border-gray-100 bg-gray-50 flex justify-between items-center">
+                                                {!isBatchMode ? (
                                                     <button
                                                         onClick={(e) => {
                                                             e.stopPropagation();
-                                                            setActiveStackId(group.id);
-                                                            setTempLinkedItems((group.news || []) as any);
-                                                            setTempDraftingInfo(group.linkingReason || "");
-                                                            // Point: default to current cover if not yet configured
-                                                            setTempPreferredImage(group.preferredImage || (group.isConfigured ? null : cover) || null);
-                                                            setLinkingModalOpen(true);
+                                                            handleToggleBatchSelection(group.id);
                                                         }}
-                                                        className={clsx(
-                                                            "text-[10px] font-bold px-3 py-1.5 rounded-lg border-2 transition-all flex items-center gap-1",
-                                                            group.isConfigured
-                                                                ? "text-green-600 border-green-500 bg-green-50"
-                                                                : "text-red-600 border-red-500 bg-red-50"
-                                                        )}
+                                                        className="text-[10px] font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 group/btn"
                                                     >
-                                                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                                                        EDITAR
+                                                        <div className="w-4 h-4 border-2 border-current rounded group-hover/btn:bg-blue-50" />
+                                                        VINCULAR A OTRO
                                                     </button>
-                                                </div>
+                                                ) : (
+                                                    <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">
+                                                        {batchSelection.includes(group.id) ? 'SELECCIONADO' : 'SELECCIONAR'}
+                                                    </span>
+                                                )}
+
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        if (isBatchMode) return;
+                                                        setActiveStackId(group.id);
+                                                        setTempLinkedItems((group.news || []) as any);
+                                                        setTempDraftingInfo(group.linkingReason || "");
+                                                        setTempPreferredImage(group.preferredImage || (group.isConfigured ? null : cover) || null);
+                                                        setLinkingModalOpen(true);
+                                                    }}
+                                                    disabled={isBatchMode}
+                                                    className={clsx(
+                                                        "text-[10px] font-bold px-3 py-1.5 rounded-lg border-2 transition-all flex items-center gap-1",
+                                                        isBatchMode ? "opacity-30 cursor-not-allowed border-gray-200 text-gray-400" : (
+                                                            group.isConfigured
+                                                                ? "text-green-600 border-green-500 bg-green-50 hover:bg-green-100"
+                                                                : "text-red-600 border-red-500 bg-red-50 hover:bg-red-100"
+                                                        )
+                                                    )}
+                                                >
+                                                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                                                    EDITAR
+                                                </button>
                                             </div>
                                         </div>
                                     );
@@ -1531,54 +1494,81 @@ ${data.article.textContent}
                             </div>
 
                             {/* Footer */}
-                            <div className="bg-white border-t border-gray-200 p-6 flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse" />
-                                    <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">
-                                        {(() => {
-                                            const selected = currentCategoryNews.find((g: NewsGroup) => g.selected);
-                                            if (selected) {
-                                                const allSources = (selected.news || []).flatMap(n => n.sources || []);
-                                                const activeCount = allSources.filter(s => !s.disabled).length;
-                                                const totalCount = allSources.length;
-                                                const newsCount = (selected.news || []).length;
-                                                return `Noticia vinculada (${newsCount} temas) con ${activeCount} fuentes de ${totalCount} disponibles`;
-                                            }
-                                            return "Selecciona una noticia para redactar";
-                                        })()}
-                                    </span>
-                                </div>
-                                <div className="flex gap-3">
-                                    {/* Link editing button moved out of footer to individual cards */}
-                                    {currentCategoryNews.length > 0 && (
-                                        <Button
-                                            variant="ghost"
-                                            onClick={() => {
-                                                if (confirm('¿Vaciar todas las noticias de esta categoría?')) {
-                                                    useNewsWorkbench.setState((prev: any) => ({
-                                                        newsByCategories: { ...prev.newsByCategories, [category || 'general']: [] }
-                                                    }));
-                                                    (useNewsWorkbench as any).clearHistory?.();
-                                                }
-                                            }}
-                                            className="text-red-500 hover:bg-red-50 hover:text-red-700"
-                                        >
-                                            Vaciar
-                                        </Button>
-                                    )}
-                                    <Button variant="ghost" onClick={() => setNewsModalOpen(false)}>Cancelar</Button>
-                                    <Button
-                                        variant="primary"
-                                        disabled={!currentCategoryNews.some((g: NewsGroup) => g.selected) || isGenerating}
-                                        className="bg-purple-600 hover:bg-purple-700 shadow-lg px-8 py-2.5 font-bold"
-                                        onClick={() => {
-                                            const selected = currentCategoryNews.find((g: NewsGroup) => g.selected);
-                                            if (selected) handleAIGenerateFromWorkbench(selected);
-                                        }}
-                                    >
-                                        Operar con Agente Editorial
-                                    </Button>
-                                </div>
+                            <div className="bg-white border-t border-gray-200 p-6">
+                                {isBatchMode ? (
+                                    <div className="flex items-center justify-between animate-in slide-in-from-bottom-4 duration-300">
+                                        <div className="flex items-center gap-4">
+                                            <div className="p-3 bg-blue-600 text-white rounded-xl shadow-lg animate-pulse">
+                                                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3"><path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-black text-blue-600 uppercase tracking-[0.2em]">Modo Vinculación Activo</p>
+                                                <p className="text-xs text-gray-500">Has seleccionado <strong>{batchSelection.length}</strong> temas para agrupar.</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-3">
+                                            <Button variant="ghost" onClick={() => setBatchSelection([])}>Cancelar Selección</Button>
+                                            <Button
+                                                variant="primary"
+                                                disabled={batchSelection.length < 2}
+                                                className="bg-blue-600 hover:bg-blue-700 shadow-xl px-10 py-3 font-bold"
+                                                onClick={handleBatchLink}
+                                            >
+                                                Vincular {batchSelection.length} Temas
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse" />
+                                            <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">
+                                                {(() => {
+                                                    const selected = currentCategoryNews.find((g: NewsGroup) => g.selected);
+                                                    if (selected) {
+                                                        const allSources = (selected.news || []).flatMap(n => n.sources || []);
+                                                        const activeCount = allSources.filter(s => !s.disabled).length;
+                                                        const totalCount = allSources.length;
+                                                        const newsCount = (selected.news || []).length;
+                                                        return `Noticia vinculada (${newsCount} temas) con ${activeCount} fuentes de ${totalCount} disponibles`;
+                                                    }
+                                                    return "Selecciona una noticia para redactar";
+                                                })()}
+                                            </span>
+                                        </div>
+                                        <div className="flex gap-3">
+                                            {currentCategoryNews.length > 0 && (
+                                                <Button
+                                                    variant="ghost"
+                                                    disabled={isBatchMode}
+                                                    onClick={() => {
+                                                        if (confirm('¿Vaciar todas las noticias de esta categoría?')) {
+                                                            useNewsWorkbench.setState((prev: any) => ({
+                                                                newsByCategories: { ...prev.newsByCategories, [category || 'general']: [] }
+                                                            }));
+                                                            (useNewsWorkbench as any).clearHistory?.();
+                                                        }
+                                                    }}
+                                                    className="text-red-500 hover:bg-red-50 hover:text-red-700"
+                                                >
+                                                    Vaciar
+                                                </Button>
+                                            )}
+                                            <Button variant="ghost" onClick={() => setNewsModalOpen(false)}>Cancelar</Button>
+                                            <Button
+                                                variant="primary"
+                                                disabled={!currentCategoryNews.some((g: NewsGroup) => g.selected) || isGenerating || isBatchMode}
+                                                className="bg-purple-600 hover:bg-purple-700 shadow-lg px-8 py-2.5 font-bold"
+                                                onClick={() => {
+                                                    const selected = currentCategoryNews.find((g: NewsGroup) => g.selected);
+                                                    if (selected) handleAIGenerateFromWorkbench(selected);
+                                                }}
+                                            >
+                                                Operar con Agente Editorial
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -1919,31 +1909,26 @@ ${data.article.textContent}
                             value={aiConfig.provider}
                             onChange={(e) => useAIStore.setState({ provider: e.target.value as any })}
                         >
-                            <option value="deepseek">DeepSeek (Recomendado)</option>
-                            <option value="openai">OpenAI</option>
-                            <option value="anthropic">Anthropic</option>
+                            <option value="gemini">Google Gemini (Recomendado)</option>
+                            <option value="deepseek">DeepSeek</option>
                         </select>
                     </div>
-                    <Input
-                        label="API Key"
-                        type="password"
-                        placeholder="sk-..."
-                        value={aiConfig.apiKey}
-                        onChange={(e) => useAIStore.setState({ apiKey: e.target.value })}
-                        helperText="Guardada solo en tu navegador (localStorage)"
-                    />
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Tu DeepSeek API Key (Opcional)</label>
+                    {/* Only show API Key input if not Gemini or DeepSeek (legacy support for others if added) */}
+                    {aiConfig.provider !== 'gemini' && aiConfig.provider !== 'deepseek' && (
                         <Input
+                            label="API Key"
                             type="password"
                             placeholder="sk-..."
-                            value={useAIStore.getState().apiKey || ''} // Reusing store for now or local state
+                            value={aiConfig.apiKey}
                             onChange={(e) => useAIStore.setState({ apiKey: e.target.value })}
+                            helperText="Guardada solo en tu navegador (localStorage)"
                         />
-                        <p className="text-xs text-gray-500 mt-1">
-                            Si se deja vacío, se usará la key del sistema (si existe).
-                        </p>
-                    </div>
+                    )}
+                    {(aiConfig.provider === 'gemini' || aiConfig.provider === 'deepseek') && (
+                        <div className="p-3 bg-blue-50 text-blue-700 text-sm rounded-lg border border-blue-100">
+                            <strong>{aiConfig.provider === 'gemini' ? 'Google Gemini' : 'DeepSeek'}</strong> está configurado por el sistema. No necesitas ingresar una clave.
+                        </div>
+                    )}
                     <div className="flex justify-end pt-2">
                         <Button
                             variant="primary"

@@ -1,5 +1,5 @@
-
 import { NewsScraper, ScanResult, Headline } from '@float.js/scraper';
+import { LLMClient, type LLMProvider } from '../../../lib/llm';
 import fs from 'fs';
 import path from 'path';
 
@@ -44,33 +44,16 @@ const CATEGORY_HUBS: Record<string, string[]> = {
     ]
 };
 
-async function askDeepSeek(messages: any[], apiKey: string) {
-    const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({
-            model: 'deepseek-chat',
-            messages: messages,
-            temperature: 0.3,
-            response_format: { type: 'json_object' }
-        })
-    });
-    if (!response.ok) throw new Error(`DeepSeek API Error: ${await response.text()}`);
-    return response.json();
-}
-
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { query, category, excludeUrls = [] } = body;
+        const { query, category, excludeUrls = [], provider = 'gemini', apiKey } = body;
 
         console.log(`[Search] Category: ${category}, Query: ${query}, Exclude: ${excludeUrls.length} urls`);
 
         const scraper = new NewsScraper();
-        const apiKey = process.env.DEEPSEEK_API_KEY;
+        // Provider specific key or environment key
+        const client = new LLMClient(provider as LLMProvider, apiKey);
 
         // 1. Select Hubs
         const catKey = (category || 'general')
@@ -110,7 +93,10 @@ export async function POST(req: Request) {
         // 5. AI Selection & Quality Filtering (The "Agent Intelligence" part)
         let finalItems: any[] = [];
 
-        if (apiKey) {
+        // Check if we can use AI (Key exists or using Gemini environment key)
+        const canUseAI = (provider === 'gemini') || (apiKey || process.env.DEEPSEEK_API_KEY);
+
+        if (canUseAI) {
             try {
                 // Try to load category contract
                 let contract = "";
@@ -154,12 +140,14 @@ export async function POST(req: Request) {
                 }
                 `;
 
-                const aiResponse = await askDeepSeek([
-                    { role: 'system', content: 'You are an expert news editor. Output JSON.' },
-                    { role: 'user', content: prompt }
-                ], apiKey);
+                const aiResponse = await client.chat({
+                    system: 'You are an expert news editor. Output JSON.',
+                    messages: [{ role: 'user', content: prompt }],
+                    response_format: 'json_object'
+                });
 
-                const groups = JSON.parse(aiResponse.choices[0].message.content).groups;
+                const content = aiResponse.content.replace(/```json/g, '').replace(/```/g, '');
+                const groups = JSON.parse(content).groups;
 
                 // Map back to NewsItem structure (Group -> News -> Sources)
                 groups.forEach((g: any) => {

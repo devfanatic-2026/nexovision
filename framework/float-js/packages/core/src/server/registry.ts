@@ -38,7 +38,7 @@ export class DependencyRegistry {
                 "react/jsx-runtime": "https://esm.sh/react@18.3.1/jsx-runtime",
                 "@float.js/core": "/__float/dist/client/index.js",
                 '@float.js/core/ai': '/__float/dist/ai/index.js',
-                '@float.js/core/realtime': '/__float/dist/realtime/index.js',
+                '@float.js/core/network': '/__float/dist/network/index.js',
                 '@float.js/core/api': '/__float/dist/api/index.js',
                 '@float.js/core/hooks/use-store': '/__float/dist/hooks/use-store.js',
             };

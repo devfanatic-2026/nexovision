@@ -1,12 +1,12 @@
 {
-  "name": "@float.js/core",
+  "name": "@float.js/lite",
   "version": "2.2.8",
-  "description": "Modern React framework with server-side rendering, file-based routing, and zero-config TypeScript",
+  "description": "Float.js Lite - Client-side framework for React Native and Web Components",
   "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/float-js/float.js.git",
-    "directory": "packages/core"
+    "directory": "packages/lite"
   },
   "homepage": "https://github.com/float-js/float.js#readme",
   "bugs": {
@@ -14,17 +14,10 @@
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "bin": {
-    "float": "./dist/cli/index.js"
-  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
-    },
-    "./server": {
-      "types": "./dist/server/index.d.ts",
-      "import": "./dist/server/index.js"
     },
     "./router": {
       "types": "./dist/router/index.d.ts",
@@ -54,31 +47,13 @@
     "prepublishOnly": "pnpm build"
   },
   "dependencies": {
-    "cac": "^6.7.14",
-    "chokidar": "^3.5.3",
-    "esbuild": "^0.25.0",
-    "fast-glob": "^3.3.2",
-    "mime-types": "^2.1.35",
-    "picocolors": "^1.0.0",
-    "ws": "^8.19.0"
+    "picocolors": "^1.0.0"
   },
   "peerDependencies": {
     "react": "^18.2.0 || ^19.0.0",
     "react-dom": "^18.2.0 || ^19.0.0"
   },
-  "peerDependenciesMeta": {
-    "tailwindcss": {
-      "optional": true
-    },
-    "postcss": {
-      "optional": true
-    },
-    "autoprefixer": {
-      "optional": true
-    }
-  },
   "devDependencies": {
-    "@types/mime-types": "^2.1.4",
     "@types/node": "^20.10.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
@@ -95,11 +70,10 @@
   "keywords": [
     "float",
     "framework",
-    "ssr",
-    "ssg",
+    "client",
     "react",
-    "modern",
-    "edge"
+    "react-native",
+    "lite"
   ],
   "license": "MIT"
 }

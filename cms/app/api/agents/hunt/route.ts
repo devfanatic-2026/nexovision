@@ -1,34 +1,21 @@
-
 import { NewsScraper } from '@float.js/scraper';
-
-// Helper to ask DeepSeek for JSON decisions
-async function askDeepSeek(messages: any[], apiKey: string) {
-    const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({
-            model: 'deepseek-reasoner', // or deepseek-chat if reasoner is too slow/expensive, but we want smarts
-            messages: messages,
-            temperature: 0.7,
-            response_format: { type: 'json_object' }
-        })
-    });
-    if (!response.ok) throw new Error(`DeepSeek API Error: ${await response.text()}`);
-    return response.json();
-}
+import { LLMClient, type LLMProvider } from '../../../../lib/llm';
 
 export async function POST(req: Request) {
     try {
-        const { category, instruction, deepseek_key } = await req.json();
+        const { category, instruction, apiKey, provider = 'gemini' } = await req.json();
 
-        if (!deepseek_key) {
-            return new Response(JSON.stringify({ error: 'DeepSeek API Key required for Hunt Mode' }), { status: 401 });
-        }
+        const client = new LLMClient(provider as LLMProvider, apiKey);
 
-        const scraper = new NewsScraper(deepseek_key);
+        // For scraper, we still might need an API key if it uses one internally for scraping (not analysis).
+        // If scraper uses key for analysis only, we can skip passing it if we do analysis manually here.
+        // But NewsScraper constructor takes a key. Let's pass the one we have or process.env.
+        // If using Gemini, scraper (if it relies on DeepSeek) might fail if we pass a Gemini key.
+        // We should verify what Scraper does with the key.
+        // For now, let's assume we pass the key if provider is deepseek, or undefined if gemini?
+        // Actually, let's pass it if available.
+        const scraperKey = provider === 'deepseek' ? apiKey : process.env.DEEPSEEK_API_KEY;
+        const scraper = new NewsScraper(scraperKey);
 
         // 1. DISCOVERY PHASE
         const discoveryPrompt = `
@@ -41,19 +28,18 @@ export async function POST(req: Request) {
         Example: { "hubs": ["https://www.emol.com/nacional", "https://www.latercera.com/canal/politica/"] }
         `;
 
-        const discoveryData = await askDeepSeek([
-            { role: 'system', content: 'You are a news discovery engine. Output JSON only.' },
-            { role: 'user', content: discoveryPrompt }
-        ], deepseek_key);
+        const discoveryRes = await client.chat({
+            system: 'You are a news discovery engine. Output JSON only.',
+            messages: [{ role: 'user', content: discoveryPrompt }],
+            response_format: 'json_object'
+        });
 
         let hubs: string[] = [];
         try {
-            // DeepSeek might return the JSON in 'content' or nested.
-            const jsonStr = discoveryData.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '');
+            const jsonStr = discoveryRes.content.replace(/```json/g, '').replace(/```/g, '');
             hubs = JSON.parse(jsonStr).hubs;
         } catch (e) {
             console.error('Failed to parse discovery JSON', e);
-            // Fallback hubs if AI fails
             hubs = ['https://www.emol.com', 'https://www.latercera.com'];
         }
 
@@ -88,38 +74,55 @@ export async function POST(req: Request) {
         Output JSON: { "selectedIndex": number, "reason": "why you picked it" }
         `;
 
-        const selectionData = await askDeepSeek([
-            { role: 'system', content: 'You are a Chief Editor. Pick the best story. Output JSON.' },
-            { role: 'user', content: selectionPrompt }
-        ], deepseek_key);
+        const selectionRes = await client.chat({
+            system: 'You are a Chief Editor. Pick the best story. Output JSON.',
+            messages: [{ role: 'user', content: selectionPrompt }],
+            response_format: 'json_object'
+        });
 
         let selectedUrl = '';
         try {
-            const jsonStr = selectionData.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '');
+            const jsonStr = selectionRes.content.replace(/```json/g, '').replace(/```/g, '');
             const selection = JSON.parse(jsonStr);
             const index = selection.selectedIndex;
             if (allHeadlines[index]) {
                 selectedUrl = allHeadlines[index].url;
             }
         } catch (e) {
-            // Fallback: pick random or first
             selectedUrl = allHeadlines[0].url;
         }
 
         // 4. EXTRACTION PHASE
         const article = await scraper.scrape(selectedUrl, { instruction });
 
-        // 5. AUTO-ANALYSIS (Optional, scraper.scrape with smart strategy + key might do it, 
-        // but we want to return structure expected by frontend)
-        // If the scraper.scrape didn't return analysis (because we didn't pass key to it in the right way or it's optional),
-        // we might do manual analysis here using `scraper.analyze` if needed.
-        // But our `NewsScraper` takes key in constructor! So `scrape` *should* strictly speaking just scrape.
-        // Wait, looking at `NewsScraper.scrape` implementation: it returns `{ article }`. It DOES NOT automatically analyze unless we uncommented that part.
-        // The frontend expects `{ article, analysis }`.
-
+        // 5. AUTO-ANALYSIS
         let analysis = null;
         if (article) {
-            analysis = await scraper.analyze(article.article, instruction || 'Analyze this news', deepseek_key);
+            // Manual analysis using our client to support Gemini
+            const analysisPrompt = `
+             Analyze this news article:
+             Title: ${article.article.title}
+             Content: ${article.article.textContent}
+             
+             Instruction: ${instruction || 'Provide a summary and extracted entities.'}
+             
+             Output JSON with:
+             - summary (string)
+             - people (array of strings)
+             - organizations (array of strings)
+             - media (array of strings)
+             `;
+
+            try {
+                const analysisRes = await client.chat({
+                    system: 'You are a News Analyst. Output JSON.',
+                    messages: [{ role: 'user', content: analysisPrompt }],
+                    response_format: 'json_object'
+                });
+                analysis = JSON.parse(analysisRes.content.replace(/```json/g, '').replace(/```/g, ''));
+            } catch (e) {
+                console.error("Analysis failed", e);
+            }
         }
 
         return new Response(JSON.stringify({

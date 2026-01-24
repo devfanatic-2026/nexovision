@@ -8,8 +8,8 @@
 export { VERSION } from './version.js';
 
 // Router
-export { 
-  scanRoutes, 
+export {
+  scanRoutes,
   matchRoute,
   type Route as FloatRoute,
   type RouterOptions as FloatRouterOptions,
@@ -29,7 +29,7 @@ export {
 } from './server/index.js';
 
 // Build
-export { 
+export {
   build,
   type BuildOptions,
   type BuildResult,
@@ -120,11 +120,11 @@ export interface Metadata {
 }
 
 // Re-export React types for convenience
-export type { 
-  ReactNode, 
-  ReactElement, 
-  FC, 
-  ComponentType 
+export type {
+  ReactNode,
+  ReactElement,
+  FC,
+  ComponentType
 } from 'react';
 
 // Float.js Hooks - Modern utilities for applications
@@ -178,7 +178,7 @@ export {
   type RealtimeRoom,
   type PresenceState,
   type RealtimeOptions,
-} from './realtime/index.js';
+} from './network/index.js';
 
 // Dev Tools - Visual dashboard for development
 export {
