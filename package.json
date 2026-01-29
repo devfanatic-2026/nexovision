@@ -16,5 +16,8 @@
     },
     "devDependencies": {
         "serve": "^14.2.5"
+    },
+    "dependencies": {
+        "react-native-web": "^0.21.2"
     }
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Paginator } from '@nexovision/ui-kit';
-import { createFloatStore } from "@float.js/core";
+import { createFloatStore } from "@float.js/lite";
 
 export interface PaginationState {
     currentPage: number;

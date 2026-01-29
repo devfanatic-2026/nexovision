@@ -3,10 +3,10 @@
     "version": "0.0.1",
     "main": "dist/index.js",
     "module": "dist/index.mjs",
-    "types": "dist/index.d.ts",
+    "types": "dist/index.d.mts",
     "exports": {
         ".": {
-            "types": "./dist/index.d.ts",
+            "types": "./dist/index.d.mts",
             "import": "./dist/index.mjs",
             "require": "./dist/index.js"
         }
@@ -29,8 +29,9 @@
         "typescript": "^5.0.0"
     },
     "dependencies": {
-        "@float.js/core": "workspace:*",
+        "@float.js/native": "workspace:*",
         "nativewind": "^4.2.1",
+        "react-native": "^0.83.1",
         "react-native-web": "^0.21.2"
     }
 }

@@ -1,0 +1,41 @@
+{
+    "name": "nexovision-cms-rt",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "concurrently \"pnpm:dev:backend\" \"pnpm:dev:frontend\"",
+        "dev:backend": "tsx src/server.ts",
+        "dev:frontend": "float dev -p 3005",
+        "build": "float build",
+        "start": "float start",
+        "seed": "tsx scripts/seed.ts",
+        "sync": "tsx scripts/sync-from-cms.ts"
+    },
+    "dependencies": {
+        "@float.js/core": "workspace:*",
+        "@float.js/native": "workspace:*",
+        "@nexovision/ui-kit": "workspace:*",
+        "@nexovision/ui-logic": "workspace:*",
+        "@nexovision/widgets-catalog": "workspace:*",
+        "dotenv": "^16.4.5",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+        "react-native-web": "^0.21.2",
+        "sqlite": "^5.1.1",
+        "sqlite3": "^5.1.7",
+        "tsx": "^4.19.1",
+        "typescript": "^5.6.3",
+        "uuid": "^10.0.0"
+    },
+    "devDependencies": {
+        "@types/react": "^18.3.1",
+        "@types/react-dom": "^18.3.1",
+        "@types/sqlite3": "^3.1.11",
+        "@types/uuid": "^10.0.0",
+        "autoprefixer": "^10.4.20",
+        "concurrently": "^9.1.2",
+        "postcss": "^8.5.6",
+        "tailwindcss": "^3.4.17"
+    }
+}

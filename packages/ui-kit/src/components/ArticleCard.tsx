@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from '@float.js/core';
-import type { ViewStyle } from '@float.js/core';
+import { View, Text, Image, TouchableOpacity, StyleSheet } from '@float.js/native';
+import type { ViewStyle } from '@float.js/lite';
 import { FloatDate } from './FloatDate';
 
 

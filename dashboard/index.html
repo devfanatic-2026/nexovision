@@ -108,16 +108,17 @@
         <h1>NexoVision Ecosystem</h1>
         <div class="grid">
             <!-- 1. CMSRT -->
-            <a href="http://localhost:3002" target="_blank" class="card" id="card-cms-rt">
-                <h2><span class="status core" id="status-cms-rt"></span>CMS-RT Backend</h2>
-                <p>Lean backend instance. Proporciona la API de datos y el WebSocket Bridge por puerto 3002.</p>
+            <a href="http://localhost:3005" target="_blank" class="card" id="card-cms-rt">
+                <h2><span class="status core" id="status-cms-rt"></span>CMS-RT Unified</h2>
+                <p>Instancia completa (App + API + WebSockets) por puerto 3005. Utiliza Float.js para el shell y widgets
+                    react-native-web.</p>
                 <small id="label-cms-rt">Checking status...</small>
             </a>
 
             <!-- 2. WIDGET CATALOG WEB -->
-            <a href="http://localhost:3004" target="_blank" class="card" id="card-widget-web">
+            <a href="http://localhost:3008" target="_blank" class="card" id="card-widget-web">
                 <h2><span class="status web" id="status-widget-web"></span>Widget Catalog Web</h2>
-                <p>Versión web del catálogo de widgets (puerto 3004).</p>
+                <p>Versión web del catálogo de widgets (puerto 3008).</p>
                 <small id="label-widget-web">Checking status...</small>
             </a>
 
@@ -149,8 +150,8 @@
 
         async function updateStatus() {
             const services = [
-                { id: 'cms-rt', port: 3002 },
-                { id: 'widget-web', port: 3004 },
+                { id: 'cms-rt', port: 3005 },
+                { id: 'widget-web', port: 3008 },
                 { id: 'storybook', port: 6006 }
             ];
 

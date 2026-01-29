@@ -29,6 +29,7 @@ const config: StorybookConfig = {
         config.resolve = config.resolve || {};
         config.resolve.alias = {
             ...(config.resolve.alias || {}),
+            "@float.js/native": "react-native-web",
             "react-native$": "react-native-web",
             "react": path.resolve(__dirname, "../node_modules/react"),
             "react-dom": path.resolve(__dirname, "../node_modules/react-dom"),

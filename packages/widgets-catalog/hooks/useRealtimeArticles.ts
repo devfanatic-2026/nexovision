@@ -1,5 +1,5 @@
-import { useEffect, useCallback } from 'react';
-import { createFloatStore, realtime } from "@float.js/core";
+import { useEffect, useCallback, useRef } from 'react';
+import { createFloatStore } from "@float.js/lite";
 
 export interface Article {
     id: string;
@@ -14,87 +14,119 @@ interface ArticleStoreState {
     total: number;
     loading: boolean;
     error: string | null;
-    currentPage: number;
-    pageSize: number;
+    page: number;
+    limit: number;
 }
 
 const useArticleStore = createFloatStore<ArticleStoreState>({
     articles: [],
     total: 0,
-    loading: false,
+    loading: false, // Default to false, let the component trigger it
     error: null,
-    currentPage: 1,
-    pageSize: 10,
+    page: 1,
+    limit: 10,
 });
 
+// Singleton WebSocket
+let singletonWs: WebSocket | null = null;
+
 interface UseRealtimeArticlesOptions {
-    url?: string;
+    url: string;
     limit?: number;
 }
 
-export function useRealtimeArticles({ url = 'http://localhost:3002', limit = 10 }: UseRealtimeArticlesOptions = {}) {
+export function useRealtimeArticles({
+    url,
+    limit = 10
+}: UseRealtimeArticlesOptions) {
     const state = useArticleStore();
-    const { articles, total, loading, error, currentPage, pageSize } = state;
+    const { articles, total, loading, error, page } = state;
 
-    // Sync store with options if they change
+    // Handle connection only
     useEffect(() => {
-        if (limit !== pageSize) {
-            useArticleStore.setState({ pageSize: limit });
+        if (!url) return;
+
+        const wsUrl = url.startsWith('http') ? url.replace(/^http/, 'ws') + '/ws' : (url.startsWith('ws') ? url : `ws://${url}/ws`);
+
+        if (singletonWs && (singletonWs.readyState === WebSocket.OPEN || singletonWs.readyState === WebSocket.CONNECTING)) {
+            // If already connected to the same URL, do nothing
+            if (singletonWs.url.includes(url)) return;
+            // Otherwise close and reconnect
+            singletonWs.close();
         }
-    }, [limit, pageSize]);
 
-    const loadPage = useCallback((page: number) => {
-        useArticleStore.setState({ loading: true, error: null });
+        console.log('🔌 Connecting to CMS-RT WebSocket at', wsUrl);
+        const ws = new WebSocket(wsUrl);
+        singletonWs = ws;
 
-        const wsUrl = url.replace('http', 'ws') + '/ws';
-        const client = (realtime as any).client({ url: wsUrl, autoReconnect: true });
+        ws.onopen = () => {
+            console.log('✅ WebSocket connected');
+        };
 
-        client.connect().then(() => {
-            console.log(`🔌 [WS] Requesting articles (page: ${page}, limit: ${pageSize})`);
-            client.emit('articles:list', { page, limit: pageSize });
-        }).catch((err: any) => {
-            useArticleStore.setState({
-                loading: false,
-                error: 'Connection failed: ' + (err.message || String(err))
-            });
-        });
+        ws.onmessage = (event) => {
+            try {
+                const msg = JSON.parse(event.data);
+                if (msg.type === 'articles:list:response') {
+                    const { articles, total, page } = msg.payload;
+                    useArticleStore.setState({
+                        articles,
+                        total,
+                        page,
+                        loading: false,
+                        error: null
+                    });
+                } else if (msg.type === 'error') {
+                    useArticleStore.setState({ error: msg.payload, loading: false });
+                }
+            } catch (e) {
+                console.error('Failed to parse WS message', e);
+            }
+        };
 
-        client.on('articles:list:response', (data: any) => {
-            useArticleStore.setState({
-                articles: data.articles || [],
-                total: data.total || 0,
-                loading: false,
-                error: null,
-                currentPage: page
-            });
-            client.disconnect();
-        });
+        ws.onerror = (err) => {
+            console.error('❌ WebSocket error', err);
+            useArticleStore.setState({ error: 'WebSocket connection failed', loading: false });
+        };
 
-        client.on('error', (err: any) => {
-            useArticleStore.setState({
-                loading: false,
-                error: typeof err === 'string' ? err : 'Unknown WebSocket error'
-            });
-            client.disconnect();
-        });
-    }, [url, pageSize]);
+        ws.onclose = () => {
+            console.log('👋 WebSocket disconnected');
+            if (singletonWs === ws) singletonWs = null;
+        };
 
-    // Initial load - only if we don't have articles or we are on a different page than the store
-    useEffect(() => {
-        if (articles.length === 0) {
-            loadPage(currentPage);
-        }
-    }, [url, pageSize]); // Add url/pageSize to trigger reload if they change
+        return () => {
+            // We keep it alive for the singleton, but if the URL changes the next effect will handle it.
+        };
+    }, [url]);
+
+    const fetchArticles = useCallback((p: number = 1) => {
+        const sendMessage = () => {
+            if (singletonWs && singletonWs.readyState === WebSocket.OPEN) {
+                useArticleStore.setState({ loading: true, page: p });
+                singletonWs.send(JSON.stringify({
+                    type: 'articles:list',
+                    payload: { page: p, limit }
+                }));
+            } else {
+                console.warn('⚠️ WebSocket NOT OPEN yet. Retrying in 500ms...');
+                setTimeout(() => fetchArticles(p), 500);
+            }
+        };
+        sendMessage();
+        return;
+    }, [limit]);
+
+    const setPage = useCallback((newPage: number) => {
+        fetchArticles(newPage);
+    }, [fetchArticles]);
 
     return {
         articles,
         total,
-        currentPage,
         loading,
         error,
-        totalPages: Math.ceil(total / pageSize),
-        loadPage: (page: number) => {
-            loadPage(page);
-        }
+        page,
+        setPage,
+        fetchArticles,
+        totalPages: Math.ceil(total / limit)
     };
 }

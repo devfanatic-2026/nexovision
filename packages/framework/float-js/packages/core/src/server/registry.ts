@@ -37,6 +37,8 @@ export class DependencyRegistry {
                 "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
                 "react/jsx-runtime": "https://esm.sh/react@18.3.1/jsx-runtime",
                 "@float.js/core": "/__float/dist/client/index.js",
+                "@float.js/lite": "/__float/dist/client/index.js",  // Temporary alias for browser compatibility
+                "@float.js/native": "https://esm.sh/react-native-web@0.19.13?external=react,react-dom",  // React Native source of truth
                 '@float.js/core/ai': '/__float/dist/ai/index.js',
                 '@float.js/core/network': '/__float/dist/network/index.js',
                 '@float.js/core/api': '/__float/dist/api/index.js',
@@ -47,7 +49,7 @@ export class DependencyRegistry {
             let count = 0;
             for (const [name, version] of Object.entries(deps)) {
                 // Skip framework itself and core react (already mapped)
-                if (name === '@float.js/core' || name === 'react' || name === 'react-dom') continue;
+                if (name === '@float.js/core' || name === '@float.js/lite' || name === '@float.js/native' || name === 'react' || name === 'react-dom') continue;
 
                 // Handle workspace/link dependencies (local transformation)
                 if (typeof version === 'string' && (version.startsWith('workspace:') || version.startsWith('link:'))) {

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Text, StyleSheet } from '@float.js/core';
-import type { TextStyle } from '@float.js/core';
+import { Text, StyleSheet } from '@float.js/native';
+import type { TextStyle } from '@float.js/lite';
 
 export interface FloatDateProps {
     date: string | number | Date | null | undefined;

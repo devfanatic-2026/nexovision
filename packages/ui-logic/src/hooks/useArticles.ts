@@ -1,5 +1,5 @@
 import { useEffect, useCallback } from 'react';
-import { createFloatStore } from "@float.js/core";
+import { createFloatStore } from "@float.js/lite";
 import { usePaginationStore } from '../components/PaginatorContainer';
 
 export interface Article {
