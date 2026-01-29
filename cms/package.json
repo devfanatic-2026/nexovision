@@ -4,7 +4,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "dev": "pnpm build:css && (node --preserve-symlinks ../framework/float-js/packages/core/dist/cli/index.js dev & pnpm watch:css)",
+        "dev": "pnpm build:css && (node --preserve-symlinks ../packages/framework/float-js/packages/core/dist/cli/index.js dev & pnpm watch:css)",
         "build": "pnpm build:css && float build",
         "start": "float start",
         "build:css": "tailwindcss -i app/globals.css -o public/styles.css",
@@ -13,8 +13,7 @@
         "export": "tsx scripts/export-data.ts"
     },
     "dependencies": {
-        "@float.js/core": "file:../framework/float-js/packages/core",
-        "@float.js/scraper": "file:../framework/floatjs-scraper",
+        "@float.js/core": "workspace:*",
         "@headlessui/react": "^1.7.18",
         "@heroicons/react": "^2.1.1",
         "@mozilla/readability": "^0.5.0",

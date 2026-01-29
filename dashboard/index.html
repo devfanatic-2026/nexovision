@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexoVision Dashboard</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #111827;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s;
+        }
+
+        .card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .card h2 {
+            margin: 0 0 0.5rem 0;
+            color: #1f2937;
+            font-size: 1.25rem;
+        }
+
+        .card p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 0.875rem;
+            flex-grow: 1;
+            margin-bottom: 1rem;
+        }
+
+        .status {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .status.core {
+            background: #3b82f6;
+        }
+
+        .status.rt {
+            background: #10b981;
+        }
+
+        .status.dev {
+            background: #f59e0b;
+        }
+
+        .status.web {
+            background: #8b5cf6;
+        }
+
+        .status.mobile {
+            background: #ec4899;
+        }
+
+        small {
+            color: #9ca3af;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>NexoVision Ecosystem</h1>
+        <div class="grid">
+            <!-- 1. CMSRT -->
+            <a href="http://localhost:3002" target="_blank" class="card" id="card-cms-rt">
+                <h2><span class="status core" id="status-cms-rt"></span>CMS-RT Backend</h2>
+                <p>Lean backend instance. Proporciona la API de datos y el WebSocket Bridge por puerto 3002.</p>
+                <small id="label-cms-rt">Checking status...</small>
+            </a>
+
+            <!-- 2. WIDGET CATALOG WEB -->
+            <a href="http://localhost:3004" target="_blank" class="card" id="card-widget-web">
+                <h2><span class="status web" id="status-widget-web"></span>Widget Catalog Web</h2>
+                <p>Versión web del catálogo de widgets (puerto 3004).</p>
+                <small id="label-widget-web">Checking status...</small>
+            </a>
+
+            <!-- 3. WIDGET CATALOG NATIVE -->
+            <a href="#" class="card" id="card-widget-native" style="opacity: 0.6; pointer-events: none;">
+                <h2><span class="status mobile" id="status-widget-native"></span>Widget Catalog Native</h2>
+                <p>Aplicación móvil Expo. Requiere Expo CLI activo.</p>
+                <small id="label-widget-native">Inactive</small>
+            </a>
+
+            <!-- 4. STORYBOOK UI KIT -->
+            <a href="#" target="_blank" class="card" id="card-sb-ui" onclick="openStorybook(64606, event)">
+                <h2><span class="status dev" id="status-sb-ui"></span>Storybook UI Kit</h2>
+                <p>Catálogo de componentes atómicos. Mantenido en puerto 64606.</p>
+                <span class="status-label">Checking status...</span>
+                <div class="card-action"></div>
+        </div>
+
+        <!-- 5. STORYBOOK UI LOGIC -->
+        <div class="card" id="sb-logic">
+            <h2><span class="status-dot dot-dev"></span>Storybook Logic</h2>
+            <p>Previsualización de estados y acciones. Mantenido en puerto 64605.</p>
+            <span class="status-label">Checking status...</span>
+            <div class="card-action"></div>
+        </div>
+    </div>
+    </div>
+
+    <script>
+        async function checkPort(port) {
+            try {
+                const res = await fetch(`http://localhost:${port}`, { mode: 'no-cors' });
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        async function openStorybook(event, name, port) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const btn = event.currentTarget;
+            btn.textContent = 'Starting...';
+            btn.disabled = true;
+
+            try {
+                // Hit the service control API on the widget-web port (3004)
+                await fetch(`http://localhost:3004/__control/start-service?name=${name}`);
+
+                // Start polling or just wait
+                let attempts = 0;
+                const interval = setInterval(async () => {
+                    const online = await checkPort(port);
+                    if (online || attempts > 20) {
+                        clearInterval(interval);
+                        if (online) {
+                            window.open(`http://localhost:${port}`, '_blank');
+                            updateStatus();
+                        } else {
+                            btn.textContent = 'Start';
+                            btn.disabled = false;
+                            alert('Failed to start service in time.');
+                        }
+                    }
+                    attempts++;
+                }, 2000);
+            } catch (e) {
+                console.error(e);
+                btn.textContent = 'Start';
+                btn.disabled = false;
+            }
+        }
+
+        async function updateStatus() {
+            const services = [
+                { id: 'cms-rt', port: 3002 },
+                { id: 'widget-web', port: 3004 },
+                { id: 'sb-ui', port: 64606, interactive: true, name: 'sb-ui' },
+                { id: 'sb-logic', port: 64605, interactive: true, name: 'sb-logic' }
+            ];
+
+            for (const service of services) {
+                const isOnline = await checkPort(service.port);
+                const card = document.getElementById(service.id);
+                if (!card) continue; // Skip if card element not found
+
+                const dot = card.querySelector('.status-dot');
+                const label = card.querySelector('.status-label');
+                const actionArea = card.querySelector('.card-action');
+
+                if (isOnline) {
+                    card.classList.remove('offline');
+                    card.classList.add('online');
+                    if (dot) {
+                        dot.style.background = '#00ff88';
+                        dot.style.boxShadow = '0 0 15px #00ff88';
+                    }
+                    if (label) label.textContent = 'Online';
+
+                    if (service.interactive && actionArea) {
+                        actionArea.innerHTML = `<span class="btn-check">✓ Running</span>`;
+                        // If it's an interactive card and online, make it a clickable link
+                        if (card.tagName === 'DIV') {
+                            card.onclick = () => window.open(`http://localhost:${service.port}`, '_blank');
+                            card.style.cursor = 'pointer';
+                        }
+                    } else if (actionArea) {
+                        actionArea.innerHTML = ''; // Clear action for non-interactive or non-storybook cards
+                    }
+                } else {
+                    card.classList.remove('online');
+                    card.classList.add('offline');
+                    if (dot) {
+                        dot.style.background = '#666';
+                        dot.style.boxShadow = 'none';
+                    }
+                    if (label) label.textContent = 'Offline';
+
+                    if (service.interactive && actionArea) {
+                        actionArea.innerHTML = `<button class="btn-start" onclick="openStorybook(event, '${service.name}', ${service.port})">Start Service</button>`;
+                        // If it's an interactive card and offline, remove direct click action
+                        if (card.tagName === 'DIV') {
+                            card.onclick = null;
+                            card.style.cursor = 'default';
+                        }
+                    } else if (actionArea) {
+                        actionArea.innerHTML = ''; // Clear action for non-interactive or non-storybook cards
+                    }
+                }
+            }
+        }
+
+        function openStorybook(port, event) {
+            const href = `http://localhost:${port}`;
+            // If the process is not started, this might 404. 
+            // The user wants on-demand, but the process must be running.
+            // In dev:all, they ARE running but --no-open was added.
+        }
+
+        setInterval(updateStatus, 3000);
+        updateStatus();
+    </script>
+</body>
+
+</html>

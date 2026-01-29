@@ -1,0 +1,6 @@
+packages:
+  - 'cms'
+  - 'cms_rt'
+  - 'dashboard'
+  - 'packages/framework/float-js/packages/*'
+  - 'packages/*'

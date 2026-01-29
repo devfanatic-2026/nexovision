@@ -1,0 +1,21 @@
+{
+    "name": "nexovision-monorepo",
+    "private": true,
+    "packageManager": "pnpm@9.0.0",
+    "scripts": {
+        "install:all": "pnpm install",
+        "dev:cms-rt": "pnpm --filter nexovision-cms-rt dev",
+        "dev:widgets-web": "pnpm --filter widget-catalog-web dev",
+        "dev:widgets-native": "cd packages/widget-catalog-native && pnpm start",
+        "dev:sb-ui": "pnpm --filter @nexovision/storybook-ui-kit-web storybook -- -p 64606 --no-open",
+        "dev:sb-logic": "pnpm --filter @nexovision/storybook-ui-logic-web storybook -- -p 64605 --no-open",
+        "dev:dashboard": "serve dashboard -p 8000",
+        "dev:ui-kit": "pnpm --filter @nexovision/ui-kit dev",
+        "dev:ui-logic": "pnpm --filter @nexovision/ui-logic dev",
+        "dev:all": "npx concurrently -n \"KIT,LOGIC,CMS-RT,WIDGETS-WEB,SB-UI,SB-LOGIC,DASHBOARD\" -c \"gray,gray,green,red,cyan,blue,white\" \"pnpm run dev:ui-kit\" \"pnpm run dev:ui-logic\" \"pnpm run dev:cms-rt\" \"pnpm run dev:widgets-web\" \"pnpm run dev:sb-ui\" \"pnpm run dev:sb-logic\" \"pnpm run dev:dashboard\"",
+        "dev:rt": "pnpm run dev:all"
+    },
+    "devDependencies": {
+        "serve": "^14.2.5"
+    }
+}
