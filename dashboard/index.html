@@ -123,18 +123,12 @@
             </a>
 
             <!-- 3. WIDGET CATALOG NATIVE -->
-            <a href="#" class="card" id="card-widget-native" style="opacity: 0.6; pointer-events: none;">
+            <a href="exp://localhost:8081" class="card" id="card-widget-native">
                 <h2><span class="status mobile" id="status-widget-native"></span>Widget Catalog Native</h2>
-                <p>Aplicación móvil Expo. Requiere Expo CLI activo.</p>
-                <small id="label-widget-native">Inactive</small>
+                <p>Aplicación móvil Expo (puerto 8081). Requiere simulador o dispositivo físico.</p>
+                <small id="label-widget-native">Checking status...</small>
             </a>
 
-            <!-- 4. STORYBOOK CONSOLIDATED -->
-            <a href="http://localhost:6006" target="_blank" class="card" id="card-storybook">
-                <h2><span class="status dev" id="status-storybook"></span>Storybook</h2>
-                <p>Catálogo unificado de componentes y lógica (Web & Native). Puerto 6006.</p>
-                <small id="label-storybook">Checking status...</small>
-            </a>
         </div>
     </div>
 
@@ -152,7 +146,7 @@
             const services = [
                 { id: 'cms-rt', port: 3005 },
                 { id: 'widget-web', port: 3008 },
-                { id: 'storybook', port: 6006 }
+                { id: 'widget-native', port: 8081 }
             ];
 
             for (const service of services) {

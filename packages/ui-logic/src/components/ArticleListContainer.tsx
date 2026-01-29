@@ -1,7 +1,5 @@
 import React from 'react';
-import * as RNModule from 'react-native';
-const RN = (RNModule as any).default || RNModule;
-const { View, FlatList, ActivityIndicator, Text, StyleSheet } = RN;
+import { View, FlatList, ActivityIndicator, Text, StyleSheet } from '@float.js/native';
 import { ArticleCard } from '@nexovision/ui-kit';
 import { PaginatorContainer } from './PaginatorContainer';
 import { useArticles, Article } from '../hooks/useArticles';

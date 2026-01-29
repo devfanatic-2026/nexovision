@@ -131,13 +131,11 @@ export {
   TextInput,
   Button,
   Switch,
-  Slider,
 
   // Touchables
   TouchableOpacity,
   TouchableHighlight,
   TouchableWithoutFeedback,
-  Touchable,
 
   // UI Components
   ActivityIndicator,

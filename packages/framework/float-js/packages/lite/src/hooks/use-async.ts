@@ -84,7 +84,7 @@ export function useFloatAsync<T, Args extends any[] = []>(
     const attempt = async (): Promise<T | undefined> => {
       try {
         const data = await asyncFn(...args);
-        
+
         if (mountedRef.current) {
           setState({
             data,
@@ -97,16 +97,16 @@ export function useFloatAsync<T, Args extends any[] = []>(
           onSuccess?.(data);
           onSettled?.(data, undefined);
         }
-        
+
         return data;
       } catch (error) {
         attemptRef.current++;
-        
+
         if (attemptRef.current <= retryCount) {
           await new Promise(resolve => setTimeout(resolve, retryDelay));
           return attempt();
         }
-        
+
         if (mountedRef.current) {
           setState(prev => ({
             ...prev,
@@ -118,7 +118,7 @@ export function useFloatAsync<T, Args extends any[] = []>(
           onError?.(error as Error);
           onSettled?.(undefined, error as Error);
         }
-        
+
         return undefined;
       }
     };
@@ -148,7 +148,7 @@ export function useFloatAsync<T, Args extends any[] = []>(
   // Execute immediately if requested
   useEffect(() => {
     mountedRef.current = true;
-    
+
     if (immediate) {
       execute(...([] as unknown as Args));
     }
@@ -174,7 +174,7 @@ export function useFloatDebounce<T, Args extends any[]>(
   delay: number = 300,
   options: FloatAsyncOptions<T> = {}
 ): FloatAsyncResult<T, Args> {
-  const timerRef = useRef<NodeJS.Timeout>();
+  const timerRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const result = useFloatAsync(asyncFn, options);
 
   const debouncedExecute = useCallback((...args: Args) => {
@@ -217,12 +217,12 @@ export function useFloatThrottle<T, Args extends any[]>(
 
   const throttledExecute = useCallback((...args: Args) => {
     const now = Date.now();
-    
+
     if (now - lastRunRef.current >= limit) {
       lastRunRef.current = now;
       return result.execute(...args);
     }
-    
+
     return Promise.resolve(result.data);
   }, [result.execute, result.data, limit]);
 

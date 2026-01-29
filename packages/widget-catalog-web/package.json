@@ -1,6 +1,7 @@
 {
   "name": "widget-catalog-web",
   "version": "1.0.0",
+  "type": "module",
   "description": "Web version of the widget catalog using float-core to convert native components",
   "main": "index.js",
   "scripts": {
@@ -18,8 +19,8 @@
     "@nexovision/ui-kit": "workspace:*",
     "@nexovision/ui-logic": "workspace:*",
     "@nexovision/widgets-catalog": "workspace:*",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
     "react-native-web": "^0.19.13"
   }
 }

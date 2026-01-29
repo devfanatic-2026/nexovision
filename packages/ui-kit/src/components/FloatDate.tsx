@@ -1,6 +1,5 @@
 import React from 'react';
-import { Text, StyleSheet } from '@float.js/native';
-import type { TextStyle } from '@float.js/lite';
+import { Text, StyleSheet, TextStyle } from 'react-native';
 
 export interface FloatDateProps {
     date: string | number | Date | null | undefined;
@@ -87,7 +86,7 @@ export const FloatDate: React.FC<FloatDateProps> = ({
     }
 
     return (
-        <Text style={[styles.text, style]} className={className} selectable={true}>
+        <Text style={[styles.text, style]} selectable={true}>
             {formatted}
         </Text>
     );

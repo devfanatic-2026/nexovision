@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from '@float.js/native';
-import type { ViewStyle } from '@float.js/lite';
+import { View, Text, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
 
 export interface PaginatorProps {
     currentPage: number;

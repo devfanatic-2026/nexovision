@@ -1,11 +1,11 @@
-import { Platform, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 import { RealtimeArticleList } from '@nexovision/widgets-catalog';
 
-export default function HomeScreen() {
+export default function Index() {
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <RealtimeArticleList />
-    </ScrollView>
+    </View>
   );
 }
 

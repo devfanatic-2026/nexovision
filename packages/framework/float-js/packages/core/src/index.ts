@@ -25,17 +25,10 @@ export {
   ActivityIndicator,
 } from 'react-native-web';
 
-export type {
-  ViewStyle,
-  TextStyle,
-  ImageStyle,
-} from 'react-native-web';
-
 import * as RNW from 'react-native-web';
-import { StyleSheet as _StyleSheet, Platform as _Platform } from 'react-native-web';
 
-export const StyleSheet: typeof _StyleSheet = (RNW as any).StyleSheet;
-export const Platform: typeof _Platform = (RNW as any).Platform;
+export const StyleSheet: any = (RNW as any).StyleSheet;
+export const Platform: any = (RNW as any).Platform;
 
 // Float.js Hooks - Modern utilities for applications
 export {

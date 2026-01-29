@@ -6,18 +6,29 @@
         "install:all": "pnpm install",
         "dev:cms-rt": "pnpm --filter nexovision-cms-rt dev",
         "dev:widgets-web": "pnpm --filter widget-catalog-web dev",
-        "dev:widgets-native": "cd packages/widget-catalog-native && pnpm start",
-        "dev:storybook": "pnpm --filter @nexovision/storybook-ui-kit storybook -- -p 6006 --no-open",
+        "dev:widgets-native": "cd packages/widget-catalog-native && pnpm run ios",
         "dev:dashboard": "serve dashboard -p 8000",
         "dev:ui-kit": "pnpm --filter @nexovision/ui-kit dev",
         "dev:ui-logic": "pnpm --filter @nexovision/ui-logic dev",
-        "dev:all": "npx concurrently -n \"KIT,LOGIC,CMS-RT,WIDGETS-WEB,STORYBOOK,DASHBOARD\" -c \"gray,gray,green,red,cyan,blue\" \"pnpm run dev:ui-kit\" \"pnpm run dev:ui-logic\" \"pnpm run dev:cms-rt\" \"pnpm run dev:widgets-web\" \"pnpm run dev:storybook\" \"pnpm run dev:dashboard\"",
-        "dev:rt": "pnpm run dev:all"
+        "dev:stop": "./scripts/stop-all.sh",
+        "dev:cleanup": "lsof -ti:3002,3005,3006,3008,3009,8000,8081 | xargs kill -9 2>/dev/null || true; pkill -9 -f 'expo start' || true",
+        "dev:core": "pnpm run dev:ui-kit & pnpm run dev:ui-logic & pnpm run dev:cms-rt & pnpm run dev:widgets-web & pnpm run dev:dashboard",
+        "dev:rt": "pnpm run dev:cleanup && pnpm run dev:core",
+        "dev:all": "pnpm run dev:cleanup && pnpm run dev:core & sleep 5 && pnpm run dev:widgets-native"
     },
     "devDependencies": {
         "serve": "^14.2.5"
     },
     "dependencies": {
         "react-native-web": "^0.21.2"
+    },
+    "pnpm": {
+        "overrides": {
+            "react": "19.1.0",
+            "react-dom": "19.1.0",
+            "react-native": "0.81.5",
+            "@types/react": "19.0.8",
+            "@types/react-dom": "19.0.3"
+        }
     }
 }

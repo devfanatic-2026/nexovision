@@ -13,20 +13,21 @@
     },
     "license": "MIT",
     "scripts": {
-        "build": "tsup src/index.ts --format esm --dts --clean --external react,react-native",
-        "dev": "tsup src/index.ts --format esm --dts --watch --external react,react-native"
+        "build": "tsup src/index.ts --format esm --dts --clean --external react,react-native,@float.js/lite,@float.js/native,@nexovision/ui-kit",
+        "dev": "tsup src/index.ts --format esm --dts --watch --external react,react-native,@float.js/lite,@float.js/native,@nexovision/ui-kit"
     },
     "dependencies": {
+        "@float.js/lite": "workspace:*",
         "@float.js/native": "workspace:*",
         "@nexovision/ui-kit": "workspace:*",
         "nativewind": "^4.2.1",
-        "react-native": "^0.83.1"
+        "react-native": "0.81.5"
     },
     "peerDependencies": {
-        "react": "^18.2.0"
+        "react": "^18.2.0 || ^19.0.0"
     },
     "devDependencies": {
-        "@types/react": "^18.0.0",
+        "@types/react": "^19.0.0",
         "tailwindcss": "^3.4.1",
         "tsup": "^8.0.0",
         "typescript": "^5.0.0"

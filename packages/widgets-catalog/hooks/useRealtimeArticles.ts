@@ -68,6 +68,7 @@ export function useRealtimeArticles({
                 const msg = JSON.parse(event.data);
                 if (msg.type === 'articles:list:response') {
                     const { articles, total, page } = msg.payload;
+                    console.log(`📦 Received ${articles?.length || 0} articles via WebSocket`);
                     useArticleStore.setState({
                         articles,
                         total,

@@ -24,19 +24,19 @@ ${pc.cyan('╚══════════════════════
 cli
   .command('dev', 'Start development server')
   .option('-p, --port <port>', 'Port to listen on', { default: 3000 })
-  .option('-h, --host <host>', 'Host to bind to', { default: 'localhost' })
+  .option('-H, --host <host>', 'Host to bind to', { default: 'localhost' })
   .option('--open', 'Open browser on start', { default: false })
   .action(async (options) => {
     console.log(banner);
     console.log(pc.cyan('🚀 Starting development server...\n'));
-    
+
     try {
       const server = await createDevServer({
         port: Number(options.port),
         host: options.host,
         open: options.open,
       });
-      
+
       await server.start();
     } catch (error) {
       console.error(pc.red('❌ Failed to start dev server:'), error);
@@ -51,12 +51,12 @@ cli
   .action(async (options) => {
     console.log(banner);
     console.log(pc.cyan('📦 Building for production...\n'));
-    
+
     try {
       const startTime = Date.now();
       await build({ analyze: options.analyze });
       const duration = Date.now() - startTime;
-      
+
       console.log(pc.green(`\n✅ Build completed in ${duration}ms`));
     } catch (error) {
       console.error(pc.red('❌ Build failed:'), error);
@@ -68,11 +68,11 @@ cli
 cli
   .command('start', 'Start production server')
   .option('-p, --port <port>', 'Port to listen on', { default: 3000 })
-  .option('-h, --host <host>', 'Host to bind to', { default: '0.0.0.0' })
+  .option('-H, --host <host>', 'Host to bind to', { default: '0.0.0.0' })
   .action(async (options) => {
     console.log(banner);
     console.log(pc.cyan('🌐 Starting production server...\n'));
-    
+
     try {
       await startProductionServer({
         port: Number(options.port),

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, FlatList, ActivityIndicator, Text, StyleSheet } from '@float.js/native';
+import { View, FlatList, ActivityIndicator, Text, StyleSheet } from 'react-native';
 import { ArticleCard } from '@nexovision/ui-kit';
 import { PaginatorContainer } from '@nexovision/ui-logic';
 import { useRealtimeArticles, Article } from '../hooks/useRealtimeArticles';
@@ -19,7 +19,7 @@ const getEnvVar = (name: string) => {
     }
 };
 
-const WS_URL = getEnvVar('WEB_SOCKET_SERVER') || 'localhost:3002';
+const WS_URL = getEnvVar('WEB_SOCKET_SERVER') || '127.0.0.1:3002';
 
 export const RealtimeArticleList = () => {
     const {
@@ -38,6 +38,18 @@ export const RealtimeArticleList = () => {
         fetchArticles(1);
     }, [fetchArticles]);
 
+    // Debug logging for articles state
+    useEffect(() => {
+        console.log('📊 Articles state:', {
+            count: articles.length,
+            loading,
+            error,
+            page,
+            totalPages,
+            firstArticle: articles[0]?.title
+        });
+    }, [articles, loading, error, page, totalPages]);
+
     if (error) {
         return (
             <View style={styles.errorContainer}>
@@ -48,34 +60,46 @@ export const RealtimeArticleList = () => {
         );
     }
 
+    if (loading && articles.length === 0) {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#3b82f6" />
+                <Text style={styles.loadingText}>Loading articles...</Text>
+            </View>
+        );
+    }
+
+    if (articles.length === 0) {
+        return (
+            <View style={styles.errorContainer}>
+                <Text style={styles.errorTitle}>No Articles</Text>
+                <Text style={styles.errorText}>No articles available yet</Text>
+            </View>
+        );
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.title}>Live Articles</Text>
+                <Text style={styles.title}>Live Articles ({articles.length})</Text>
                 {loading && <ActivityIndicator size="small" color="#3b82f6" />}
             </View>
 
-            {loading && articles.length === 0 ? (
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color="#3b82f6" />
-                </View>
-            ) : (
-                <FlatList
-                    data={articles}
-                    keyExtractor={(item: Article) => item.id}
-                    contentContainerStyle={styles.listContent}
-                    renderItem={({ item }: { item: Article }) => (
-                        <ArticleCard
-                            title={item.title}
-                            excerpt={item.description}
-                            coverImage={item.cover}
-                            publishedAt={item.published_time}
-                            onPress={() => console.log('Article pressed:', item.id)}
-                            style={styles.card}
-                        />
-                    )}
-                />
-            )}
+            <FlatList
+                data={articles}
+                keyExtractor={(item: Article) => item.id}
+                contentContainerStyle={styles.listContent}
+                renderItem={({ item }: { item: Article }) => (
+                    <ArticleCard
+                        title={item.title}
+                        excerpt={item.description}
+                        coverImage={item.cover}
+                        publishedAt={item.published_time}
+                        onPress={() => console.log('Article pressed:', item.id)}
+                        style={styles.card}
+                    />
+                )}
+            />
 
             <View style={styles.footer}>
                 <PaginatorContainer
@@ -115,6 +139,11 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    loadingText: {
+        marginTop: 10,
+        fontSize: 14,
+        color: '#666',
     },
     footer: {
         paddingVertical: 20,
