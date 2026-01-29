@@ -1,5 +1,5 @@
 import { useEffect, useCallback } from 'react';
-import { createFloatStore, realtime } from "@float.js/lite";
+import { createFloatStore, realtime } from "@float.js/core";
 
 export interface Article {
     id: string;
@@ -38,29 +38,31 @@ export function useRealtimeArticles({ url = 'http://localhost:3002', limit = 10 
 
     // Sync store with options if they change
     useEffect(() => {
-        useArticleStore.setState({ pageSize: limit });
-    }, [limit]);
+        if (limit !== pageSize) {
+            useArticleStore.setState({ pageSize: limit });
+        }
+    }, [limit, pageSize]);
 
     const loadPage = useCallback((page: number) => {
-        useArticleStore.setState({ loading: true });
+        useArticleStore.setState({ loading: true, error: null });
 
         const wsUrl = url.replace('http', 'ws') + '/ws';
         const client = (realtime as any).client({ url: wsUrl, autoReconnect: true });
 
         client.connect().then(() => {
-            console.log('🔌 Connected to cms-rt WebSockets at', wsUrl);
-            client.emit('articles:list', { payload: { page, limit: pageSize } });
+            console.log(`🔌 [WS] Requesting articles (page: ${page}, limit: ${pageSize})`);
+            client.emit('articles:list', { page, limit: pageSize });
         }).catch((err: any) => {
             useArticleStore.setState({
                 loading: false,
-                error: 'Connection failed'
+                error: 'Connection failed: ' + (err.message || String(err))
             });
         });
 
         client.on('articles:list:response', (data: any) => {
             useArticleStore.setState({
-                articles: data.articles,
-                total: data.total,
+                articles: data.articles || [],
+                total: data.total || 0,
                 loading: false,
                 error: null,
                 currentPage: page
@@ -71,16 +73,18 @@ export function useRealtimeArticles({ url = 'http://localhost:3002', limit = 10 
         client.on('error', (err: any) => {
             useArticleStore.setState({
                 loading: false,
-                error: typeof err === 'string' ? err : 'Unknown error'
+                error: typeof err === 'string' ? err : 'Unknown WebSocket error'
             });
             client.disconnect();
         });
     }, [url, pageSize]);
 
-    // Initial load
+    // Initial load - only if we don't have articles or we are on a different page than the store
     useEffect(() => {
-        loadPage(currentPage);
-    }, []);
+        if (articles.length === 0) {
+            loadPage(currentPage);
+        }
+    }, [url, pageSize]); // Add url/pageSize to trigger reload if they change
 
     return {
         articles,
@@ -88,9 +92,8 @@ export function useRealtimeArticles({ url = 'http://localhost:3002', limit = 10 
         currentPage,
         loading,
         error,
-        totalPages: Math.ceil(total / limit),
+        totalPages: Math.ceil(total / pageSize),
         loadPage: (page: number) => {
-            useArticleStore.setState({ currentPage: page });
             loadPage(page);
         }
     };

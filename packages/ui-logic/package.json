@@ -17,11 +17,13 @@
         "dev": "tsup src/index.ts --format esm --dts --watch --external react,react-native"
     },
     "dependencies": {
-        "@float.js/lite": "workspace:*",
+        "@float.js/core": "workspace:*",
         "@nexovision/ui-kit": "workspace:*",
         "nativewind": "^4.2.1",
-        "react": "^18.2.0",
         "react-native": "*"
+    },
+    "peerDependencies": {
+        "react": "^18.2.0"
     },
     "devDependencies": {
         "@types/react": "^18.0.0",

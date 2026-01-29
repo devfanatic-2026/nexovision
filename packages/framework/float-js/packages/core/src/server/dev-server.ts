@@ -10,7 +10,8 @@ import pc from 'picocolors';
 import chokidar from 'chokidar';
 import { WebSocketServer, WebSocket } from 'ws';
 import mime from 'mime-types';
-import { scanRoutes, matchRoute, type Route } from '../router/index.js';
+import { matchRoute, type Route } from '../router/index.js';
+import { scanRoutes } from '../router/server-router.js';
 import { renderPage } from './ssr.js';
 import { transformFile } from '../build/transform.js';
 import { getRegistry } from './registry.js';
@@ -207,14 +208,52 @@ ${FLOAT_ERROR_OVERLAY}
       // Serve CSS files
       if (pathname.endsWith('.css')) {
         const cssPath = path.join(rootDir, 'app', pathname.replace(/^\//, ''));
+
         if (fs.existsSync(cssPath)) {
-          const content = fs.readFileSync(cssPath, 'utf-8');
+          let content = fs.readFileSync(cssPath, 'utf-8');
+
+          // Check if we need to process with Tailwind
+          const tailwindConfig = checkTailwindSetup(rootDir);
+          console.log(`[DEBUG] Checking Tailwind in: ${rootDir}`);
+          console.log(`[DEBUG] Config result:`, JSON.stringify(tailwindConfig, null, 2));
+
+          if (tailwindConfig.hasTailwind) {
+            try {
+              console.log(pc.dim(`  🎨 Processing CSS: ${pathname}`));
+
+              // Use createRequire to resolve dependencies from the project root
+              const { createRequire } = await import('module');
+              const require = createRequire(path.join(rootDir, 'package.json'));
+
+              const postcss = require('postcss');
+              const tailwindcss = require('tailwindcss');
+              const autoprefixer = require('autoprefixer');
+
+              const plugins = [
+                tailwindcss(tailwindConfig.configPath),
+                autoprefixer({})
+              ];
+
+              const result = await postcss(plugins).process(content, {
+                from: cssPath
+              });
+
+              content = result.css;
+            } catch (err) {
+              console.error(pc.red('  ❌ CSS Processing failed:'), err);
+              // Fallback to raw content serves
+            }
+          }
+
           res.writeHead(200, {
             'Content-Type': 'text/css',
             'Cache-Control': 'no-cache',
           });
           res.end(content);
           return;
+        } else {
+          // Debug failure to find file
+          console.log(pc.yellow(`  ⚠️ CSS Not Found: ${cssPath}`));
         }
       }
 
@@ -322,14 +361,12 @@ if (!data) {
       const afterApp = componentPath.substring(appIndex + 5); // +5 to skip '/app/'
       const modulePath = afterApp.replace(/\.tsx?$/, ''); // Remove .tsx or .ts
       
-      console.log('[Float.js] Component path:', componentPath);
-      console.log('[Float.js] After /app/:', afterApp);
-      console.log('[Float.js] Module path:', modulePath);
-      console.log('[Float.js] Importing from:', '/' + modulePath);
+      console.log('[Float.js] Component path: ' + componentPath);
+      console.log('[Float.js] Importing from: /' + modulePath);
       
       // Dynamically import the component (needs leading slash)
       import('/' + modulePath).then((module) => {
-        console.log('[Float.js] Component loaded:', module);
+        console.log('[Float.js] Component loaded successfully');
         const Component = module.default;
         
         if (!Component) {
@@ -343,7 +380,7 @@ if (!data) {
         
         console.log('[Float.js] Component rendered successfully!');
       }).catch((error) => {
-        console.error('[Float.js] Failed to load component:', error);
+        console.error('[Float.js] Failed to load component: ' + String(error));
       });
     }
   } else {

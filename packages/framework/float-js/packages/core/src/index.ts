@@ -8,124 +8,34 @@
 export { VERSION } from './version.js';
 
 // Router
+// Router
 export {
-  scanRoutes,
   matchRoute,
   type Route as FloatRoute,
   type RouterOptions as FloatRouterOptions,
 } from './router/index.js';
 
-// Server
+// React Native Primitives (Interop)
 export {
-  createDevServer,
-  startProductionServer,
-  renderPage,
-  renderPageStream,
-  type DevServer,
-  type DevServerOptions,
-  type ProdServerOptions,
-  type RenderOptions,
-  type PageProps,
-} from './server/index.js';
+  View,
+  Text,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native-web';
 
-// Build
-export {
-  build,
-  type BuildOptions,
-  type BuildResult,
-} from './build/index.js';
-
-export {
-  transformFile,
-  transformSource,
-  clearModuleCache,
-} from './build/transform.js';
-
-// Types for user applications
-export interface FloatConfig {
-  /** App directory (default: 'app') */
-  appDir?: string;
-  /** Base path for all routes */
-  basePath?: string;
-  /** Enable React strict mode */
-  reactStrictMode?: boolean;
-  /** Internationalization config */
-  i18n?: {
-    locales: string[];
-    defaultLocale: string;
-  };
-  /** Custom headers */
-  headers?: () => Promise<Array<{
-    source: string;
-    headers: Array<{ key: string; value: string }>;
-  }>>;
-  /** Redirects */
-  redirects?: () => Promise<Array<{
-    source: string;
-    destination: string;
-    permanent: boolean;
-  }>>;
-  /** Environment variables to expose to client */
-  env?: Record<string, string>;
-  /** Experimental features */
-  experimental?: {
-    serverActions?: boolean;
-    ppr?: boolean; // Partial Pre-rendering
-  };
-}
-
-// Metadata types
-export interface Metadata {
-  title?: string | { default: string; template?: string };
-  description?: string;
-  keywords?: string[];
-  authors?: Array<{ name: string; url?: string }>;
-  creator?: string;
-  publisher?: string;
-  robots?: string | {
-    index?: boolean;
-    follow?: boolean;
-    googleBot?: {
-      index?: boolean;
-      follow?: boolean;
-    };
-  };
-  openGraph?: {
-    title?: string;
-    description?: string;
-    url?: string;
-    siteName?: string;
-    images?: Array<{
-      url: string;
-      width?: number;
-      height?: number;
-      alt?: string;
-    }>;
-    locale?: string;
-    type?: 'website' | 'article' | 'book' | 'profile';
-  };
-  twitter?: {
-    card?: 'summary' | 'summary_large_image' | 'app' | 'player';
-    title?: string;
-    description?: string;
-    images?: string[];
-    creator?: string;
-  };
-  icons?: {
-    icon?: string | Array<{ url: string; sizes?: string }>;
-    apple?: string | Array<{ url: string; sizes?: string }>;
-  };
-  manifest?: string;
-  canonical?: string;
-}
-
-// Re-export React types for convenience
 export type {
-  ReactNode,
-  ReactElement,
-  FC,
-  ComponentType
-} from 'react';
+  ViewStyle,
+  TextStyle,
+  ImageStyle,
+} from 'react-native-web';
+
+import * as RNW from 'react-native-web';
+import { StyleSheet as _StyleSheet, Platform as _Platform } from 'react-native-web';
+
+export const StyleSheet: typeof _StyleSheet = (RNW as any).StyleSheet;
+export const Platform: typeof _Platform = (RNW as any).Platform;
 
 // Float.js Hooks - Modern utilities for applications
 export {
@@ -180,68 +90,20 @@ export {
   type RealtimeOptions,
 } from './network/index.js';
 
-// Dev Tools - Visual dashboard for development
+// Image Optimization (Client Types & Loaders)
 export {
-  devtools,
-  dashboardState,
-  createDevDashboard,
-  createRequestLogger,
-  type RouteInfo,
-  type BuildInfo,
-  type RequestLog,
-  type PerformanceMetrics,
-  type DevDashboardOptions,
-} from './devtools/index.js';
-
-// Image Optimization
-export {
-  image,
-  configureImages,
+  type ImageConfig,
+  type ImageFormat,
+  type ImageLoaderProps,
+  type ImageProps,
+  type OptimizedImage,
+  type StaticImageData,
   getImageConfig,
-  createImageHandler,
   floatImageLoader,
   generateSrcSet,
   getImageProps,
   renderImageToString,
-  type ImageConfig,
-  type ImageProps,
-  type OptimizedImage,
-  type StaticImageData,
-} from './image/index.js';
-
-// Edge Middleware
-export {
-  middleware,
-  middlewareHelpers,
-  NextResponse,
-  registerMiddleware,
-  clearMiddleware,
-  createMiddlewareHandler,
-  type MiddlewareRequest,
-  type MiddlewareHandler,
-  type MiddlewareConfig,
-  type NextURL,
-  type GeoData,
-} from './middleware/index.js';
-
-// Static Site Generation (SSG) & ISR
-export {
-  ssg,
-  SSGEngine,
-  getSSGEngine,
-  configureSSG,
-  defineStaticPaths,
-  defineStaticProps,
-  createSSGHandler,
-  createRevalidateHandler,
-  type StaticPath,
-  type GetStaticPathsResult,
-  type GetStaticPropsContext,
-  type GetStaticPropsResult,
-  type CachedPage,
-  type SSGConfig,
-  type GenerateResult,
-} from './ssg/index.js';
+} from './image/client-image.js';
 
 // Built-in Analytics
 export {

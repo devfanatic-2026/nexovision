@@ -14,7 +14,6 @@
   "license": "ISC",
   "dependencies": {
     "@float.js/core": "link:../framework/float-js/packages/core",
-    "@float.js/lite": "link:../framework/float-js/packages/lite",
     "@nexovision/ui-kit": "link:../ui-kit",
     "@nexovision/ui-logic": "link:../ui-logic",
     "@nexovision/widgets-catalog": "link:../widgets-catalog",

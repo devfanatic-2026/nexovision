@@ -7,7 +7,8 @@ import * as esbuild from 'esbuild';
 import fs from 'node:fs';
 import path from 'node:path';
 import pc from 'picocolors';
-import { scanRoutes, type Route } from '../router/index.js';
+import { type Route } from '../router/index.js';
+import { scanRoutes } from '../router/server-router.js';
 import { renderPage } from '../server/ssr.js';
 
 export interface BuildOptions {
@@ -57,7 +58,7 @@ export async function build(options: BuildOptions = {}): Promise<BuildResult> {
 
   // Build client bundle
   console.log(pc.dim('  Building client bundle...'));
-  
+
   const clientEntryPoints = routes
     .filter(r => r.type === 'page')
     .map(r => r.absolutePath);
@@ -122,14 +123,14 @@ export async function build(options: BuildOptions = {}): Promise<BuildResult> {
   for (const route of pageRoutes) {
     try {
       const html = await renderPage(route, {}, { isDev: false });
-      const outputPath = route.path === '/' 
+      const outputPath = route.path === '/'
         ? path.join(outputDir, 'pages', 'index.html')
         : path.join(outputDir, 'pages', route.path, 'index.html');
-      
+
       fs.mkdirSync(path.dirname(outputPath), { recursive: true });
       fs.writeFileSync(outputPath, html);
       prerenderedPages.push(route.path);
-      
+
       console.log(pc.dim(`    ✓ ${route.path}`));
     } catch (error) {
       console.log(pc.yellow(`    ⚠ ${route.path} (will render at runtime)`));
@@ -185,7 +186,7 @@ export async function build(options: BuildOptions = {}): Promise<BuildResult> {
 
   // Generate build info
   const duration = Date.now() - startTime;
-  
+
   const buildInfo = {
     duration,
     timestamp: new Date().toISOString(),

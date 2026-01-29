@@ -1,13 +1,32 @@
 import './globals.css';
+import React from 'react';
+import { Sidebar } from '../components/Sidebar';
+import { TopHeader } from '../components/TopHeader';
+
+export const metadata = {
+  title: 'NexoVision Widget Catalog',
+  description: 'Explore our library of React Native widgets running on the web',
+};
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
+    <div className="flex min-h-screen bg-gray-50">
+      <link rel="stylesheet" href="/globals.css" />
+      <Sidebar />
+
+      {/* Main Content */}
+      <main className="flex-1 overflow-auto">
+        <TopHeader />
+
+
+        <div className="p-8">
+          {children}
+        </div>
+      </main>
+    </div>
   );
 }

@@ -18,7 +18,8 @@
         "lint": "eslint ."
     },
     "peerDependencies": {
-        "react": "*"
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0"
     },
     "devDependencies": {
         "@types/react": "^18.0.0",
@@ -28,7 +29,7 @@
         "typescript": "^5.0.0"
     },
     "dependencies": {
-        "@float.js/lite": "workspace:*",
+        "@float.js/core": "workspace:*",
         "nativewind": "^4.2.1",
         "react-native-web": "^0.21.2"
     }

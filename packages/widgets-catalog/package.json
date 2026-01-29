@@ -12,13 +12,12 @@
         "start": "float start"
     },
     "dependencies": {
-        "@float.js/lite": "link:../framework/float-js/packages/lite",
+        "@float.js/core": "workspace:*",
         "@nexovision/ui-kit": "workspace:*",
         "@nexovision/ui-logic": "workspace:*",
         "nativewind": "^4.2.1",
         "react": "^18.2.0",
-        "react-dom": "^18.2.0",
-        "react-native-web": "^0.19.13"
+        "react-dom": "^18.2.0"
     },
     "devDependencies": {
         "@float.js/core": "workspace:*",
@@ -27,6 +26,7 @@
         "@types/react-native-web": "^0.19.0",
         "autoprefixer": "^10.4.23",
         "postcss": "^8.5.6",
+        "react-native-web": "^0.19.13",
         "tailwindcss": "^3.4.1",
         "tsup": "^8.0.0",
         "typescript": "^5.9.3"

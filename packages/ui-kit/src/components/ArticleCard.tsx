@@ -1,6 +1,8 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from '@float.js/lite';
-import type { ViewStyle } from '@float.js/lite';
+import { View, Text, Image, TouchableOpacity, StyleSheet } from '@float.js/core';
+import type { ViewStyle } from '@float.js/core';
+import { FloatDate } from './FloatDate';
+
 
 export interface ArticleCardProps {
     title: string;
@@ -27,9 +29,13 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
                 <View style={[styles.image, styles.placeholder]} />
             )}
             <View style={styles.content}>
-                <Text style={styles.date}>{publishedAt || 'Reciente'}</Text>
-                <Text style={styles.title} numberOfLines={2}>{title}</Text>
-                {excerpt && <Text style={styles.excerpt} numberOfLines={3}>{excerpt}</Text>}
+                <FloatDate
+                    date={publishedAt}
+                    style={styles.date}
+                    format="medium"
+                />
+                <Text style={styles.title} numberOfLines={2} selectable={true}>{title}</Text>
+                {excerpt && <Text style={styles.excerpt} numberOfLines={3} selectable={true}>{excerpt}</Text>}
             </View>
         </TouchableOpacity>
     );
