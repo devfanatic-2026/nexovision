@@ -26,6 +26,7 @@ cli
   .option('-p, --port <port>', 'Port to listen on', { default: 3000 })
   .option('-H, --host <host>', 'Host to bind to', { default: 'localhost' })
   .option('--open', 'Open browser on start', { default: false })
+  .option('--vibe-debug', 'Enable enhanced debugging for agents/LLMs', { default: false })
   .action(async (options) => {
     console.log(banner);
     console.log(pc.cyan('🚀 Starting development server...\n'));
@@ -35,6 +36,7 @@ cli
         port: Number(options.port),
         host: options.host,
         open: options.open,
+        vibeDebug: !!options.vibeDebug,
       });
 
       await server.start();

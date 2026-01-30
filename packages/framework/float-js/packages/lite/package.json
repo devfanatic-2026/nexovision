@@ -1,16 +1,17 @@
 {
   "name": "@float.js/lite",
-  "version": "2.2.8",
-  "description": "Float.js Lite - Client-side framework for React Native and Web Components",
+  "version": "1.0.0",
+  "description": "Float.js Lite - Client-side framework for React Native and Web Components with state management and real-time capabilities",
   "type": "module",
+  "author": "Alejandro Iglesias",
   "repository": {
     "type": "git",
-    "url": "https://github.com/float-js/float.js.git",
-    "directory": "packages/lite"
+    "url": "https://github.com/maravilla-digital/maravilla-cms.git",
+    "directory": "packages/framework/float-js/packages/lite"
   },
-  "homepage": "https://github.com/float-js/float.js#readme",
+  "homepage": "https://maravilla.digital",
   "bugs": {
-    "url": "https://github.com/float-js/float.js/issues"
+    "url": "https://github.com/maravilla-digital/maravilla-cms/issues"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -47,6 +48,7 @@
     "prepublishOnly": "pnpm build"
   },
   "dependencies": {
+    "fast-glob": "^3.3.2",
     "picocolors": "^1.0.0"
   },
   "peerDependencies": {

@@ -1,0 +1,18 @@
+{
+    "name": "@float.js/examples-root",
+    "version": "0.0.1",
+    "private": true,
+    "scripts": {
+        "dev:monorepo": "pnpm --filter @showcase/server start",
+        "dev:web": "pnpm --filter @showcase/web dev",
+        "dev:web-ws": "concurrently \"pnpm --filter @showcase/server start\" \"pnpm --filter @showcase/web dev:ws\"",
+        "dev:mobile": "pnpm --filter @showcase/mobile start",
+        "dev:ios": "pnpm --filter @showcase/mobile ios",
+        "dev:android": "pnpm --filter @showcase/mobile android",
+        "dev:ios-ws": "concurrently \"pnpm --filter @showcase/server start\" \"pnpm --filter @showcase/mobile ios:ws\"",
+        "dev:android-ws": "concurrently \"pnpm --filter @showcase/server start\" \"pnpm --filter @showcase/mobile android:ws\""
+    },
+    "devDependencies": {
+        "concurrently": "^8.2.2"
+    }
+}

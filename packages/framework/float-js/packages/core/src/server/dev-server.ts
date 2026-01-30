@@ -26,6 +26,7 @@ export interface DevServerOptions {
   port: number;
   host: string;
   open?: boolean;
+  vibeDebug?: boolean;
 }
 
 export interface DevServer {
@@ -34,10 +35,60 @@ export interface DevServer {
   restart: () => Promise<void>;
 }
 
+import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
+
+function tryResolve(id: string, from: string): string | null {
+  try {
+    const req = createRequire(path.join(from, 'noop.js'));
+    return fs.realpathSync(req.resolve(id));
+  } catch (e) {
+    return null;
+  }
+}
+
 export async function createDevServer(options: DevServerOptions): Promise<DevServer> {
-  const { port, host, open } = options;
+  const { port, host, open, vibeDebug } = options;
   const rootDir = process.cwd();
   const publicDir = path.join(rootDir, 'public');
+
+  const { lockFrameworkDependencies } = await import('../build/transform.js');
+  lockFrameworkDependencies(rootDir);
+
+  const { VibeDebugger } = await import('./vibe-debug.js');
+  VibeDebugger.init(!!vibeDebug, rootDir);
+
+  if (vibeDebug) {
+    console.log(pc.magenta('\n🔍 [VibeDebug] Pre-flight Health Check:'));
+    const reactPath = tryResolve('react', rootDir);
+    const reactDomPath = tryResolve('react-dom', rootDir);
+    const corePath = tryResolve('@float.js/core', rootDir);
+
+    console.log(`  📦 React:     ${reactPath ? pc.green(reactPath) : pc.red('Missing')}`);
+    console.log(`  📦 ReactDOM:  ${reactDomPath ? pc.green(reactDomPath) : pc.red('Missing')}`);
+    console.log(`  📦 Core:      ${corePath ? pc.green(corePath) : pc.red('Missing')}`);
+
+    // Check for multiple Reacts
+    if (reactPath && reactPath.includes('node_modules')) {
+      const currentDir = path.dirname(fileURLToPath(import.meta.url));
+      const frameworkReact = tryResolve('react', currentDir);
+      if (frameworkReact && frameworkReact !== reactPath) {
+        console.warn(pc.yellow(`  ⚠️  Warning: Multiple React instances detected. This will cause Hook errors.`));
+        console.warn(pc.dim(`     Framework: ${frameworkReact}`));
+        console.warn(pc.dim(`     App:       ${reactPath}`));
+      }
+    }
+  }
+
+  // Clear cache on startup to ensure fresh transformation
+  const cacheDir = path.join(rootDir, '.float', '.cache');
+  if (fs.existsSync(cacheDir)) {
+    try {
+      fs.rmSync(cacheDir, { recursive: true, force: true });
+    } catch (e: any) {
+      console.warn(pc.dim(`  ⚠️  Failed to clear cache: ${e.message}`));
+    }
+  }
 
   let routes: Route[] = [];
   let server: http.Server | null = null;
@@ -225,12 +276,34 @@ ${FLOAT_ERROR_OVERLAY}
               const { createRequire } = await import('module');
               const require = createRequire(path.join(rootDir, 'package.json'));
 
+              const { discoverWorkspaceContent } = await import('../build/tailwind-setup.js');
+              const workspaceContent = discoverWorkspaceContent(rootDir);
+
               const postcss = require('postcss');
               const tailwindcss = require('tailwindcss');
               const autoprefixer = require('autoprefixer');
 
+              // Load and augment Tailwind config
+              let finalConfig: any = {};
+              if (tailwindConfig.configPath) {
+                try {
+                  const userConfig = require(tailwindConfig.configPath);
+                  finalConfig = {
+                    ...userConfig,
+                    content: [
+                      ...(userConfig.content || []),
+                      ...workspaceContent
+                    ]
+                  };
+                } catch (e) {
+                  finalConfig = {
+                    content: ['./app/**/*.{js,ts,jsx,tsx}', ...workspaceContent]
+                  };
+                }
+              }
+
               const plugins = [
-                tailwindcss(tailwindConfig.configPath),
+                tailwindcss(finalConfig),
                 autoprefixer({})
               ];
 
@@ -444,38 +517,7 @@ if (!data) {
         return;
       }
 
-      // Handle service control (on-demand startup)
-      if (pathname === '/__control/start-service') {
-        const name = url.searchParams.get('name');
-        console.log(pc.magenta(`  🚀 Service Request: ${name}`));
 
-        // This is a simplified control mechanism. 
-        // In a real monorepo, we would hit the root pnpm scripts.
-        const { spawn } = await import('child_process');
-
-        let command = '';
-        if (name === 'sb-ui') command = 'pnpm run dev:sb-ui';
-        if (name === 'sb-logic') command = 'pnpm run dev:sb-logic';
-
-        if (command) {
-          // Run in background
-          const [cmd, ...args] = command.split(' ');
-          const child = spawn(cmd, args, {
-            cwd: path.resolve(process.cwd(), '../..'), // Go to root from packages/widget-catalog-web
-            detached: true,
-            stdio: 'ignore'
-          });
-          child.unref();
-
-          res.writeHead(200, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ status: 'starting', name }));
-          return;
-        }
-
-        res.writeHead(400);
-        res.end('Unknown service');
-        return;
-      }
 
       // Match route
       const { route, params } = matchRoute(pathname, routes);
@@ -520,11 +562,14 @@ if (!data) {
       }
 
       // Render page with SSR
+      const globalCssExists = fs.existsSync(path.join(rootDir, 'app', 'globals.css'));
       const html = await renderPage(route, params, {
         hmrScript: hmrClientScript,
         isDev: true,
         pathname,
         query: Object.fromEntries(url.searchParams),
+        globalCss: globalCssExists ? '/globals.css' : undefined,
+        vibeDebug,
       });
 
       res.writeHead(200, {

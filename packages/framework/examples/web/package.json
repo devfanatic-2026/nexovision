@@ -1,0 +1,29 @@
+{
+    "name": "@showcase/web",
+    "version": "1.0.0",
+    "description": "Float.js Web Showcase - Complete examples using @float.js/core",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "float dev",
+        "dev:ws": "FLOAT_API_URL=http://localhost:4000 FLOAT_WS_URL=ws://localhost:4000 float dev",
+        "build": "float build",
+        "start": "float start",
+        "clean": "rm -rf .float dist"
+    },
+    "dependencies": {
+        "@float.js/core": "workspace:*",
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0",
+        "react-native-web": "^0.19.13"
+    },
+    "devDependencies": {
+        "@types/node": "^20.10.0",
+        "@types/react": "^19.0.0",
+        "@types/react-dom": "^19.0.0",
+        "autoprefixer": "^10.4.16",
+        "postcss": "^8.4.32",
+        "tailwindcss": "^3.4.0",
+        "typescript": "^5.3.0"
+    }
+}

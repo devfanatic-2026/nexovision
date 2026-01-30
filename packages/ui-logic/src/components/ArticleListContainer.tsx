@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, FlatList, ActivityIndicator, Text, StyleSheet } from '@float.js/native';
+import { View, FlatList, ActivityIndicator, Text, StyleSheet } from '@float.js/lite';
 import { ArticleCard } from '@nexovision/ui-kit';
 import { PaginatorContainer } from './PaginatorContainer';
 import { useArticles, Article } from '../hooks/useArticles';

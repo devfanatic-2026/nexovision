@@ -3,14 +3,32 @@
  * Server-Side Rendering with React 18 Streaming
  */
 
-import React from 'react';
-import { renderToPipeableStream, renderToString } from 'react-dom/server';
+import { createRequire } from 'node:module';
+import { pathToFileURL } from 'node:url';
+import path from 'node:path';
+import fs from 'node:fs';
+
+// Dynamically load React from project root to ensure consistency with the app
+const projectRequire = createRequire(path.join(process.cwd(), 'noop.js'));
+const reactPath = fs.realpathSync(projectRequire.resolve('react'));
+const reactDomServerPath = fs.realpathSync(projectRequire.resolve('react-dom/server'));
+
+// Set global singletons for the transformer to use
+const reactModule = await import(pathToFileURL(reactPath).href);
+const React = reactModule.default || reactModule;
+(globalThis as any).__FLOAT_REACT__ = React;
+console.log(`[VibeDebug] Global React set. Keys: ${Object.keys(React).join(', ')}`);
+
+const reactDomServer = await import(pathToFileURL(reactDomServerPath).href);
+const { renderToString, renderToPipeableStream } = reactDomServer.default || reactDomServer;
+(globalThis as any).__FLOAT_REACT_DOM_SERVER__ = reactDomServer.default || reactDomServer;
 import { Writable } from 'node:stream';
 import type { Route } from '../router/index.js';
 import { transformFile } from '../build/transform.js';
 import { RouterProvider } from '../hooks/use-router.js';
 import { isClientComponent } from '../build/detect-client.js';
 import { getRegistry } from './registry.js';
+import { VibeDebugger } from './vibe-debug.js';
 
 export interface RenderOptions {
   hmrScript?: string;
@@ -18,6 +36,8 @@ export interface RenderOptions {
   streaming?: boolean;
   pathname?: string;
   query?: Record<string, string>;
+  globalCss?: string;
+  vibeDebug?: boolean;
 }
 
 export interface PageProps {
@@ -34,19 +54,25 @@ export async function renderPage(
   params: Record<string, string>,
   options: RenderOptions = {}
 ): Promise<string> {
-  const { hmrScript = '', isDev = false, streaming = false } = options;
+  const { hmrScript = '', isDev = false, streaming = false, vibeDebug = false } = options;
   void streaming; // Reserved for future streaming implementation
+
+  const props: PageProps = {
+    params,
+    searchParams: options.query || {},
+    currentPath: options.pathname || route.path,
+  };
+
+  if (vibeDebug) {
+    VibeDebugger.log(`Rendering page: ${route.filePath}`, { props });
+  }
 
   try {
     // Check if this is a client component
     const isClient = isClientComponent(route.absolutePath);
 
-    if (isClient) {
-      console.log(`[Float.js] Client component detected, skipping SSR: ${route.filePath}`);
-    }
-
     // Load the page component
-    const pageModule = await transformFile(route.absolutePath);
+    const pageModule = await transformFile(route.absolutePath, { vibeDebug });
     const PageComponent = pageModule.default;
 
     if (!PageComponent) {
@@ -56,7 +82,7 @@ export async function renderPage(
     // Load layouts (from root to current)
     const layouts = await Promise.all(
       route.layouts.map(async (layoutPath) => {
-        const layoutModule = await transformFile(layoutPath);
+        const layoutModule = await transformFile(layoutPath, { vibeDebug });
         return layoutModule.default;
       })
     );
@@ -70,46 +96,36 @@ export async function renderPage(
       pageMetadata = await generateMetadata({ params });
     }
 
-    // Create props
-    const props: PageProps = {
-      params,
-      searchParams: {},
-      currentPath: options.pathname || route.path,
-    };
-
     let element: React.ReactElement;
 
-    // For client components, render a placeholder instead of executing the component
+    // Wrap the component for hydration if it's a client component
+    // But still render it on the server for SEO and initial performance
+    const isAsyncComponent = PageComponent.constructor?.name === 'AsyncFunction' ||
+      PageComponent.prototype?.constructor?.name === 'AsyncFunction';
+
+    if (vibeDebug) {
+      console.log(`[VibeDebug] Component: ${PageComponent.name}, isAsync: ${isAsyncComponent}`);
+    }
+
+    if (isAsyncComponent) {
+      // For async components, resolve the promise first
+      const asyncResult = await PageComponent(props);
+      const AsyncResolvedComponent = () => asyncResult;
+      element = React.createElement(AsyncResolvedComponent, {});
+    } else {
+      element = React.createElement(PageComponent, props);
+    }
+
     if (isClient) {
-      // Create a placeholder that will be hydrated on the client
-      const ClientPlaceholder = () => {
+      // Wrap in hydration root
+      const ClientWrapper = ({ children }: { children: React.ReactNode }) => {
         return React.createElement('div', {
           id: '__float_client_root',
           'data-component-path': route.absolutePath,
           suppressHydrationWarning: true,
-        }, 'Loading...');
+        }, children);
       };
-      element = React.createElement(ClientPlaceholder, {});
-    } else {
-      // Check if PageComponent is an async function
-      const isAsyncComponent = PageComponent.constructor?.name === 'AsyncFunction' ||
-        PageComponent.prototype?.constructor?.name === 'AsyncFunction' ||
-        (PageComponent.toString().includes('async ') && PageComponent.toString().includes('function'));
-
-      if (isAsyncComponent) {
-        // For async components, we need to resolve the promise first
-        const asyncResult = await PageComponent(props);
-
-        // Create a temporary component that renders the resolved JSX
-        const AsyncResolvedComponent = () => {
-          // The async component returns JSX directly, so we return it
-          return asyncResult;
-        };
-        element = React.createElement(AsyncResolvedComponent, {});
-      } else {
-        // For regular components, use the original flow
-        element = React.createElement(PageComponent, props);
-      }
+      element = React.createElement(ClientWrapper, { children: element });
     }
 
     // Wrap with layouts (innermost to outermost)
@@ -153,13 +169,21 @@ export async function renderPage(
       hmrScript: isDev ? hmrScript : '',
       isDev,
       hydrationData,
+      globalCss: options.globalCss,
     });
 
     return html;
 
-  } catch (error) {
-    console.error('SSR Error:', error);
-    throw error;
+  } catch (err) {
+    if (vibeDebug) {
+      VibeDebugger.error('Render failed', err);
+      VibeDebugger.dumpEvidence('ssr_error', {
+        route: route.filePath,
+        error: err instanceof Error ? err.stack : String(err),
+        props
+      });
+    }
+    throw err;
   }
 }
 
@@ -215,13 +239,13 @@ export async function renderPageStream(
       onShellReady() {
         pipe(writable);
       },
-      onShellError(error) {
+      onShellError(error: any) {
         reject(error);
       },
       onAllReady() {
         resolve(writable as any);
       },
-      onError(error) {
+      onError(error: any) {
         console.error('Streaming error:', error);
       }
     });
@@ -239,13 +263,14 @@ interface HtmlDocumentOptions {
   styles?: string;
   scripts?: string[];
   hydrationData?: any;
+  globalCss?: string;
 }
 
 /**
  * Generate full HTML document
  */
 function generateHtmlDocument(options: HtmlDocumentOptions): string {
-  const { content, metadata, hmrScript, isDev, styles = '', scripts = [], hydrationData } = options;
+  const { content, metadata, hmrScript, isDev, styles = '', scripts = [], hydrationData, globalCss } = options;
 
   // Handle title which can be string or object with default/template
   let title = 'Float.js App';
@@ -294,6 +319,7 @@ function generateHtmlDocument(options: HtmlDocumentOptions): string {
   ${description ? `<meta name="description" content="${escapeHtml(description)}">` : ''}
   ${metaTags}
   <meta name="generator" content="Float.js">
+  ${globalCss ? `<link rel="stylesheet" href="${globalCss}">` : ''}
   ${importMap}
   <style>
     /* Float.js Base Styles */

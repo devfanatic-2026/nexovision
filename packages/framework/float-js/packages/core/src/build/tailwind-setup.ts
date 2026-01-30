@@ -31,7 +31,7 @@ export function checkTailwindSetup(rootDir: string): TailwindConfig {
   ];
 
   let configPath: string | null = null;
-  
+
   for (const config of possibleConfigs) {
     const fullPath = path.join(rootDir, config);
     if (fs.existsSync(fullPath)) {
@@ -86,7 +86,7 @@ export default {
 
     const configPath = path.join(rootDir, 'tailwind.config.js');
     fs.writeFileSync(configPath, tailwindConfig);
-    
+
     if (!silent) {
       console.log(pc.green('  ✓ Created tailwind.config.js'));
     }
@@ -104,7 +104,7 @@ export default {
 `;
 
     fs.writeFileSync(postcssPath, postcssConfig);
-    
+
     if (!silent) {
       console.log(pc.green('  ✓ Created postcss.config.js'));
     }
@@ -124,7 +124,7 @@ export default {
 `;
 
     fs.writeFileSync(globalsPath, globalsCss);
-    
+
     if (!silent) {
       console.log(pc.green('  ✓ Created app/globals.css'));
     }
@@ -149,7 +149,7 @@ export default function RootLayout({
 `;
 
     fs.writeFileSync(layoutPath, layoutContent);
-    
+
     if (!silent) {
       console.log(pc.green('  ✓ Created app/layout.tsx'));
     }
@@ -170,7 +170,7 @@ export function checkTailwindDeps(rootDir: string): {
   hasAutoprefixer: boolean;
 } {
   const packageJsonPath = path.join(rootDir, 'package.json');
-  
+
   if (!fs.existsSync(packageJsonPath)) {
     return {
       hasPackageJson: false,
@@ -199,7 +199,7 @@ export function checkTailwindDeps(rootDir: string): {
  */
 export function getTailwindInstallCommand(rootDir: string): string | null {
   const deps = checkTailwindDeps(rootDir);
-  
+
   if (!deps.hasPackageJson) {
     return null;
   }
@@ -225,3 +225,58 @@ export function getTailwindInstallCommand(rootDir: string): string | null {
 
   return `${pm} ${missing.join(' ')}`;
 }
+
+/**
+ * Discover content paths for workspace dependencies
+ */
+export function discoverWorkspaceContent(rootDir: string): string[] {
+  const nodeModulesPath = path.join(rootDir, 'node_modules');
+  if (!fs.existsSync(nodeModulesPath)) {
+    return [];
+  }
+
+  const contentPaths: string[] = [];
+
+  function scanDir(dir: string, scope?: string) {
+    const items = fs.readdirSync(dir);
+    for (const item of items) {
+      if (item.startsWith('.')) continue;
+
+      const itemPath = path.join(dir, item);
+      const isScope = item.startsWith('@') && !scope;
+
+      if (isScope) {
+        scanDir(itemPath, item);
+        continue;
+      }
+
+      try {
+        const stats = fs.lstatSync(itemPath);
+        if (stats.isSymbolicLink()) {
+          const realPath = fs.realpathSync(itemPath);
+          // Only include if it's within the same monorepo (heuristic: share same parent)
+          // or just any symlink as it's likely a workspace pkg
+          const possiblePaths = [
+            path.join(realPath, 'app/**/*.{js,ts,jsx,tsx}'),
+            path.join(realPath, 'components/**/*.{js,ts,jsx,tsx}'),
+            path.join(realPath, 'src/**/*.{js,ts,jsx,tsx}'),
+          ];
+
+          for (const p of possiblePaths) {
+            // Check if directory exists before adding glob to avoid tailwind noise
+            const baseDir = p.split('*')[0];
+            if (fs.existsSync(baseDir)) {
+              contentPaths.push(p);
+            }
+          }
+        }
+      } catch (e) {
+        // Skip errors
+      }
+    }
+  }
+
+  scanDir(nodeModulesPath);
+  return contentPaths;
+}
+

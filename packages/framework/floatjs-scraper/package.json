@@ -1,8 +1,16 @@
 {
     "name": "@float.js/scraper",
-    "version": "0.1.0",
-    "description": "Smart news scraping engine with DeepSeek integration for Float.js",
+    "version": "1.0.0",
+    "description": "Intelligent news scraping engine with multi-strategy extraction and AI analysis capabilities for Float.js framework",
     "type": "module",
+    "author": "Alejandro Iglesias",
+    "homepage": "https://maravilla.digital",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/maravilla-digital/maravilla-cms.git",
+        "directory": "packages/framework/floatjs-scraper"
+    },
+    "license": "MIT",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "exports": {
@@ -14,7 +22,8 @@
     "scripts": {
         "dev": "tsup --watch",
         "build": "tsup",
-        "test": "vitest"
+        "test": "vitest",
+        "clean": "rm -rf dist"
     },
     "dependencies": {
         "@mozilla/readability": "^0.5.0",
@@ -33,5 +42,14 @@
     "files": [
         "dist"
     ],
-    "license": "MIT"
+    "keywords": [
+        "scraper",
+        "news",
+        "web-scraping",
+        "content-extraction",
+        "playwright",
+        "cheerio",
+        "ai-analysis",
+        "floatjs"
+    ]
 }

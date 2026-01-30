@@ -1,22 +1,41 @@
 {
-    "name": "nexovision-monorepo",
+    "name": "maravilla-digital",
+    "version": "1.0.0",
+    "description": "Maravilla Digital - Headless CMS for multi-platform widget distribution via MCP integration",
     "private": true,
+    "author": "Maravilla Digital Team",
+    "homepage": "https://maravilla.digital",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/maravilla-digital/maravilla-cms"
+    },
+    "license": "MIT",
     "packageManager": "pnpm@9.0.0",
     "scripts": {
         "install:all": "pnpm install",
-        "dev:cms-rt": "pnpm --filter nexovision-cms-rt dev",
-        "dev:widgets-web": "pnpm --filter widget-catalog-web dev",
-        "dev:widgets-native": "cd packages/widget-catalog-native && pnpm run ios",
+        "dev:cms": "pnpm --filter maravilla-cms dev",
+        "dev:widgets-web": "pnpm --filter @maravilla/widget-catalog-web dev",
+        "dev:widgets-mobile": "cd packages/widget-catalog-mobile && pnpm run ios",
         "dev:dashboard": "serve dashboard -p 8000",
-        "dev:ui-kit": "pnpm --filter @nexovision/ui-kit dev",
-        "dev:ui-logic": "pnpm --filter @nexovision/ui-logic dev",
+        "dev:ui-kit": "pnpm --filter @maravilla/ui-kit dev",
+        "dev:ui-logic": "pnpm --filter @maravilla/ui-logic dev",
         "dev:stop": "./scripts/stop-all.sh",
         "dev:cleanup": "lsof -ti:3002,3005,3006,3008,3009,8000,8081 | xargs kill -9 2>/dev/null || true; pkill -9 -f 'expo start' || true",
-        "dev:core": "pnpm run dev:ui-kit & pnpm run dev:ui-logic & pnpm run dev:cms-rt & pnpm run dev:widgets-web & pnpm run dev:dashboard",
-        "dev:rt": "pnpm run dev:cleanup && pnpm run dev:core",
-        "dev:all": "pnpm run dev:cleanup && pnpm run dev:core & sleep 5 && pnpm run dev:widgets-native"
+        "dev:core": "pnpm run dev:ui-kit & pnpm run dev:ui-logic & pnpm run dev:cms & pnpm run dev:widgets-web & pnpm run dev:dashboard",
+        "dev:all": "pnpm run dev:cleanup && pnpm run dev:core & sleep 5 && pnpm run dev:widgets-mobile",
+        "build": "pnpm -r build",
+        "build:cms": "pnpm --filter maravilla-cms build",
+        "build:widgets": "pnpm --filter @maravilla/widget-catalog-web build",
+        "test": "pnpm -r test",
+        "test:all": "pnpm -r test",
+        "typecheck": "pnpm -r typecheck",
+        "typecheck:all": "pnpm -r typecheck",
+        "lint": "pnpm -r lint",
+        "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+        "clean": "pnpm -r clean && rm -rf node_modules"
     },
     "devDependencies": {
+        "prettier": "^3.2.5",
         "serve": "^14.2.5"
     },
     "dependencies": {
@@ -30,5 +49,15 @@
             "@types/react": "19.0.8",
             "@types/react-dom": "19.0.3"
         }
-    }
+    },
+    "keywords": [
+        "cms",
+        "headless-cms",
+        "widgets",
+        "mcp",
+        "real-time",
+        "websocket",
+        "react-native",
+        "multi-platform"
+    ]
 }

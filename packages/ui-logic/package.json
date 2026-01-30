@@ -1,9 +1,13 @@
 {
-    "name": "@nexovision/ui-logic",
-    "version": "0.0.1",
+    "name": "@maravilla/ui-logic",
+    "version": "1.0.0",
+    "description": "Maravilla Digital UI Logic - Business logic layer for widget data management and state",
     "main": "dist/index.js",
     "module": "dist/index.mjs",
     "types": "dist/index.d.mts",
+    "author": "Maravilla Digital Team",
+    "homepage": "https://maravilla.digital",
+    "license": "MIT",
     "exports": {
         ".": {
             "types": "./dist/index.d.mts",
@@ -11,15 +15,15 @@
             "require": "./dist/index.js"
         }
     },
-    "license": "MIT",
     "scripts": {
-        "build": "tsup src/index.ts --format esm --dts --clean --external react,react-native,@float.js/lite,@float.js/native,@nexovision/ui-kit",
-        "dev": "tsup src/index.ts --format esm --dts --watch --external react,react-native,@float.js/lite,@float.js/native,@nexovision/ui-kit"
+        "build": "tsup src/index.ts --format esm --dts --clean --external react,react-native,@float.js/lite,@maravilla/ui-kit",
+        "dev": "tsup src/index.ts --format esm --dts --watch --external react,react-native,@float.js/lite,@maravilla/ui-kit",
+        "typecheck": "tsc --noEmit",
+        "clean": "rm -rf dist"
     },
     "dependencies": {
         "@float.js/lite": "workspace:*",
-        "@float.js/native": "workspace:*",
-        "@nexovision/ui-kit": "workspace:*",
+        "@maravilla/ui-kit": "workspace:*",
         "nativewind": "^4.2.1",
         "react-native": "0.81.5"
     },
@@ -31,5 +35,11 @@
         "tailwindcss": "^3.4.1",
         "tsup": "^8.0.0",
         "typescript": "^5.0.0"
-    }
+    },
+    "keywords": [
+        "maravilla-digital",
+        "business-logic",
+        "state-management",
+        "widgets"
+    ]
 }

@@ -2,6 +2,7 @@
 node_modules
 dist
 tmp
+sandbox
 .float
 .cache
 out-css

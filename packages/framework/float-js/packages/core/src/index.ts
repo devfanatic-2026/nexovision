@@ -116,4 +116,5 @@ export {
 } from './analytics/index.js';
 
 // Client utilities
+export { useFloatState } from './hooks/use-state.js';
 export { generateWelcomePage } from './client/welcome-page.js';

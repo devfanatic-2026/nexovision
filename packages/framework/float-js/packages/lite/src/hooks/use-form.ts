@@ -26,6 +26,7 @@ export interface FloatFormOptions<T extends Record<string, any>> {
   onError?: (errors: Record<keyof T, string | undefined>) => void;
   validateOnChange?: boolean;
   validateOnBlur?: boolean;
+  validation?: Partial<Record<keyof T, ValidationRule<any> | ValidationRule<any>[]>>;
 }
 
 export interface FloatFormResult<T extends Record<string, any>> {
@@ -35,7 +36,7 @@ export interface FloatFormResult<T extends Record<string, any>> {
   isSubmitting: boolean;
   isValid: boolean;
   isDirty: boolean;
-  
+
   // Field helpers
   register: (name: keyof T) => {
     value: any;
@@ -43,7 +44,7 @@ export interface FloatFormResult<T extends Record<string, any>> {
     onBlur: (e: React.FocusEvent<any>) => void;
     name: string;
   };
-  
+
   // Actions
   setValue: (name: keyof T, value: any) => void;
   setError: (name: keyof T, error: string | undefined) => void;
@@ -71,15 +72,25 @@ export function useFloatForm<T extends Record<string, any>>(
     onError,
     validateOnChange = true,
     validateOnBlur = true,
+    validation = {},
   } = options;
 
   const [values, setValues] = useState<T>(initialValues as T);
   const [errors, setErrors] = useState<Partial<Record<keyof T, string>>>({});
   const [touched, setTouchedState] = useState<Partial<Record<keyof T, boolean>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const initialValuesRef = useRef(initialValues);
   const validatorsRef = useRef<Map<keyof T, ValidationRule<any>[]>>(new Map());
+
+  // Initialize validators
+  useMemo(() => {
+    Object.entries(validation).forEach(([key, rules]) => {
+      if (rules) {
+        validatorsRef.current.set(key as keyof T, Array.isArray(rules) ? rules : [rules]);
+      }
+    });
+  }, [validation]);
 
   // Validate a single field
   const validateField = useCallback(async (name: keyof T, value: any): Promise<string | undefined> => {
@@ -113,7 +124,7 @@ export function useFloatForm<T extends Record<string, any>>(
   // Set a single value
   const setValue = useCallback((name: keyof T, value: any) => {
     setValues(prev => ({ ...prev, [name]: value }));
-    
+
     if (validateOnChange) {
       validateField(name, value).then(error => {
         setErrors(prev => ({ ...prev, [name]: error }));
@@ -142,7 +153,7 @@ export function useFloatForm<T extends Record<string, any>>(
   // Handle submit
   const handleSubmit = useCallback(async (e?: React.FormEvent) => {
     e?.preventDefault();
-    
+
     // Touch all fields
     const allTouched = Object.keys(values).reduce((acc, key) => {
       acc[key as keyof T] = true;
@@ -153,7 +164,7 @@ export function useFloatForm<T extends Record<string, any>>(
     setIsSubmitting(true);
 
     const isValid = await validate();
-    
+
     if (isValid) {
       try {
         await onSubmit(values);
@@ -228,7 +239,7 @@ export function useFloatForm<T extends Record<string, any>>(
 
 // Built-in validators
 export const validators = {
-  required: (message = 'This field is required'): ValidationRule<any> => 
+  required: (message = 'This field is required'): ValidationRule<any> =>
     (value) => {
       if (value === undefined || value === null || value === '') {
         return message;
@@ -236,35 +247,35 @@ export const validators = {
       return undefined;
     },
 
-  email: (message = 'Invalid email address'): ValidationRule<string> => 
+  email: (message = 'Invalid email address'): ValidationRule<string> =>
     (value) => {
       if (!value) return undefined;
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return emailRegex.test(value) ? undefined : message;
     },
 
-  minLength: (min: number, message?: string): ValidationRule<string> => 
+  minLength: (min: number, message?: string): ValidationRule<string> =>
     (value) => {
       if (!value) return undefined;
-      return value.length >= min 
-        ? undefined 
+      return value.length >= min
+        ? undefined
         : message || `Must be at least ${min} characters`;
     },
 
-  maxLength: (max: number, message?: string): ValidationRule<string> => 
+  maxLength: (max: number, message?: string): ValidationRule<string> =>
     (value) => {
       if (!value) return undefined;
-      return value.length <= max 
-        ? undefined 
+      return value.length <= max
+        ? undefined
         : message || `Must be at most ${max} characters`;
     },
 
-  pattern: (regex: RegExp, message = 'Invalid format'): ValidationRule<string> => 
+  pattern: (regex: RegExp, message = 'Invalid format'): ValidationRule<string> =>
     (value) => {
       if (!value) return undefined;
       return regex.test(value) ? undefined : message;
     },
 
-  match: (field: string, message = 'Fields do not match'): ValidationRule<any> => 
+  match: (field: string, message = 'Fields do not match'): ValidationRule<any> =>
     (value, formData) => value === formData[field] ? undefined : message,
 };

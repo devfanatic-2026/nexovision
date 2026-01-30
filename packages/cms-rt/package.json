@@ -1,8 +1,12 @@
 {
-    "name": "nexovision-cms-rt",
+    "name": "maravilla-cms",
     "version": "1.0.0",
+    "description": "Maravilla Digital CMS - Content Management System with real-time capabilities and multi-platform widget distribution",
     "private": true,
     "type": "module",
+    "author": "Maravilla Digital Team",
+    "homepage": "https://maravilla.digital",
+    "license": "MIT",
     "scripts": {
         "dev": "concurrently \"pnpm:dev:backend\" \"pnpm:dev:frontend\"",
         "dev:backend": "tsx src/server.ts",
@@ -10,14 +14,15 @@
         "build": "float build",
         "start": "float start",
         "seed": "tsx scripts/seed.ts",
-        "sync": "tsx scripts/sync-from-cms.ts"
+        "sync": "tsx scripts/sync-from-cms.ts",
+        "typecheck": "tsc --noEmit",
+        "clean": "rm -rf .float dist node_modules/.cache"
     },
     "dependencies": {
         "@float.js/core": "workspace:*",
-        "@float.js/native": "workspace:*",
-        "@nexovision/ui-kit": "workspace:*",
-        "@nexovision/ui-logic": "workspace:*",
-        "@nexovision/widgets-catalog": "workspace:*",
+        "@maravilla/ui-kit": "workspace:*",
+        "@maravilla/ui-logic": "workspace:*",
+        "@maravilla/widgets": "workspace:*",
         "dotenv": "^16.4.5",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
@@ -37,5 +42,12 @@
         "concurrently": "^9.1.2",
         "postcss": "^8.5.6",
         "tailwindcss": "^3.4.17"
-    }
+    },
+    "keywords": [
+        "cms",
+        "maravilla-digital",
+        "real-time",
+        "websocket",
+        "widgets"
+    ]
 }

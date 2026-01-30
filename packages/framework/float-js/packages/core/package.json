@@ -1,16 +1,17 @@
 {
   "name": "@float.js/core",
-  "version": "2.2.8",
+  "version": "1.0.0",
   "description": "Modern React framework with server-side rendering, file-based routing, and zero-config TypeScript",
   "type": "module",
+  "author": "Alejandro Iglesias",
   "repository": {
     "type": "git",
-    "url": "https://github.com/float-js/float.js.git",
-    "directory": "packages/core"
+    "url": "https://github.com/maravilla-digital/maravilla-cms.git",
+    "directory": "packages/framework/float-js/packages/core"
   },
-  "homepage": "https://github.com/float-js/float.js#readme",
+  "homepage": "https://maravilla.digital",
   "bugs": {
-    "url": "https://github.com/float-js/float.js/issues"
+    "url": "https://github.com/maravilla-digital/maravilla-cms/issues"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

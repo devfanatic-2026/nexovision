@@ -1,0 +1,33 @@
+{
+  "name": "@maravilla/widget-web",
+  "version": "1.0.0",
+  "description": "Maravilla Digital Widget Catalog Web - Web platform widget display using Float.js SSR",
+  "type": "module",
+  "main": "index.js",
+  "author": "Maravilla Digital Team",
+  "homepage": "https://maravilla.digital",
+  "license": "MIT",
+  "scripts": {
+    "dev": "float dev -p 3008",
+    "build": "float build",
+    "start": "float start",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf .float dist"
+  },
+  "dependencies": {
+    "@float.js/core": "workspace:*",
+    "@maravilla/ui-kit": "workspace:*",
+    "@maravilla/ui-logic": "workspace:*",
+    "@maravilla/widgets": "workspace:*",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-native-web": "^0.19.13"
+  },
+  "keywords": [
+    "maravilla-digital",
+    "widgets",
+    "web",
+    "ssr",
+    "catalog"
+  ]
+}

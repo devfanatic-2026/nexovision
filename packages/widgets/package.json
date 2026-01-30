@@ -1,0 +1,45 @@
+{
+    "name": "@maravilla/widgets",
+    "version": "1.0.0",
+    "description": "Maravilla Digital Widgets Catalog - Widget display and management system",
+    "private": true,
+    "main": "index.tsx",
+    "module": "index.tsx",
+    "types": "index.d.ts",
+    "author": "Maravilla Digital Team",
+    "homepage": "https://maravilla.digital",
+    "license": "MIT",
+    "scripts": {
+        "dev": "float dev -p 3003",
+        "dev:all": "(pnpm --filter maravilla-cms dev & float dev -p 3003)",
+        "build": "float build",
+        "start": "float start",
+        "typecheck": "tsc --noEmit",
+        "clean": "rm -rf .float dist"
+    },
+    "dependencies": {
+        "@maravilla/ui-kit": "workspace:*",
+        "@maravilla/ui-logic": "workspace:*",
+        "nativewind": "^4.2.1",
+        "react": "19.1.0",
+        "react-dom": "19.1.0",
+        "react-native": "0.81.5"
+    },
+    "devDependencies": {
+        "@types/react": "^18.2.0",
+        "@types/react-dom": "^18.2.0",
+        "@types/react-native-web": "^0.19.0",
+        "autoprefixer": "^10.4.23",
+        "postcss": "^8.5.6",
+        "react-native-web": "^0.19.13",
+        "tailwindcss": "^3.4.1",
+        "tsup": "^8.0.0",
+        "typescript": "^5.9.3"
+    },
+    "keywords": [
+        "maravilla-digital",
+        "widgets",
+        "catalog",
+        "display"
+    ]
+}

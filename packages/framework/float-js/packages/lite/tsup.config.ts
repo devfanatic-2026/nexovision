@@ -24,7 +24,7 @@ export default defineConfig([
     clean: true,
     target: 'node18',
     shims: true,
-    external: ['ws', 'postcss', 'tailwindcss', 'autoprefixer', 'react', 'react-dom', 'react/jsx-runtime', 'react-native', 'react-native-web'],
+    external: ['ws', 'postcss', 'tailwindcss', 'autoprefixer', 'react', 'react-dom', 'react/jsx-runtime', 'react-native', 'react-native-web', 'fast-glob'],
   },
   // CLI entry (with shebang)
   {
